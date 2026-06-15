@@ -1,0 +1,13 @@
+﻿file_name,time_unit,standard_column,actual_column
+OBS_ASOS_MNH_20260615164729.csv,monthly,date,일시
+OBS_ASOS_MNH_20260615164729.csv,monthly,avg_temp,평균기온(°C)
+OBS_ASOS_MNH_20260615164729.csv,monthly,max_temp,평균최고기온(°C)
+OBS_ASOS_MNH_20260615164729.csv,monthly,min_temp,평균최저기온(°C)
+OBS_ASOS_MNH_20260615164729.csv,monthly,precipitation,월합강수량(00~24h만)(mm)
+OBS_ASOS_MNH_20260615164729.csv,monthly,rainy_days,
+OBS_ASOS_MNH_20260615164729.csv,monthly,humidity,평균상대습도(%)
+OBS_ASOS_MNH_20260615164729.csv,monthly,wind_speed,평균풍속(m/s)
+OBS_ASOS_MNH_20260615164729.csv,monthly,sunshine_hours,합계 일조시간(hr)
+OBS_ASOS_MNH_20260615164729.csv,monthly,heatwave_days,
+OBS_ASOS_MNH_20260615164729.csv,monthly,coldwave_days,
+OBS_ASOS_MNH_20260615164729.csv,monthly,snowfall,최심적설(cm)
