@@ -5,7 +5,6 @@ import pandas as pd
 import streamlit as st
 
 from src.analysis import (
-    classify_stop_types,
     correlation_analysis,
     create_analysis_tables,
     generate_analysis_summary_markdown,
@@ -13,8 +12,8 @@ from src.analysis import (
     kmeans_cluster_hourly_patterns,
     monthly_yoy_growth,
 )
-from src.data_loader import audit_to_dataframe, load_csv_files
-from src.preprocessing import normalize_stop_id, prepare_datasets
+from src.data_loader import audit_to_dataframe
+from src.preprocessing import normalize_stop_id
 from src.utils import (
     ensure_directories,
     format_number,
@@ -47,7 +46,6 @@ from src.weather_analysis import (
     calculate_weather_correlations,
     infer_bus_time_unit,
     merge_bus_weather_monthly,
-    prepare_weather_bundle,
     selected_weather_correlation_summary,
 )
 
@@ -79,6 +77,7 @@ EVENING_END_HOUR = 20
 HIGH_CONCENTRATION_THRESHOLD = 25.0
 LOW_USAGE_QUANTILE = 0.25
 YOY_MIN_PREVIOUS_VALUE = 1_000
+YOY_MIN_CURRENT_VALUE_FOR_DECREASE = 1_000
 
 
 def empty_message(message: str) -> None:
@@ -109,6 +108,12 @@ def processed_cache_is_fresh(data_dir: Path, processed_dir: Path) -> bool:
     latest_raw = max(path.stat().st_mtime for path in raw_csv_files)
     oldest_processed = min(path.stat().st_mtime for path in paths)
     return oldest_processed >= latest_raw
+
+
+def processed_cache_exists(processed_dir: Path) -> bool:
+    """Streamlit 앱이 바로 읽을 정제 CSV가 있는지 확인합니다."""
+    required = ["stop_summary", "hourly_summary", "monthly_summary", "weather_monthly", "data_check_report"]
+    return all((processed_dir / PROCESSED_CACHE_FILES[name]).exists() for name in required)
 
 
 def load_processed_cache(processed_dir: Path) -> dict:
@@ -144,33 +149,22 @@ def load_processed_cache(processed_dir: Path) -> dict:
     return bundle
 
 
-@st.cache_data(show_spinner="데이터를 불러오는 중입니다. 처음 실행이거나 원본 CSV가 바뀐 경우 시간이 걸릴 수 있습니다.")
+@st.cache_data(show_spinner="정제된 분석 CSV를 불러오는 중입니다.")
 def load_project_data(data_dir: str, fingerprint: tuple) -> dict:
-    """data 폴더의 CSV를 읽고 점검 결과와 분석용 테이블을 만듭니다."""
-    del fingerprint
+    """전처리된 CSV만 읽어 Streamlit 앱 시작 시간을 줄입니다."""
     data_path = Path(data_dir)
-    if processed_cache_is_fresh(data_path, PROCESSED_DIR):
-        return load_processed_cache(PROCESSED_DIR)
+    del fingerprint
+    if not processed_cache_exists(PROCESSED_DIR):
+        return {
+            "audit": [],
+            "stop_summary": pd.DataFrame(),
+            "hourly_summary": pd.DataFrame(),
+            "monthly_summary": pd.DataFrame(),
+            "processed_cache_missing": True,
+        }
 
-    loaded_files = load_csv_files(data_path)
-    audit = [payload.get("audit", {}) for payload in loaded_files.values()]
-    bundle = prepare_datasets(loaded_files)
-    weather_bundle = prepare_weather_bundle(loaded_files)
-    bundle.update(weather_bundle)
-    bundle["audit"] = audit
-
-    stop_summary = bundle.get("stop_summary", pd.DataFrame())
-    hourly_summary = bundle.get("hourly_summary", pd.DataFrame())
-    if not stop_summary.empty:
-        bundle["stop_summary"] = classify_stop_types(
-            stop_summary,
-            morning_threshold=HIGH_CONCENTRATION_THRESHOLD,
-            evening_threshold=HIGH_CONCENTRATION_THRESHOLD,
-            low_usage_quantile=LOW_USAGE_QUANTILE,
-        )
-    if not hourly_summary.empty:
-        bundle["hourly_summary"] = hourly_summary
-    bundle["loaded_from_processed_cache"] = False
+    bundle = load_processed_cache(PROCESSED_DIR)
+    bundle["processed_cache_stale"] = not processed_cache_is_fresh(data_path, PROCESSED_DIR)
     return bundle
 
 
@@ -578,11 +572,17 @@ def format_signed_number(value) -> str:
     return f"{number:+,.0f}"
 
 
-def prepare_yoy_rank_data(yoy_df: pd.DataFrame, metric: str, top_n: int, ascending: bool) -> tuple[pd.DataFrame, bool]:
+def prepare_yoy_rank_data(
+    yoy_df: pd.DataFrame,
+    metric: str,
+    top_n: int,
+    ascending: bool,
+    min_current_value: int | None = None,
+) -> tuple[pd.DataFrame, bool, bool]:
     """전년 대비 증감률 표에 필요한 컬럼만 보기 좋게 정리합니다."""
     required = {"stop_name", "year", "month", metric, "previous_year_value", "yoy_growth_rate"}
     if yoy_df.empty or not required.issubset(yoy_df.columns):
-        return pd.DataFrame(), False
+        return pd.DataFrame(), False, False
 
     data = yoy_df.copy()
     filtered = data[data["previous_year_value"] >= YOY_MIN_PREVIOUS_VALUE].copy()
@@ -591,9 +591,13 @@ def prepare_yoy_rank_data(yoy_df: pd.DataFrame, metric: str, top_n: int, ascendi
         filtered = data.copy()
         used_minimum_filter = False
 
+    used_current_filter = min_current_value is not None
+    if min_current_value is not None:
+        filtered = filtered[filtered[metric] >= min_current_value].copy()
+
     ranked = filtered.sort_values("yoy_growth_rate", ascending=ascending).head(top_n).copy()
     if ranked.empty:
-        return pd.DataFrame(), used_minimum_filter
+        return pd.DataFrame(), used_minimum_filter, used_current_filter
 
     ranked["순위"] = range(1, len(ranked) + 1)
     ranked["연월"] = ranked["year"].astype(int).astype(str) + "-" + ranked["month"].astype(int).astype(str).str.zfill(2)
@@ -607,7 +611,31 @@ def prepare_yoy_rank_data(yoy_df: pd.DataFrame, metric: str, top_n: int, ascendi
             "yoy_growth_rate": "증감률",
         }
     )
-    return display, used_minimum_filter
+    return display, used_minimum_filter, used_current_filter
+
+
+def available_yoy_periods(yoy_df: pd.DataFrame) -> list[str]:
+    """전년 동월 비교가 가능한 연월 목록을 만듭니다."""
+    if yoy_df.empty or not {"year", "month"}.issubset(yoy_df.columns):
+        return []
+    periods = (
+        yoy_df[["year", "month"]]
+        .dropna()
+        .drop_duplicates()
+        .sort_values(["year", "month"])
+        .assign(period=lambda data: data["year"].astype(int).astype(str) + "-" + data["month"].astype(int).astype(str).str.zfill(2))
+    )
+    return periods["period"].tolist()
+
+
+def filter_yoy_period(yoy_df: pd.DataFrame, period: str) -> pd.DataFrame:
+    """선택한 기준월의 전년 동월 비교 행만 남깁니다."""
+    if yoy_df.empty or not period:
+        return pd.DataFrame()
+    target = pd.to_datetime(period + "-01", errors="coerce")
+    if pd.isna(target):
+        return pd.DataFrame()
+    return yoy_df[(yoy_df["year"] == target.year) & (yoy_df["month"] == target.month)].copy()
 
 
 def render_yoy_rank_table(table: pd.DataFrame, positive: bool) -> None:
@@ -740,18 +768,48 @@ def monthly_tab(monthly_df: pd.DataFrame, top_n: int) -> None:
     if yoy.empty:
         empty_message("전년 같은 달과 비교할 수 있는 데이터가 부족합니다.")
         return
+    periods = available_yoy_periods(yoy)
+    if not periods:
+        empty_message("전년 동월 비교가 가능한 기준월이 없습니다.")
+        return
+
+    selected_period = st.selectbox(
+        "전년 대비 비교 기준월",
+        periods,
+        index=len(periods) - 1,
+        help="선택한 기준월과 정확히 1년 전 같은 달을 비교합니다.",
+    )
+    target_yoy = filter_yoy_period(yoy, selected_period)
+    if target_yoy.empty:
+        empty_message("선택한 기준월의 전년 동월 비교 데이터가 없습니다.")
+        return
+
+    previous_period = str(int(selected_period[:4]) - 1) + selected_period[4:]
+    st.caption(f"현재 표는 {selected_period} 승차 인원을 {previous_period} 승차 인원과 비교한 결과입니다.")
+
     col1, col2 = st.columns(2)
     with col1:
         st.subheader(f"이용량 증가율 TOP {top_n}")
-        increase_table, used_filter = prepare_yoy_rank_data(yoy, metric, top_n, ascending=False)
+        increase_table, used_filter, _ = prepare_yoy_rank_data(target_yoy, metric, top_n, ascending=False)
         render_yoy_rank_table(increase_table, positive=True)
     with col2:
         st.subheader(f"이용량 감소율 TOP {top_n}")
-        decrease_table, _ = prepare_yoy_rank_data(yoy, metric, top_n, ascending=True)
+        decrease_table, _, used_current_filter = prepare_yoy_rank_data(
+            target_yoy,
+            metric,
+            top_n,
+            ascending=True,
+            min_current_value=YOY_MIN_CURRENT_VALUE_FOR_DECREASE,
+        )
         render_yoy_rank_table(decrease_table, positive=False)
     if used_filter:
         st.caption(
             f"전년 동월 승차 인원이 {YOY_MIN_PREVIOUS_VALUE:,}명 미만인 행은 증감률이 과장될 수 있어 순위 표에서 제외했습니다."
+        )
+    if used_current_filter:
+        st.caption(
+            f"감소율 표에서는 현재 월 승차 인원이 {YOY_MIN_CURRENT_VALUE_FOR_DECREASE:,}명 미만인 행을 "
+            "정류소 운영 중단, 명칭 변경, ID 매칭 또는 자료 누락 확인 대상으로 보고 순위에서 제외했습니다."
         )
 
 
@@ -941,8 +999,16 @@ def main() -> None:
     hourly_df = bundle.get("hourly_summary", pd.DataFrame())
     monthly_df = bundle.get("monthly_summary", pd.DataFrame())
 
+    if bundle.get("processed_cache_missing"):
+        st.error("정제된 분석 CSV가 없습니다. PowerShell에서 `python prepare_data.py`를 먼저 실행한 뒤 앱을 새로고침하세요.")
+        st.code("python prepare_data.py", language="powershell")
+        return
+
+    if bundle.get("processed_cache_stale"):
+        st.warning("data 폴더의 원본 CSV가 정제 결과보다 최신입니다. 최신 데이터 반영이 필요하면 `python prepare_data.py`를 다시 실행하세요.")
+
     if stop_df.empty:
-        st.warning("현재 data 폴더에 분석 가능한 CSV 파일이 없습니다. CSV 파일을 넣은 뒤 앱을 새로고침하세요.")
+        st.warning("정제된 분석 CSV에 표시할 정류소 데이터가 없습니다. 원본 CSV를 확인한 뒤 `python prepare_data.py`를 다시 실행하세요.")
         data_limit_tab(bundle)
         return
 
