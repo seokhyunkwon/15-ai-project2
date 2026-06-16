@@ -442,6 +442,38 @@ def plot_season_bus_box(data: pd.DataFrame):
     return fig
 
 
+def plot_cluster_pattern_heatmap(patterns: pd.DataFrame):
+    """K-means 군집별 시간대 이용 비율을 퍼센트 히트맵으로 보여줍니다."""
+    px = get_plotly_express()
+    if px is None or patterns.empty:
+        return None
+    hour_cols = sorted([col for col in patterns.columns if isinstance(col, (int, float))], key=int)
+    if not hour_cols:
+        return None
+
+    heatmap = patterns.copy()
+    heatmap["군집 유형"] = heatmap.apply(
+        lambda row: f"{row.get('cluster_name', '군집')} ({int(row.get('cluster', 0))})",
+        axis=1,
+    )
+    heatmap_data = heatmap.set_index("군집 유형")[hour_cols] * 100
+    heatmap_data.columns = [f"{int(hour):02d}시" for hour in hour_cols]
+
+    fig = px.imshow(
+        heatmap_data,
+        aspect="auto",
+        color_continuous_scale="YlGnBu",
+        title="군집별 시간대 승차 비율",
+        labels=dict(x="시간대", y="군집 유형", color="승차 비율(%)"),
+    )
+    fig.update_traces(
+        texttemplate="%{z:.1f}%",
+        hovertemplate="군집: %{y}<br>시간대: %{x}<br>승차 비율: %{z:.1f}%<extra></extra>",
+    )
+    fig.update_layout(height=420, margin=dict(l=20, r=20, t=60, b=20))
+    return fig
+
+
 def plot_weather_correlation_heatmap(correlation_df: pd.DataFrame):
     """날씨 변수별 Pearson, Spearman 상관계수를 히트맵으로 표시합니다."""
     px = get_plotly_express()
