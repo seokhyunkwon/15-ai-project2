@@ -22,7 +22,6 @@ from src.utils import (
     set_korean_font,
 )
 from src.visualization import (
-    create_pydeck_map,
     metric_label as plot_metric_label,
     plot_board_alight_line,
     plot_district_bar,
@@ -80,6 +79,1577 @@ YOY_MIN_PREVIOUS_VALUE = 1_000
 YOY_MIN_CURRENT_VALUE_FOR_DECREASE = 1_000
 YOY_BASE_YEAR = 2025
 YOY_TARGET_YEAR = 2026
+
+SOFT_BG = "#0A0A0B"
+SOFT_SURFACE = "#141416"
+SOFT_SURFACE_RAISED = "#1A1B1F"
+SOFT_TEXT = "#F5F5F5"
+SOFT_MUTED = "#8A8A8F"
+SOFT_ACCENT = "#89AACC"
+SOFT_ACCENT_LIGHT = "#4E85BF"
+SOFT_ACCENT_GRADIENT = "linear-gradient(90deg, #89AACC 0%, #4E85BF 100%)"
+SOFT_TEAL = "#4ADE80"
+SOFT_ROSE = "#FB7185"
+SOFT_STROKE = "#26272C"
+SOFT_SHADOW_LIGHT = "rgba(137, 170, 204, 0.12)"
+SOFT_SHADOW_DARK = "rgba(0, 0, 0, 0.50)"
+SOFT_SHADOW = (
+    "0 22px 70px rgba(0, 0, 0, 0.44), "
+    "inset 0 1px 0 rgba(255, 255, 255, 0.04)"
+)
+SOFT_SHADOW_HOVER = (
+    "0 26px 90px rgba(0, 0, 0, 0.58), "
+    "0 0 0 1px rgba(137, 170, 204, 0.34), "
+    "0 0 34px rgba(78, 133, 191, 0.14)"
+)
+SOFT_SHADOW_INSET = (
+    "inset 0 1px 0 rgba(255, 255, 255, 0.04), "
+    "inset 0 0 0 1px rgba(255, 255, 255, 0.05)"
+)
+SOFT_SHADOW_INSET_DEEP = (
+    "inset 0 0 0 1px rgba(137, 170, 204, 0.20), "
+    "inset 0 -24px 60px rgba(0, 0, 0, 0.35)"
+)
+
+
+def apply_neumorphic_theme() -> None:
+    """Streamlit 기본 UI 위에 프리미엄 다크 대시보드 디자인 토큰을 적용합니다."""
+    st.markdown(
+        f"""
+        <style>
+        @import url('https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@1&family=Inter:wght@300;400;500;600;700;800&display=swap');
+
+        :root {{
+            --soft-bg: {SOFT_BG};
+            --soft-surface: {SOFT_SURFACE};
+            --soft-surface-raised: {SOFT_SURFACE_RAISED};
+            --soft-text: {SOFT_TEXT};
+            --soft-muted: {SOFT_MUTED};
+            --soft-accent: {SOFT_ACCENT};
+            --soft-accent-light: {SOFT_ACCENT_LIGHT};
+            --soft-teal: {SOFT_TEAL};
+            --soft-rose: {SOFT_ROSE};
+            --soft-stroke: {SOFT_STROKE};
+            --accent-gradient: {SOFT_ACCENT_GRADIENT};
+            --soft-shadow: {SOFT_SHADOW};
+            --soft-shadow-hover: {SOFT_SHADOW_HOVER};
+            --soft-inset: {SOFT_SHADOW_INSET};
+            --soft-inset-deep: {SOFT_SHADOW_INSET_DEEP};
+        }}
+
+        html, body, [class*="css"] {{
+            font-family: "Inter", "Malgun Gothic", "Apple SD Gothic Neo", sans-serif;
+            color: var(--soft-text);
+        }}
+
+        .stApp {{
+            background:
+                radial-gradient(circle at 12% 0%, rgba(137, 170, 204, 0.15), transparent 32rem),
+                radial-gradient(circle at 88% 8%, rgba(78, 133, 191, 0.14), transparent 28rem),
+                linear-gradient(90deg, rgba(255,255,255,0.018) 1px, transparent 1px),
+                linear-gradient(180deg, rgba(255,255,255,0.012) 1px, transparent 1px),
+                linear-gradient(180deg, #050506 0%, var(--soft-bg) 48%, #050506 100%);
+            background-size: auto, auto, 72px 72px, 72px 72px, auto;
+            color: var(--soft-text);
+        }}
+
+        .block-container {{
+            max-width: 1480px;
+            padding-top: 2rem;
+            padding-bottom: 5rem;
+        }}
+
+        h1, h2, h3, h4, h5, h6 {{
+            font-family: "Inter", "Malgun Gothic", "Apple SD Gothic Neo", sans-serif;
+            color: var(--soft-text);
+            letter-spacing: 0;
+        }}
+
+        h1 {{
+            font-size: clamp(1.9rem, 2.6vw, 3rem);
+            line-height: 1.18;
+            font-weight: 800;
+            margin-bottom: 0.65rem;
+        }}
+
+        h2, h3 {{
+            font-weight: 800;
+        }}
+
+        p, li, label, span {{
+            color: inherit;
+        }}
+
+        .app-hero {{
+            position: relative;
+            margin: 0.25rem 0 1.8rem;
+            padding: clamp(1.65rem, 3vw, 3rem);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 30px;
+            background:
+                linear-gradient(135deg, rgba(137, 170, 204, 0.13), transparent 38%),
+                radial-gradient(circle at 88% 0%, rgba(78, 133, 191, 0.22), transparent 24rem),
+                rgba(20, 20, 22, 0.78);
+            box-shadow: var(--soft-shadow);
+            overflow: hidden;
+        }}
+
+        .app-hero::before {{
+            content: "";
+            position: absolute;
+            inset: 0;
+            pointer-events: none;
+            background-image: radial-gradient(circle, rgba(255,255,255,0.18) 1px, transparent 1px);
+            background-size: 5px 5px;
+            opacity: 0.08;
+            mix-blend-mode: screen;
+        }}
+
+        .app-hero__eyebrow {{
+            position: relative;
+            display: inline-flex;
+            align-items: center;
+            min-height: 2rem;
+            margin-bottom: 0.9rem;
+            padding: 0.36rem 0.82rem;
+            border: 1px solid rgba(137, 170, 204, 0.26);
+            border-radius: 999px;
+            color: var(--soft-text);
+            background: rgba(255, 255, 255, 0.035);
+            box-shadow: var(--soft-inset);
+            font-size: 0.72rem;
+            font-weight: 700;
+            letter-spacing: 0.28em;
+            text-transform: uppercase;
+        }}
+
+        .app-hero__title {{
+            position: relative;
+            max-width: 1180px;
+            font-family: "Instrument Serif", "Inter", "Malgun Gothic", serif;
+            color: var(--soft-text);
+            font-size: clamp(1.95rem, 3.25vw, 3.65rem);
+            font-style: italic;
+            font-weight: 400;
+            line-height: 1.12;
+            margin: 0 0 1rem;
+            text-wrap: pretty;
+            word-break: keep-all;
+            overflow-wrap: normal;
+        }}
+
+        .app-hero__body {{
+            position: relative;
+            max-width: 880px;
+            color: var(--soft-muted);
+            font-size: 1.02rem;
+            line-height: 1.85;
+            margin: 0;
+        }}
+
+        section[data-testid="stSidebar"] {{
+            background:
+                linear-gradient(180deg, rgba(255,255,255,0.035), rgba(255,255,255,0.012)),
+                rgba(10, 10, 11, 0.98);
+            border-right: 1px solid var(--soft-stroke);
+            box-shadow: inset -1px 0 0 rgba(255, 255, 255, 0.03), 18px 0 80px rgba(0,0,0,0.30);
+        }}
+
+        section[data-testid="stSidebar"] > div {{
+            background: transparent;
+        }}
+
+        section[data-testid="stSidebar"] h1,
+        section[data-testid="stSidebar"] h2,
+        section[data-testid="stSidebar"] h3 {{
+            color: var(--soft-text);
+        }}
+
+        section[data-testid="stSidebar"] [data-testid="stSidebarUserContent"] {{
+            padding-top: 1.4rem;
+        }}
+
+        section[data-testid="stSidebar"] [data-testid="stMarkdownContainer"] p,
+        section[data-testid="stSidebar"] label {{
+            color: var(--soft-muted);
+            font-size: 0.88rem;
+            font-weight: 700;
+        }}
+
+        section[data-testid="stSidebar"] div[data-baseweb="select"] > div,
+        section[data-testid="stSidebar"] div[data-baseweb="input"] > div {{
+            background: rgba(255,255,255,0.045) !important;
+        }}
+
+        div[data-testid="stMetric"] {{
+            min-height: 132px;
+            padding: 1.05rem 1.05rem 1rem;
+            border: 1px solid rgba(137, 170, 204, 0.20);
+            border-radius: 22px;
+            background: linear-gradient(180deg, rgba(255,255,255,0.055), rgba(255,255,255,0.018));
+            box-shadow: var(--soft-shadow);
+            transition: transform 300ms ease-out, box-shadow 300ms ease-out;
+        }}
+
+        div[data-testid="stMetric"]:hover {{
+            transform: translateY(-1px);
+            box-shadow: var(--soft-shadow-hover);
+        }}
+
+        div[data-testid="stMetricLabel"] p {{
+            color: var(--soft-muted);
+            font-size: 0.82rem;
+            font-weight: 800;
+            line-height: 1.35;
+        }}
+
+        div[data-testid="stMetricValue"] {{
+            color: var(--soft-text);
+            font-family: "Inter", "Malgun Gothic", "Apple SD Gothic Neo", sans-serif;
+            font-size: clamp(1.15rem, 1.35vw, 1.65rem);
+            font-style: normal;
+            font-weight: 800;
+            line-height: 1.28;
+            overflow-wrap: anywhere;
+            font-variant-numeric: tabular-nums;
+        }}
+
+        div[data-testid="stMetricDelta"] {{
+            color: var(--soft-accent);
+            font-weight: 800;
+        }}
+
+        div[data-testid="stTabs"] button {{
+            min-height: 46px;
+            border-radius: 999px;
+            color: var(--soft-muted);
+            background: transparent;
+            transition: all 300ms ease-out;
+        }}
+
+        div[data-testid="stTabs"] button:hover {{
+            color: var(--soft-text);
+            background: rgba(255, 255, 255, 0.045);
+        }}
+
+        div[data-testid="stTabs"] button[aria-selected="true"] {{
+            color: var(--soft-text);
+            background: linear-gradient(90deg, rgba(137,170,204,0.22), rgba(78,133,191,0.18));
+            box-shadow: inset 0 0 0 1px rgba(137,170,204,0.28);
+            font-weight: 700;
+        }}
+
+        div[data-testid="stTabs"] [data-baseweb="tab-list"] {{
+            width: fit-content;
+            max-width: 100%;
+            gap: 0.5rem;
+            padding: 0.45rem;
+            border: 1px solid var(--soft-stroke);
+            border-radius: 999px;
+            background: rgba(20, 20, 22, 0.88);
+            box-shadow: var(--soft-inset);
+            overflow-x: auto;
+        }}
+
+        button[kind], div[data-testid="stDownloadButton"] button {{
+            min-height: 44px;
+            border: 1px solid rgba(137, 170, 204, 0.25) !important;
+            border-radius: 999px !important;
+            color: var(--soft-text) !important;
+            background: linear-gradient(180deg, rgba(255,255,255,0.075), rgba(255,255,255,0.025)) !important;
+            box-shadow: var(--soft-shadow) !important;
+            transition: transform 300ms ease-out, box-shadow 300ms ease-out !important;
+        }}
+
+        button[kind]:hover, div[data-testid="stDownloadButton"] button:hover {{
+            transform: translateY(-1px);
+            color: var(--soft-text) !important;
+            box-shadow: var(--soft-shadow-hover) !important;
+        }}
+
+        button[kind]:active, div[data-testid="stDownloadButton"] button:active {{
+            transform: translateY(0.5px);
+            box-shadow: var(--soft-inset) !important;
+        }}
+
+        button:focus, input:focus, textarea:focus, [role="button"]:focus-visible {{
+            outline: 2px solid var(--soft-accent) !important;
+            outline-offset: 2px !important;
+        }}
+
+        div[data-baseweb="select"] > div,
+        div[data-baseweb="input"] > div,
+        div[data-baseweb="textarea"] > div,
+        div[data-baseweb="base-input"],
+        div[data-testid="stNumberInput"] input {{
+            border: 1px solid var(--soft-stroke) !important;
+            border-radius: 14px !important;
+            background: rgba(255, 255, 255, 0.035) !important;
+            color: var(--soft-text) !important;
+            box-shadow: var(--soft-inset) !important;
+        }}
+
+        div[data-baseweb="select"] span,
+        div[data-baseweb="base-input"] input {{
+            color: var(--soft-text) !important;
+        }}
+
+        div[data-testid="stSlider"] [data-baseweb="slider"] > div {{
+            color: var(--soft-accent);
+        }}
+
+        div[data-testid="stCheckbox"] label {{
+            min-height: 44px;
+            align-items: center;
+        }}
+
+        div[data-testid="stSlider"] [role="slider"] {{
+            background: var(--accent-gradient) !important;
+            border-color: rgba(255,255,255,0.24) !important;
+        }}
+
+        div[data-testid="stAlert"],
+        details[data-testid="stExpander"],
+        div[data-testid="stDataFrame"],
+        div[data-testid="stTable"],
+        div[data-testid="stPlotlyChart"],
+        div[data-testid="stPydeckChart"],
+        div[data-testid="stVegaLiteChart"] {{
+            border: 1px solid var(--soft-stroke) !important;
+            border-radius: 26px !important;
+            background: rgba(20, 20, 22, 0.82) !important;
+            box-shadow: var(--soft-shadow);
+            overflow: hidden;
+        }}
+
+        div[data-testid="stAlert"] {{
+            padding: 0.2rem;
+        }}
+
+        div[data-testid="stPlotlyChart"],
+        div[data-testid="stPydeckChart"],
+        div[data-testid="stVegaLiteChart"] {{
+            padding: 0.7rem;
+            margin-bottom: 1.1rem;
+        }}
+
+        div[data-testid="stPlotlyChart"]:nth-of-type(even) {{
+            margin-top: 0.65rem;
+        }}
+
+        div[data-testid="stDataFrame"] {{
+            padding: 0.35rem;
+        }}
+
+        div[data-testid="stDataFrame"] canvas,
+        div[data-testid="stDataFrame"] [role="gridcell"],
+        div[data-testid="stDataFrame"] [role="columnheader"] {{
+            font-family: "Inter", "Malgun Gothic", "Apple SD Gothic Neo", sans-serif !important;
+            font-variant-numeric: tabular-nums;
+        }}
+
+        div[data-testid="stDataFrame"] [role="grid"] {{
+            border-radius: 20px;
+            overflow: hidden;
+            color: var(--soft-text);
+        }}
+
+        details[data-testid="stExpander"] > summary {{
+            color: var(--soft-text);
+            font-weight: 800;
+        }}
+
+        .soft-note {{
+            margin: 0.4rem 0 1rem;
+            padding: 1rem 1.2rem;
+            border: 1px solid var(--soft-stroke);
+            border-radius: 20px;
+            color: var(--soft-muted);
+            background: rgba(255,255,255,0.035);
+            box-shadow: var(--soft-inset);
+            line-height: 1.65;
+            font-weight: 500;
+        }}
+
+        .section-kicker {{
+            position: relative;
+            margin: 1.6rem 0 1rem;
+            padding: 1rem 0 0.35rem;
+        }}
+
+        .section-kicker::before {{
+            content: "";
+            display: block;
+            width: 2.5rem;
+            height: 1px;
+            margin-bottom: 0.75rem;
+            background: var(--accent-gradient);
+            box-shadow: 0 0 12px rgba(137,170,204,0.35);
+        }}
+
+        .section-kicker__eyebrow {{
+            margin-bottom: 0.45rem;
+            color: var(--soft-muted);
+            font-size: 0.72rem;
+            font-weight: 800;
+            letter-spacing: 0.28em;
+            text-transform: uppercase;
+        }}
+
+        .section-kicker__title {{
+            margin: 0;
+            color: var(--soft-text);
+            font-family: "Inter", "Malgun Gothic", "Apple SD Gothic Neo", sans-serif;
+            font-size: clamp(1.65rem, 2.15vw, 2.6rem);
+            font-style: normal;
+            font-weight: 850;
+            line-height: 1.2;
+        }}
+
+        .section-kicker__body {{
+            max-width: 760px;
+            margin-top: 0.7rem;
+            color: var(--soft-muted);
+            line-height: 1.7;
+        }}
+
+        .soft-pill {{
+            display: inline-flex;
+            align-items: center;
+            min-height: 2rem;
+            padding: 0.25rem 0.75rem;
+            border: 1px solid rgba(137, 170, 204, 0.24);
+            border-radius: 999px;
+            color: var(--soft-text);
+            background: rgba(255,255,255,0.04);
+            box-shadow: var(--soft-inset);
+            font-weight: 700;
+        }}
+
+        .soft-metric-card {{
+            min-height: 124px;
+            position: relative;
+            padding: 1rem 1.05rem 1.15rem;
+            border: 1px solid rgba(137, 170, 204, 0.22);
+            border-radius: 22px;
+            background:
+                linear-gradient(180deg, rgba(255,255,255,0.065), rgba(255,255,255,0.020)),
+                rgba(20, 20, 22, 0.84);
+            box-shadow: var(--soft-shadow);
+            overflow: hidden;
+            transition: transform 300ms ease-out, box-shadow 300ms ease-out;
+        }}
+
+        .soft-metric-card::before {{
+            display: none;
+        }}
+
+        .soft-metric-card::after {{
+            content: "";
+            position: absolute;
+            left: 1rem;
+            right: 1rem;
+            bottom: 0;
+            height: 3px;
+            border-radius: 999px;
+            background: var(--accent-gradient);
+            opacity: 0.85;
+            box-shadow: 0 0 8px rgba(137,170,204,0.35);
+        }}
+
+        .soft-metric-card:hover {{
+            transform: translateY(-1px);
+            box-shadow: var(--soft-shadow-hover);
+        }}
+
+        .soft-metric-card__label {{
+            color: var(--soft-muted);
+            font-size: 0.74rem;
+            font-weight: 750;
+            line-height: 1.35;
+            margin-bottom: 0.55rem;
+            letter-spacing: 0.03em;
+            text-transform: uppercase;
+        }}
+
+        .soft-metric-card__value {{
+            color: var(--soft-text);
+            font-family: "Inter", "Malgun Gothic", "Apple SD Gothic Neo", sans-serif;
+            font-size: clamp(1.18rem, 1.45vw, 1.8rem);
+            font-style: normal;
+            font-weight: 800;
+            line-height: 1.22;
+            overflow-wrap: anywhere;
+            word-break: break-word;
+            font-variant-numeric: tabular-nums;
+            max-width: 100%;
+        }}
+
+        div[data-testid="stHorizontalBlock"] > div:nth-child(even) div[data-testid="stPlotlyChart"] {{
+            margin-top: 1.15rem;
+        }}
+
+        div[data-testid="stHorizontalBlock"] > div:nth-child(odd) div[data-testid="stPlotlyChart"] {{
+            border-color: rgba(137,170,204,0.24) !important;
+        }}
+
+        .soft-metric-card__delta {{
+            display: inline-flex;
+            margin-top: 0.65rem;
+            padding: 0.22rem 0.58rem;
+            border: 1px solid rgba(137, 170, 204, 0.22);
+            border-radius: 999px;
+            color: var(--soft-accent);
+            background: rgba(137, 170, 204, 0.08);
+            box-shadow: var(--soft-inset);
+            font-size: 0.78rem;
+            font-weight: 700;
+        }}
+
+        .stMarkdown a {{
+            color: var(--soft-accent);
+            font-weight: 800;
+        }}
+
+        hr {{
+            border: 0;
+            height: 1px;
+            background: rgba(255, 255, 255, 0.10);
+        }}
+
+        .cosmic-footer {{
+            position: relative;
+            margin-top: 3rem;
+            padding: 2.4rem 0 0.4rem;
+            border-top: 1px solid var(--soft-stroke);
+            overflow: hidden;
+        }}
+
+        .cosmic-marquee {{
+            display: flex;
+            width: max-content;
+            animation: cosmic-marquee 38s linear infinite;
+            color: rgba(245, 245, 245, 0.92);
+            font-family: "Instrument Serif", "Inter", "Malgun Gothic", serif;
+            font-size: clamp(2rem, 4.8vw, 5rem);
+            font-style: italic;
+            line-height: 0.95;
+            white-space: nowrap;
+        }}
+
+        .cosmic-marquee span {{
+            padding-right: 2rem;
+            background: var(--accent-gradient);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }}
+
+        .cosmic-footer__meta {{
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: space-between;
+            gap: 0.8rem;
+            margin-top: 1.3rem;
+            color: var(--soft-muted);
+            font-size: 0.86rem;
+        }}
+
+        .cosmic-dot {{
+            display: inline-block;
+            width: 0.55rem;
+            height: 0.55rem;
+            margin-right: 0.45rem;
+            border-radius: 999px;
+            background: #4ade80;
+            box-shadow: 0 0 0 rgba(74, 222, 128, 0.55);
+            animation: pulse-dot 1.8s ease-in-out infinite;
+        }}
+
+        @keyframes cosmic-marquee {{
+            from {{ transform: translateX(0); }}
+            to {{ transform: translateX(-50%); }}
+        }}
+
+        @keyframes pulse-dot {{
+            0%, 100% {{ box-shadow: 0 0 0 0 rgba(74, 222, 128, 0.45); }}
+            50% {{ box-shadow: 0 0 0 8px rgba(74, 222, 128, 0); }}
+        }}
+
+        @media (max-width: 900px) {{
+            .block-container {{
+                padding-left: 1rem;
+                padding-right: 1rem;
+            }}
+            .app-hero {{
+                padding: 1.45rem;
+                border-radius: 28px;
+            }}
+            div[data-testid="stMetric"] {{
+                min-height: 108px;
+            }}
+            .soft-metric-card {{
+                min-height: 108px;
+            }}
+        }}
+        </style>
+        """,
+        unsafe_allow_html=True,
+    )
+
+
+def apply_retro_90s_overrides() -> None:
+    """90년대 Windows/초기 웹 느낌의 최종 CSS 오버라이드를 적용합니다."""
+    st.markdown(
+        """
+        <style>
+        :root {
+            --retro-bg: #c0c0c0;
+            --retro-bg-dark: #a8a8a8;
+            --retro-text: #000000;
+            --retro-muted: #808080;
+            --retro-blue: #000080;
+            --retro-blue-bright: #0000ff;
+            --retro-blue-end: #1084d0;
+            --retro-red: #ff0000;
+            --retro-yellow: #ffff00;
+            --retro-panel: #ffffcc;
+            --retro-white: #ffffff;
+            --retro-green: #00aa00;
+            --retro-border-dark: #808080;
+            --retro-border-darker: #404040;
+            --retro-highlight: #dfdfdf;
+        }
+
+        html, body, [class*="css"] {
+            font-family: "MS Sans Serif", "Segoe UI", Tahoma, Geneva, Verdana, sans-serif !important;
+            color: var(--retro-text) !important;
+        }
+
+        .stApp {
+            background-color: var(--retro-bg) !important;
+            background-image:
+                linear-gradient(45deg, #b8b8b8 25%, transparent 25%),
+                linear-gradient(-45deg, #b8b8b8 25%, transparent 25%),
+                linear-gradient(45deg, transparent 75%, #b8b8b8 75%),
+                linear-gradient(-45deg, transparent 75%, #b8b8b8 75%) !important;
+            background-size: 4px 4px !important;
+            background-position: 0 0, 0 2px, 2px -2px, -2px 0 !important;
+        }
+
+        html * {
+            border-radius: 0 !important;
+            transition: none !important;
+            scroll-behavior: auto !important;
+        }
+
+        .block-container {
+            max-width: 1320px !important;
+            padding-top: 1.2rem !important;
+        }
+
+        h1, h2, h3, h4, h5, h6,
+        .section-kicker__title,
+        .app-hero__title {
+            font-family: "Arial Black", Impact, Haettenschweiler, "Malgun Gothic", sans-serif !important;
+            color: var(--retro-text) !important;
+            font-style: normal !important;
+            font-weight: 900 !important;
+            letter-spacing: 0 !important;
+            line-height: 1.15 !important;
+            text-shadow: 2px 2px 0 #808080;
+        }
+
+        .app-hero {
+            margin: 0 0 1rem !important;
+            padding: 2.35rem 1rem 1rem !important;
+            border: 2px solid !important;
+            border-color: #ffffff #808080 #808080 #ffffff !important;
+            background: var(--retro-bg) !important;
+            box-shadow: inset -1px -1px 0 #404040, inset 1px 1px 0 #dfdfdf !important;
+            overflow: hidden !important;
+            position: relative !important;
+        }
+
+        .app-hero::before {
+            content: "" !important;
+            position: absolute !important;
+            left: 0 !important;
+            right: 0 !important;
+            top: 0 !important;
+            height: 1.75rem !important;
+            background: linear-gradient(90deg, #000080, #1084d0) !important;
+            opacity: 1 !important;
+            pointer-events: none !important;
+        }
+
+        .app-hero::after {
+            content: "DAEGU_BUS_DASHBOARD.EXE" !important;
+            position: absolute !important;
+            left: 0.5rem !important;
+            top: 0.22rem !important;
+            color: #ffffff !important;
+            font-family: "MS Sans Serif", Tahoma, sans-serif !important;
+            font-size: 0.82rem !important;
+            font-weight: 800 !important;
+            text-shadow: none !important;
+            z-index: 2 !important;
+        }
+
+        .app-hero__eyebrow {
+            display: inline-block !important;
+            margin: 0 0 0.7rem !important;
+            padding: 0.22rem 0.45rem !important;
+            border: 2px solid !important;
+            border-color: #ffffff #808080 #808080 #ffffff !important;
+            background: #ffff00 !important;
+            color: #000000 !important;
+            box-shadow: inset -1px -1px 0 #404040, inset 1px 1px 0 #dfdfdf !important;
+            font-family: "Courier New", Courier, monospace !important;
+            font-size: 0.78rem !important;
+            letter-spacing: 0 !important;
+            text-transform: uppercase !important;
+        }
+
+        .app-hero__title {
+            max-width: 1000px !important;
+            margin: 0 0 0.8rem !important;
+            font-size: clamp(1.8rem, 3.4vw, 3.3rem) !important;
+            word-break: keep-all !important;
+        }
+
+        .app-hero__body,
+        .section-kicker__body,
+        p, li {
+            color: #000000 !important;
+            font-size: 0.96rem !important;
+            line-height: 1.55 !important;
+            text-shadow: none !important;
+        }
+
+        .section-kicker {
+            margin: 1rem 0 0.7rem !important;
+            padding: 0.6rem !important;
+            border: 2px solid !important;
+            border-color: #808080 #ffffff #ffffff #808080 !important;
+            background: var(--retro-panel) !important;
+            box-shadow: inset 1px 1px 0 #404040, inset -1px -1px 0 #dfdfdf !important;
+        }
+
+        .section-kicker::before {
+            height: 4px !important;
+            width: 100% !important;
+            margin-bottom: 0.55rem !important;
+            background: linear-gradient(to bottom, #808080 0%, #808080 50%, #ffffff 50%, #ffffff 100%) !important;
+            box-shadow: none !important;
+        }
+
+        .section-kicker__eyebrow {
+            display: inline-block !important;
+            margin-bottom: 0.35rem !important;
+            padding: 0.15rem 0.35rem !important;
+            background: #ff0000 !important;
+            color: #ffffff !important;
+            font-family: "Courier New", Courier, monospace !important;
+            font-size: 0.72rem !important;
+            font-weight: 800 !important;
+            letter-spacing: 0 !important;
+            text-transform: uppercase !important;
+            animation: retro-blink 1s step-end infinite;
+        }
+
+        .section-kicker__title {
+            font-size: clamp(1.35rem, 2.4vw, 2rem) !important;
+            text-transform: uppercase !important;
+        }
+
+        section[data-testid="stSidebar"] {
+            background: #c0c0c0 !important;
+            border-right: 2px solid #000000 !important;
+            box-shadow: inset -1px 0 0 #808080 !important;
+        }
+
+        section[data-testid="stSidebar"] * {
+            color: #000000 !important;
+            text-shadow: none !important;
+        }
+
+        section[data-testid="stSidebar"] h1,
+        section[data-testid="stSidebar"] h2,
+        section[data-testid="stSidebar"] h3 {
+            font-family: "Arial Black", Impact, "Malgun Gothic", sans-serif !important;
+        }
+
+        div[data-baseweb="select"] > div,
+        div[data-baseweb="input"] > div,
+        div[data-baseweb="textarea"] > div,
+        div[data-baseweb="base-input"],
+        div[data-testid="stNumberInput"] input {
+            border: 2px solid !important;
+            border-color: #808080 #ffffff #ffffff #808080 !important;
+            background: #ffffff !important;
+            color: #000000 !important;
+            box-shadow: inset 1px 1px 0 #404040, inset -1px -1px 0 #dfdfdf !important;
+            font-family: "MS Sans Serif", Tahoma, sans-serif !important;
+        }
+
+        button[kind],
+        div[data-testid="stDownloadButton"] button,
+        div[data-testid="stButton"] button {
+            border: 2px solid !important;
+            border-color: #ffffff #808080 #808080 #ffffff !important;
+            background: #c0c0c0 !important;
+            color: #000000 !important;
+            box-shadow: inset -1px -1px 0 #404040, inset 1px 1px 0 #dfdfdf !important;
+            font-family: "MS Sans Serif", Tahoma, sans-serif !important;
+            font-weight: 800 !important;
+            text-transform: uppercase !important;
+        }
+
+        button[kind]:active,
+        div[data-testid="stDownloadButton"] button:active,
+        div[data-testid="stButton"] button:active {
+            border-color: #808080 #ffffff #ffffff #808080 !important;
+            box-shadow: inset 1px 1px 0 #404040, inset -1px -1px 0 #dfdfdf !important;
+            transform: translate(1px, 1px) !important;
+        }
+
+        button:focus,
+        input:focus,
+        textarea:focus,
+        [role="button"]:focus-visible {
+            outline: 2px dotted #000000 !important;
+            outline-offset: 2px !important;
+        }
+
+        div[data-testid="stTabs"] [data-baseweb="tab-list"] {
+            width: 100% !important;
+            padding: 0.2rem !important;
+            border: 2px solid !important;
+            border-color: #ffffff #808080 #808080 #ffffff !important;
+            background: #c0c0c0 !important;
+            box-shadow: inset -1px -1px 0 #404040, inset 1px 1px 0 #dfdfdf !important;
+            overflow-x: auto !important;
+        }
+
+        div[data-testid="stTabs"] button {
+            min-height: 34px !important;
+            border: 2px solid !important;
+            border-color: #ffffff #808080 #808080 #ffffff !important;
+            background: #c0c0c0 !important;
+            color: #000000 !important;
+            font-weight: 800 !important;
+            white-space: nowrap !important;
+        }
+
+        div[data-testid="stTabs"] button[aria-selected="true"] {
+            border-color: #808080 #ffffff #ffffff #808080 !important;
+            background: #ffff00 !important;
+            color: #000000 !important;
+            text-shadow: none !important;
+        }
+
+        div[data-testid="stTabs"] button[aria-selected="true"] *,
+        div[data-testid="stTabs"] button[aria-selected="true"] p {
+            color: #000000 !important;
+            text-shadow: none !important;
+        }
+
+        div[data-testid="stAlert"],
+        details[data-testid="stExpander"],
+        div[data-testid="stDataFrame"],
+        div[data-testid="stTable"],
+        div[data-testid="stPlotlyChart"],
+        div[data-testid="stPydeckChart"],
+        div[data-testid="stVegaLiteChart"] {
+            border: 2px solid !important;
+            border-color: #ffffff #808080 #808080 #ffffff !important;
+            background: #c0c0c0 !important;
+            box-shadow: inset -1px -1px 0 #404040, inset 1px 1px 0 #dfdfdf !important;
+        }
+
+        div[data-testid="stPlotlyChart"],
+        div[data-testid="stPydeckChart"] {
+            padding: 0.5rem !important;
+            overflow: hidden !important;
+        }
+
+        div[data-testid="stHorizontalBlock"] > div:nth-child(even) div[data-testid="stPlotlyChart"],
+        div[data-testid="stHorizontalBlock"] > div:nth-child(odd) div[data-testid="stPlotlyChart"] {
+            margin-top: 0 !important;
+        }
+
+        div[data-testid="stPlotlyChart"] .modebar,
+        div[data-testid="stPlotlyChart"] .modebar-container {
+            display: none !important;
+        }
+
+        .soft-metric-card {
+            height: 112px !important;
+            min-height: 112px !important;
+            padding: 1.55rem 0.7rem 0.65rem !important;
+            border: 2px solid !important;
+            border-color: #ffffff #808080 #808080 #ffffff !important;
+            background: #c0c0c0 !important;
+            box-shadow: inset -1px -1px 0 #404040, inset 1px 1px 0 #dfdfdf !important;
+            position: relative !important;
+            display: flex !important;
+            flex-direction: column !important;
+            justify-content: flex-start !important;
+            gap: 0.3rem !important;
+            overflow: hidden !important;
+        }
+
+        .soft-metric-card::before {
+            content: "COUNT.EXE" !important;
+            display: block !important;
+            position: absolute !important;
+            left: 0 !important;
+            right: 0 !important;
+            top: 0 !important;
+            height: 1.25rem !important;
+            padding-left: 0.35rem !important;
+            background: linear-gradient(90deg, #000080, #1084d0) !important;
+            color: #ffffff !important;
+            font-family: "MS Sans Serif", Tahoma, sans-serif !important;
+            font-size: 0.72rem !important;
+            font-style: normal !important;
+            font-weight: 800 !important;
+            line-height: 1.25rem !important;
+        }
+
+        .soft-metric-card::after {
+            left: 0.45rem !important;
+            right: 0.45rem !important;
+            bottom: 0.25rem !important;
+            height: 3px !important;
+            background: repeating-linear-gradient(45deg, #ffff00, #ffff00 8px, #000000 8px, #000000 16px) !important;
+            box-shadow: none !important;
+            opacity: 1 !important;
+        }
+
+        .soft-metric-card__label {
+            color: #000000 !important;
+            font-family: "MS Sans Serif", Tahoma, sans-serif !important;
+            font-size: 0.74rem !important;
+            font-weight: 800 !important;
+            letter-spacing: 0 !important;
+            text-transform: none !important;
+            min-height: 1rem !important;
+            line-height: 1.15 !important;
+            overflow: hidden !important;
+        }
+
+        .soft-metric-card__value {
+            display: inline-block !important;
+            max-width: 100% !important;
+            width: fit-content !important;
+            color: #00ff00 !important;
+            background: #000000 !important;
+            border: 2px solid !important;
+            border-color: #808080 #ffffff #ffffff #808080 !important;
+            padding: 0.14rem 0.42rem !important;
+            font-family: "Courier New", Courier, monospace !important;
+            font-size: clamp(1rem, 1.35vw, 1.38rem) !important;
+            font-style: normal !important;
+            font-weight: 800 !important;
+            line-height: 1.15 !important;
+            word-break: keep-all !important;
+            overflow-wrap: anywhere !important;
+            overflow: hidden !important;
+            text-shadow: none !important;
+        }
+
+        .soft-metric-card__value--compact {
+            white-space: nowrap !important;
+            overflow-wrap: normal !important;
+            word-break: normal !important;
+            font-size: clamp(0.86rem, 1.05vw, 1.08rem) !important;
+            letter-spacing: -0.04em !important;
+        }
+
+        .soft-metric-card__value--text-long {
+            font-size: clamp(0.82rem, 1vw, 1.02rem) !important;
+            line-height: 1.14 !important;
+            max-height: 3.9rem !important;
+        }
+
+        .soft-metric-card__value--text-xlong {
+            font-size: clamp(0.7rem, 0.86vw, 0.9rem) !important;
+            line-height: 1.1 !important;
+            max-height: 4.15rem !important;
+            padding-left: 0.32rem !important;
+            padding-right: 0.32rem !important;
+        }
+
+        .soft-metric-card__delta {
+            background: #ffff00 !important;
+            color: #ff0000 !important;
+            border: 2px solid #000000 !important;
+            box-shadow: none !important;
+        }
+
+        .yoy-table-wrap {
+            border: 2px solid !important;
+            border-color: #ffffff #808080 #808080 #ffffff !important;
+            background: #c0c0c0 !important;
+            box-shadow: inset -1px -1px 0 #404040, inset 1px 1px 0 #dfdfdf !important;
+        }
+
+        .yoy-table thead th {
+            background: #000080 !important;
+            color: #ffffff !important;
+            border: 1px solid #000000 !important;
+        }
+
+        .yoy-table tbody td {
+            background: #ffffff !important;
+            color: #000000 !important;
+            border: 1px solid #808080 !important;
+        }
+
+        .pretty-table-window {
+            margin: 0.8rem 0 1.2rem !important;
+            border: 2px solid !important;
+            border-color: #ffffff #808080 #808080 #ffffff !important;
+            background: #c0c0c0 !important;
+            box-shadow: inset -1px -1px 0 #404040, inset 1px 1px 0 #dfdfdf !important;
+        }
+
+        .pretty-table-titlebar {
+            display: flex !important;
+            align-items: center !important;
+            justify-content: space-between !important;
+            gap: 0.75rem !important;
+            min-height: 1.5rem !important;
+            padding: 0.22rem 0.45rem !important;
+            background: linear-gradient(90deg, #000080, #1084d0) !important;
+            color: #ffffff !important;
+            font-family: "MS Sans Serif", Tahoma, sans-serif !important;
+            font-size: 0.82rem !important;
+            font-weight: 800 !important;
+            text-shadow: none !important;
+        }
+
+        .pretty-table-titlebar span {
+            color: #ffffff !important;
+            text-shadow: none !important;
+        }
+
+        .pretty-table-meta {
+            font-family: "Courier New", Courier, monospace !important;
+            font-size: 0.7rem !important;
+            white-space: nowrap !important;
+        }
+
+        .pretty-table-scroll {
+            overflow-x: auto !important;
+            overflow-y: visible !important;
+            padding: 0.45rem !important;
+        }
+
+        .pretty-table {
+            width: 100% !important;
+            border-collapse: collapse !important;
+            background: #ffffff !important;
+            color: #000000 !important;
+            font-family: "MS Sans Serif", Tahoma, "Malgun Gothic", sans-serif !important;
+            font-size: 0.86rem !important;
+        }
+
+        .pretty-table th {
+            padding: 0.5rem 0.55rem !important;
+            border: 1px solid #000000 !important;
+            background: #ffffcc !important;
+            color: #000000 !important;
+            font-weight: 900 !important;
+            text-align: left !important;
+            white-space: nowrap !important;
+        }
+
+        .pretty-table td {
+            padding: 0.46rem 0.55rem !important;
+            border: 1px solid #808080 !important;
+            background: #ffffff !important;
+            color: #000000 !important;
+            vertical-align: middle !important;
+            line-height: 1.28 !important;
+        }
+
+        .pretty-table tr:nth-child(even) td {
+            background: #e8e8e8 !important;
+        }
+
+        .pretty-table .number {
+            text-align: right !important;
+            font-family: "Courier New", Courier, monospace !important;
+            white-space: nowrap !important;
+        }
+
+        .pretty-table .name {
+            min-width: 10rem !important;
+            max-width: 18rem !important;
+            font-weight: 800 !important;
+            word-break: keep-all !important;
+            overflow-wrap: anywhere !important;
+        }
+
+        .pretty-table .badge {
+            display: inline-block !important;
+            padding: 0.16rem 0.42rem !important;
+            border: 1px solid #000000 !important;
+            background: #ffff00 !important;
+            color: #000000 !important;
+            font-weight: 800 !important;
+            white-space: nowrap !important;
+        }
+
+        .pretty-table-note {
+            margin: 0 0.45rem 0.45rem !important;
+            padding: 0.28rem 0.4rem !important;
+            border: 1px solid #808080 !important;
+            background: #ffffcc !important;
+            color: #000000 !important;
+            font-size: 0.78rem !important;
+        }
+
+        a, .stMarkdown a {
+            color: #0000ff !important;
+            text-decoration: underline !important;
+        }
+
+        a:hover, .stMarkdown a:hover {
+            color: #ff0000 !important;
+        }
+
+        .cosmic-footer {
+            margin-top: 2rem !important;
+            padding: 0.65rem !important;
+            border: 4px solid #000000 !important;
+            background: repeating-linear-gradient(45deg, #ffff00, #ffff00 10px, #000000 10px, #000000 20px) !important;
+        }
+
+        .cosmic-marquee {
+            display: flex !important;
+            width: max-content !important;
+            animation: cosmic-marquee 22s linear infinite !important;
+            font-family: "Arial Black", Impact, sans-serif !important;
+            font-size: clamp(1.4rem, 3.2vw, 3rem) !important;
+            font-style: normal !important;
+            line-height: 1 !important;
+            white-space: nowrap !important;
+            background: #c0c0c0 !important;
+            border: 2px solid !important;
+            border-color: #808080 #ffffff #ffffff #808080 !important;
+            padding: 0.35rem !important;
+        }
+
+        .cosmic-marquee span {
+            color: #0000ff !important;
+            background: none !important;
+            -webkit-background-clip: initial !important;
+            background-clip: initial !important;
+            text-shadow: 2px 2px 0 #ffff00 !important;
+        }
+
+        .cosmic-footer__meta {
+            color: #000000 !important;
+            background: #ffffcc !important;
+            border: 2px solid #000000 !important;
+            padding: 0.35rem !important;
+            font-family: "Courier New", Courier, monospace !important;
+        }
+
+        .cosmic-dot {
+            background: #00ff00 !important;
+            box-shadow: none !important;
+        }
+
+        @keyframes retro-blink {
+            0%, 49% { visibility: visible; }
+            50%, 100% { visibility: hidden; }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            .section-kicker__eyebrow,
+            .cosmic-marquee {
+                animation: none !important;
+            }
+        }
+        </style>
+        """,
+        unsafe_allow_html=True,
+    )
+
+
+def render_app_hero() -> None:
+    """앱 첫 화면 제목을 디자인 시스템에 맞는 히어로 영역으로 보여줍니다."""
+    st.markdown(
+        """
+        <section class="app-hero">
+            <div class="app-hero__eyebrow">DAEGU BUS DEMAND LAB</div>
+            <h1 class="app-hero__title">대구 시내버스 정류소 이용 수요 및 노선 공급 불균형 분석</h1>
+            <p class="app-hero__body">
+                대구 시내버스 정류소의 시간대별 승하차 데이터를 분석하여 수요가 집중되는 시간과 지역을 확인하고,
+                이용 수요 대비 경유 노선 수가 상대적으로 적은 정류소 후보를 탐색합니다.
+            </p>
+        </section>
+        """,
+        unsafe_allow_html=True,
+    )
+
+
+def render_marquee_footer() -> None:
+    """대시보드 하단에 영화적 마키 푸터를 표시합니다."""
+    st.markdown(
+        """
+        <footer class="cosmic-footer">
+            <div class="cosmic-marquee" aria-hidden="true">
+                <span>DAEGU BUS DEMAND INTELLIGENCE • </span>
+                <span>ROUTES • STOPS • HOURS • WEATHER • </span>
+                <span>DAEGU BUS DEMAND INTELLIGENCE • </span>
+                <span>ROUTES • STOPS • HOURS • WEATHER • </span>
+            </div>
+            <div class="cosmic-footer__meta">
+                <div><span class="cosmic-dot"></span>현재 필터 기준 분석 결과를 표시 중입니다.</div>
+                <div>대구 시내버스 데이터 분석 대시보드</div>
+            </div>
+        </footer>
+        """,
+        unsafe_allow_html=True,
+    )
+
+
+def render_section_header(eyebrow: str, title: str, body: str = "") -> None:
+    """탭 내부를 탐험 갤러리처럼 구분하는 섹션 헤더를 표시합니다."""
+    body_html = f"<div class='section-kicker__body'>{escape(body)}</div>" if body else ""
+    st.markdown(
+        f"""
+        <section class="section-kicker">
+            <div class="section-kicker__eyebrow">{escape(eyebrow)}</div>
+            <h2 class="section-kicker__title">{escape(title)}</h2>
+            {body_html}
+        </section>
+        """,
+        unsafe_allow_html=True,
+    )
+
+
+def style_plotly_figure(fig):
+    """Plotly 그래프가 프리미엄 다크 대시보드 배경과 자연스럽게 섞이도록 공통 스타일을 적용합니다."""
+    if fig is None:
+        return None
+    for trace in fig.data:
+        if getattr(trace, "type", None) == "bar" and getattr(trace, "orientation", None) == "h":
+            trace.update(
+                textposition="inside",
+                insidetextanchor="end",
+                textfont=dict(color="#FFFFFF", size=12, family="Courier New, monospace"),
+                cliponaxis=False,
+            )
+        if getattr(trace, "type", None) == "bar":
+            trace.update(marker_line_width=2, marker_line_color="#000000", opacity=1)
+        if getattr(trace, "type", None) == "scatter":
+            trace.update(line=dict(width=3), marker=dict(size=7, line=dict(width=2, color="#000000")))
+    fig.update_layout(
+        template="plotly_white",
+        paper_bgcolor="#C0C0C0",
+        plot_bgcolor="#FFFFFF",
+        font=dict(family="MS Sans Serif, Tahoma, Malgun Gothic, sans-serif", color="#000000", size=13),
+        title=dict(
+            font=dict(family="Arial Black, Impact, Malgun Gothic, sans-serif", color="#000000", size=20),
+            x=0.02,
+            xanchor="left",
+        ),
+        legend=dict(
+            bgcolor="#FFFFCC",
+            bordercolor="#000000",
+            borderwidth=1,
+            font=dict(color="#000000"),
+            orientation="h",
+        ),
+        colorway=["#0000FF", "#00AA00", "#FF0000", "#FFFF00", "#800080", "#008080", "#808080"],
+        hoverlabel=dict(
+            bgcolor="#FFFFCC",
+            bordercolor="#000000",
+            font=dict(color="#000000", family="MS Sans Serif, Tahoma, Malgun Gothic, sans-serif"),
+        ),
+        margin=dict(l=28, r=28, t=68, b=34),
+    )
+    fig.update_xaxes(
+        color="#000000",
+        gridcolor="#808080",
+        zerolinecolor="#000000",
+        linecolor="#000000",
+        title_font=dict(color="#000000"),
+        tickfont=dict(color="#000000"),
+    )
+    fig.update_yaxes(
+        color="#000000",
+        gridcolor="#808080",
+        zerolinecolor="#000000",
+        linecolor="#000000",
+        title_font=dict(color="#000000"),
+        tickfont=dict(color="#000000"),
+    )
+    return fig
+
+
+def build_dark_line_chart(data: pd.DataFrame, x_col: str, y_col: str, title: str, y_label: str):
+    """Streamlit 기본 라인 차트 대신 공통 Plotly 테마를 적용할 라인 차트를 만듭니다."""
+    try:
+        import plotly.express as px
+    except ImportError:
+        return None
+    if data.empty or x_col not in data.columns or y_col not in data.columns:
+        return None
+    fig = px.line(
+        data,
+        x=x_col,
+        y=y_col,
+        markers=True,
+        title=title,
+        labels={x_col: "기간", y_col: y_label},
+    )
+    fig.update_layout(height=420)
+    return fig
+
+
+def build_yoy_comparison_line(trend: pd.DataFrame):
+    """전년 대비 월별 이용량 비교를 Plotly 라인 차트로 만듭니다."""
+    try:
+        import plotly.express as px
+    except ImportError:
+        return None
+    if trend.empty:
+        return None
+    chart = trend[["period", "base_value", "target_value"]].rename(
+        columns={
+            "period": "월",
+            "base_value": f"{YOY_BASE_YEAR}년",
+            "target_value": f"{YOY_TARGET_YEAR}년",
+        }
+    )
+    melted = chart.melt(id_vars="월", var_name="연도", value_name="승차 인원")
+    fig = px.line(
+        melted,
+        x="월",
+        y="승차 인원",
+        color="연도",
+        markers=True,
+        title=f"{YOY_BASE_YEAR}년 대비 {YOY_TARGET_YEAR}년 월별 승차 인원",
+    )
+    fig.update_layout(height=430)
+    return fig
+
+
+def build_yoy_growth_bar(trend: pd.DataFrame):
+    """전년 동월 대비 증감률을 Plotly 막대 차트로 만듭니다."""
+    try:
+        import plotly.express as px
+    except ImportError:
+        return None
+    if trend.empty or "growth_rate" not in trend.columns:
+        return None
+    chart = trend[["period", "growth_rate"]].rename(columns={"period": "월", "growth_rate": "전년 동월 대비 증감률"})
+    fig = px.bar(
+        chart,
+        x="월",
+        y="전년 동월 대비 증감률",
+        title="전년 동월 대비 증감률",
+        text="전년 동월 대비 증감률",
+    )
+    fig.update_traces(texttemplate="%{text:+.1f}%", textposition="outside", cliponaxis=False)
+    fig.update_layout(height=390)
+    return fig
+
+
+def render_soft_metric(label: str, value, delta: str | None = None) -> None:
+    """긴 정류소명도 잘리지 않는 커스텀 지표 카드를 표시합니다."""
+    value_text = "-" if value is None else str(value)
+    compact_value = any(char.isdigit() for char in value_text) and len(value_text) >= 4
+    value_classes = ["soft-metric-card__value"]
+    if compact_value:
+        value_classes.append("soft-metric-card__value--compact")
+    elif len(value_text) >= 14:
+        value_classes.append("soft-metric-card__value--text-xlong")
+    elif len(value_text) >= 9:
+        value_classes.append("soft-metric-card__value--text-long")
+    value_class = " ".join(value_classes)
+    delta_html = f"<div class='soft-metric-card__delta'>{escape(str(delta))}</div>" if delta else ""
+    st.markdown(
+        f"""
+        <div class="soft-metric-card">
+            <div class="soft-metric-card__label">{escape(str(label))}</div>
+            <div class="{value_class}">{escape(value_text)}</div>
+            {delta_html}
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
+
+
+TABLE_COLUMN_LABELS = {
+    "_merge_key": "병합 기준",
+    "stop_id": "정류소 ID",
+    "stop_name": "정류소명",
+    "stop_label": "정류소명",
+    "district": "구·군",
+    "boardings": "승차 인원",
+    "alightings": "하차 인원",
+    "total_riders": "전체 이용객",
+    "route_count": "경유 노선 수",
+    "boardings_per_route": "노선당 승차 인원",
+    "morning_boardings": "출근 시간 승차",
+    "evening_boardings": "퇴근 시간 승차",
+    "morning_concentration": "출근 집중도",
+    "evening_concentration": "퇴근 집중도",
+    "peak_hour": "최대 혼잡 시간",
+    "peak_hour_label": "최대 혼잡 시간대",
+    "stop_type": "정류소 유형",
+    "year": "연도",
+    "month": "월",
+    "period": "연월",
+    "base_value": f"{YOY_BASE_YEAR}년 승차 인원",
+    "target_value": f"{YOY_TARGET_YEAR}년 승차 인원",
+    "change": "증감 인원",
+    "growth_rate": "증감률",
+    "previous_year_value": "전년 동월",
+    "yoy_growth_rate": "전년 대비 증감률",
+    "passengers": "이용객",
+    "cluster": "군집",
+    "cluster_name": "군집 유형",
+}
+
+
+PERCENT_COLUMNS = {
+    "morning_concentration",
+    "evening_concentration",
+    "growth_rate",
+    "yoy_growth_rate",
+}
+
+
+NUMERIC_TABLE_COLUMNS = {
+    "boardings",
+    "alightings",
+    "total_riders",
+    "route_count",
+    "boardings_per_route",
+    "morning_boardings",
+    "evening_boardings",
+    "base_value",
+    "target_value",
+    "change",
+    "previous_year_value",
+    "passengers",
+}
+
+
+def table_column_label(column) -> str:
+    """내부 컬럼명을 발표용 한글 컬럼명으로 바꿉니다."""
+    text = str(column)
+    return TABLE_COLUMN_LABELS.get(text, text)
+
+
+def table_value_is_number(value) -> bool:
+    """표 셀 값이 숫자로 표시 가능한지 확인합니다."""
+    if value is None or pd.isna(value):
+        return False
+    try:
+        float(str(value).replace(",", "").replace("%", ""))
+        return True
+    except (TypeError, ValueError):
+        return False
+
+
+def format_pretty_table_value(value, column) -> str:
+    """표 안의 숫자와 비율을 사람이 읽기 좋은 단위로 바꿉니다."""
+    if value is None or pd.isna(value):
+        return "-"
+
+    column_key = str(column)
+    if isinstance(value, str) and "%" in value:
+        return value
+
+    if column_key in {"year", "month", "cluster"}:
+        try:
+            return str(int(float(value)))
+        except (TypeError, ValueError):
+            return str(value)
+
+    if column_key in PERCENT_COLUMNS:
+        try:
+            return f"{float(value):,.1f}%"
+        except (TypeError, ValueError):
+            return str(value)
+
+    if column_key in NUMERIC_TABLE_COLUMNS or table_value_is_number(value):
+        text_value = str(value).replace(",", "").replace("%", "")
+        try:
+            number = float(text_value)
+        except (TypeError, ValueError):
+            return str(value)
+        if abs(number - round(number)) < 0.001:
+            return format_number(number)
+        return format_number(number, decimals=1)
+
+    return str(value)
+
+
+def render_pretty_table(table: pd.DataFrame, title: str, max_rows: int = 20) -> None:
+    """Streamlit 기본 데이터프레임 대신 발표 화면에 어울리는 HTML 표를 표시합니다."""
+    if table is None or table.empty:
+        empty_message(f"{title} 데이터가 없습니다.")
+        return
+
+    display = table.head(max_rows).copy()
+    headers = "".join(f"<th>{escape(table_column_label(col))}</th>" for col in display.columns)
+    rows = []
+    for _, row in display.iterrows():
+        cells = []
+        for col in display.columns:
+            raw_value = row[col]
+            text_value = format_pretty_table_value(raw_value, col)
+            cell_classes = []
+            if str(col) in {"stop_name", "stop_label"}:
+                cell_classes.append("name")
+            if str(col) in {"stop_type", "cluster_name"}:
+                text_value = f"<span class='badge'>{escape(text_value)}</span>"
+            else:
+                text_value = escape(text_value)
+            if str(col) in NUMERIC_TABLE_COLUMNS or str(col) in PERCENT_COLUMNS or table_value_is_number(raw_value):
+                cell_classes.append("number")
+            class_attr = f" class='{' '.join(cell_classes)}'" if cell_classes else ""
+            cells.append(f"<td{class_attr}>{text_value}</td>")
+        rows.append(f"<tr>{''.join(cells)}</tr>")
+
+    note = ""
+    if len(table) > len(display):
+        note = (
+            f"<div class='pretty-table-note'>상위 {len(display):,}개 행만 표시합니다. "
+            f"전체 {len(table):,}개 행은 CSV 다운로드로 확인할 수 있습니다.</div>"
+        )
+
+    st.markdown(
+        f"""
+        <div class="pretty-table-window">
+            <div class="pretty-table-titlebar">
+                <span>{escape(str(title))}</span>
+                <span class="pretty-table-meta">{len(table):,} ROWS</span>
+            </div>
+            <div class="pretty-table-scroll">
+                <table class="pretty-table">
+                    <thead><tr>{headers}</tr></thead>
+                    <tbody>{''.join(rows)}</tbody>
+                </table>
+            </div>
+            {note}
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
 
 
 def empty_message(message: str) -> None:
@@ -251,6 +1821,19 @@ def filter_hourly_data(hourly_df: pd.DataFrame, stop_df: pd.DataFrame, hours: tu
         return pd.DataFrame()
     valid_keys = set(stop_df["_merge_key"].dropna())
     filtered = hourly_df[hourly_df["_merge_key"].isin(valid_keys)].copy()
+    metadata_cols = [
+        col
+        for col in ["district", "stop_type", "route_count"]
+        if col in stop_df.columns and col not in filtered.columns
+    ]
+    if metadata_cols and "_merge_key" in stop_df.columns:
+        metadata = stop_df[["_merge_key"] + metadata_cols].dropna(subset=["_merge_key"]).drop_duplicates("_merge_key")
+        filtered = filtered.merge(metadata, on="_merge_key", how="left")
+    if "total_riders" not in filtered.columns:
+        if {"boardings", "alightings"}.issubset(filtered.columns):
+            filtered["total_riders"] = filtered["boardings"].fillna(0) + filtered["alightings"].fillna(0)
+        elif "passengers" in filtered.columns:
+            filtered["total_riders"] = filtered["passengers"]
     if "hour" in filtered.columns:
         filtered = filtered[(filtered["hour"] >= hours[0]) & (filtered["hour"] <= hours[1])]
     return filtered
@@ -266,15 +1849,25 @@ def metric_choice_to_column(choice: str) -> str:
     return mapping.get(choice, "boardings")
 
 
-def show_metric(label: str, value) -> None:
+def show_metric(label: str, value, decimals: int = 0) -> None:
     """숫자 지표를 천 단위 쉼표와 함께 표시합니다."""
-    st.metric(label, format_number(value))
+    render_soft_metric(label, format_number(value, decimals=decimals))
+
+
+def show_text_metric(label: str, value, delta: str | None = None) -> None:
+    """정류소명처럼 긴 텍스트 지표를 줄바꿈 가능한 카드로 표시합니다."""
+    render_soft_metric(label, "-" if value is None else value, delta=delta)
 
 
 def render_plotly_chart(fig, empty_text: str, caption: bool = False) -> None:
     """그래프 객체가 있을 때만 표시하고 Streamlit 내부 객체가 화면에 노출되지 않게 합니다."""
     if fig is not None:
-        st.plotly_chart(fig, use_container_width=True)
+        style_plotly_figure(fig)
+        st.plotly_chart(
+            fig,
+            use_container_width=True,
+            config={"displayModeBar": False, "responsive": True},
+        )
     elif caption:
         st.caption(empty_text)
     else:
@@ -353,6 +1946,12 @@ def overview_tab(stop_df: pd.DataFrame, hourly_df: pd.DataFrame, top_n: int, met
         empty_message("필터 조건에 맞는 정류소 데이터가 없습니다.")
         return
 
+    render_section_header(
+        "Overview",
+        "전체 현황",
+        "필터 조건에 맞는 정류소 수요, 하차, 시간대 피크, 노선당 승차 밀도를 한 화면에서 비교합니다.",
+    )
+
     metric_cols = st.columns(6)
     with metric_cols[0]:
         show_metric("전체 승차 인원", stop_df.get("boardings", pd.Series(dtype=float)).sum())
@@ -364,19 +1963,19 @@ def overview_tab(stop_df: pd.DataFrame, hourly_df: pd.DataFrame, top_n: int, met
         top_stop = "-"
         if "boardings" in stop_df.columns and stop_df["boardings"].notna().any():
             top_stop = stop_df.sort_values("boardings", ascending=False).iloc[0].get("stop_name", "-")
-        st.metric("가장 이용객이 많은 정류소", top_stop)
+        show_text_metric("가장 이용객이 많은 정류소", top_stop)
     with metric_cols[4]:
         peak_hour = "-"
         if not hourly_df.empty and "hour" in hourly_df.columns and "boardings" in hourly_df.columns:
             hourly_total = hourly_df.groupby("hour", as_index=False)["boardings"].sum()
             if not hourly_total.empty:
                 peak_hour = f"{int(hourly_total.sort_values('boardings', ascending=False).iloc[0]['hour'])}시"
-        st.metric("가장 혼잡한 시간대", peak_hour)
+        show_text_metric("가장 혼잡한 시간대", peak_hour)
     with metric_cols[5]:
         per_route_stop = "-"
         if "boardings_per_route" in stop_df.columns and stop_df["boardings_per_route"].notna().any():
             per_route_stop = stop_df.sort_values("boardings_per_route", ascending=False).iloc[0].get("stop_name", "-")
-        st.metric("노선당 승차 인원 최고", per_route_stop)
+        show_text_metric("노선당 승차 인원 최고", per_route_stop)
 
     col1, col2 = st.columns(2)
     with col1:
@@ -400,6 +1999,12 @@ def hourly_tab(stop_df: pd.DataFrame, hourly_df: pd.DataFrame, top_n: int, metri
     if hourly_df.empty:
         empty_message("시간대 컬럼이 있는 데이터가 없어 시간대별 분석을 표시할 수 없습니다.")
         return
+
+    render_section_header(
+        "Time Flow",
+        "시간대별 이용 패턴",
+        "하루의 이동 리듬을 시간대, 정류소, 구·군 단위로 쪼개어 피크와 반복 패턴을 확인합니다.",
+    )
 
     col1, col2 = st.columns(2)
     with col1:
@@ -443,6 +2048,12 @@ def stop_detail_tab(stop_df: pd.DataFrame, hourly_df: pd.DataFrame, monthly_df: 
         empty_message("정류소명 컬럼이 없어 정류소별 상세 분석을 표시할 수 없습니다.")
         return
 
+    render_section_header(
+        "Stop Lens",
+        "정류소별 상세 분석",
+        "개별 정류소의 수요, 노선 공급, 혼잡 시간대, 월별 흐름을 한 정류소 단위로 좁혀 봅니다.",
+    )
+
     stop_name = st.selectbox("상세 분석 정류소 선택", sorted(stop_df["stop_name"].dropna().astype(str).unique()))
     selected = stop_df[stop_df["stop_name"].astype(str) == stop_name]
     if selected.empty:
@@ -452,9 +2063,9 @@ def stop_detail_tab(stop_df: pd.DataFrame, hourly_df: pd.DataFrame, monthly_df: 
     row = selected.iloc[0]
     cols = st.columns(5)
     with cols[0]:
-        st.metric("정류소명", row.get("stop_name", "-"))
+        show_text_metric("정류소명", row.get("stop_name", "-"))
     with cols[1]:
-        st.metric("행정구역", row.get("district", "-"))
+        show_text_metric("행정구역", row.get("district", "-"))
     with cols[2]:
         show_metric("경유 노선 수", row.get("route_count"))
     with cols[3]:
@@ -466,13 +2077,13 @@ def stop_detail_tab(stop_df: pd.DataFrame, hourly_df: pd.DataFrame, monthly_df: 
     with cols2[0]:
         show_metric("노선당 승차 인원", row.get("boardings_per_route"))
     with cols2[1]:
-        st.metric("최대 혼잡 시간대", row.get("peak_hour_label", "-"))
+        show_text_metric("최대 혼잡 시간대", row.get("peak_hour_label", "-"))
     with cols2[2]:
         show_metric("출근 시간 집중도(%)", row.get("morning_concentration"))
     with cols2[3]:
         show_metric("퇴근 시간 집중도(%)", row.get("evening_concentration"))
     with cols2[4]:
-        st.metric("정류소 유형", row.get("stop_type", "-"))
+        show_text_metric("정류소 유형", row.get("stop_type", "-"))
 
     fig = plot_stop_comparison_line(hourly_df, [stop_name], metric="boardings", include_average=True)
     render_plotly_chart(fig, "선택 정류소의 시간대별 그래프를 표시할 수 없습니다.")
@@ -483,7 +2094,14 @@ def stop_detail_tab(stop_df: pd.DataFrame, hourly_df: pd.DataFrame, monthly_df: 
         if not stop_monthly.empty and {"year", "month"}.issubset(stop_monthly.columns):
             stop_monthly["period"] = stop_monthly["year"].astype(int).astype(str) + "-" + stop_monthly["month"].astype(int).astype(str).str.zfill(2)
             metric = "boardings" if "boardings" in stop_monthly.columns else "passengers"
-            st.line_chart(stop_monthly.set_index("period")[metric])
+            monthly_fig = build_dark_line_chart(
+                stop_monthly,
+                "period",
+                metric,
+                "선택 정류소 월별 이용량",
+                plot_metric_label(metric),
+            )
+            render_plotly_chart(monthly_fig, "선택 정류소의 월별 그래프를 표시할 수 없습니다.")
 
 
 def imbalance_tab(stop_df: pd.DataFrame, top_n: int) -> pd.DataFrame:
@@ -491,6 +2109,12 @@ def imbalance_tab(stop_df: pd.DataFrame, top_n: int) -> pd.DataFrame:
     if stop_df.empty:
         empty_message("수요·공급 불균형 분석에 사용할 데이터가 없습니다.")
         return pd.DataFrame()
+
+    render_section_header(
+        "Supply Gap",
+        "수요·공급 불균형 탐색",
+        "승차 수요는 높지만 경유 노선 수나 노선당 승차 밀도가 비정상적으로 나타나는 후보 정류소를 찾습니다.",
+    )
 
     st.caption("이 분석은 실제 노선 부족을 확정하지 않고, 추가 검토가 필요한 후보 정류소를 찾는 용도입니다.")
     col1, col2, col3 = st.columns(3)
@@ -541,7 +2165,7 @@ def imbalance_tab(stop_df: pd.DataFrame, top_n: int) -> pd.DataFrame:
         "stop_type",
     ]
     display_cols = [col for col in display_cols if col in candidates.columns]
-    st.dataframe(candidates[display_cols], use_container_width=True)
+    render_pretty_table(candidates[display_cols], "수요·공급 불균형 추가 검토 후보", max_rows=20)
     st.download_button(
         "추가 검토 후보 정류소 CSV 다운로드",
         data=make_download_csv(candidates[display_cols] if display_cols else candidates),
@@ -553,14 +2177,39 @@ def imbalance_tab(stop_df: pd.DataFrame, top_n: int) -> pd.DataFrame:
 
 def map_tab(stop_df: pd.DataFrame, show_map: bool) -> None:
     """지도 분석 탭을 구성합니다."""
+    render_section_header(
+        "Urban Field",
+        "지도 기반 정류소 분포",
+        "대구 전역의 정류소 수요와 노선당 승차 밀도를 버스 정류장 아이콘 지도 위에서 공간적으로 탐색합니다.",
+    )
     if not show_map:
         empty_message("사이드바에서 지도 표시 여부가 꺼져 있습니다.")
         return
-    deck = create_pydeck_map(stop_df)
+    map_data_count = len(stop_df.dropna(subset=["lat", "lon"])) if {"lat", "lon"}.issubset(stop_df.columns) else 0
+    max_icons = None
+    if map_data_count > 900:
+        max_icons = st.slider(
+            "지도 표시 정류소 수",
+            min_value=300,
+            max_value=int(map_data_count),
+            value=min(900, int(map_data_count)),
+            step=100,
+            help="줌아웃 상태에서 아이콘이 겹치지 않도록 기본값은 이용량 상위 정류소 위주로 표시합니다.",
+        )
+        st.caption(
+            f"현재 지도에는 승차 인원 기준 상위 {format_number(max_icons)}개 정류소를 표시합니다. "
+            "확대해서 더 많은 정류소를 보고 싶으면 이 값을 올리세요."
+        )
+    import importlib
+    import src.visualization as visualization_module
+
+    visualization_module = importlib.reload(visualization_module)
+    deck = visualization_module.create_pydeck_map(stop_df, max_icons=max_icons)
     if deck is None:
         empty_message("위치정보 데이터가 없어 지도 분석을 표시할 수 없습니다.")
         return
-    st.pydeck_chart(deck, use_container_width=True)
+    map_key = f"bus_stop_icon_map_v3_{max_icons or 'all'}"
+    st.pydeck_chart(deck, use_container_width=True, key=map_key)
 
 
 def format_signed_number(value) -> str:
@@ -651,14 +2300,12 @@ def render_target_year_yoy_trend(trend: pd.DataFrame) -> None:
         empty_message(f"{YOY_BASE_YEAR}년 대비 {YOY_TARGET_YEAR}년 월별 비교 데이터가 없습니다.")
         return
 
-    chart = trend.set_index("period")[["base_value", "target_value"]].rename(
-        columns={"base_value": f"{YOY_BASE_YEAR}년", "target_value": f"{YOY_TARGET_YEAR}년"}
-    )
     st.subheader(f"{YOY_BASE_YEAR}년 대비 {YOY_TARGET_YEAR}년 월별 승차 인원")
-    st.line_chart(chart)
-
-    rate_chart = trend.set_index("period")["growth_rate"].rename("전년 동월 대비 증감률")
-    st.bar_chart(rate_chart)
+    render_plotly_chart(
+        build_yoy_comparison_line(trend),
+        f"{YOY_BASE_YEAR}년 대비 {YOY_TARGET_YEAR}년 월별 비교 차트를 표시할 수 없습니다.",
+    )
+    render_plotly_chart(build_yoy_growth_bar(trend), "전년 동월 대비 증감률 차트를 표시할 수 없습니다.")
 
     display = trend[["period", "base_value", "target_value", "change", "growth_rate"]].rename(
         columns={
@@ -674,7 +2321,7 @@ def render_target_year_yoy_trend(trend: pd.DataFrame) -> None:
         formatted[col] = formatted[col].apply(format_number)
     formatted["증감 인원"] = formatted["증감 인원"].apply(format_signed_number)
     formatted["증감률"] = formatted["증감률"].apply(lambda value: "-" if pd.isna(value) else f"{float(value):+,.1f}%")
-    st.dataframe(formatted, use_container_width=True, hide_index=True)
+    render_pretty_table(formatted, f"{YOY_BASE_YEAR}년 대비 {YOY_TARGET_YEAR}년 월별 증감 요약", max_rows=12)
 
 
 def render_yoy_rank_table(table: pd.DataFrame, positive: bool) -> None:
@@ -706,45 +2353,47 @@ def render_yoy_rank_table(table: pd.DataFrame, positive: bool) -> None:
     html = f"""
     <style>
     .yoy-table-wrap {{
-        border: 1px solid rgba(148, 163, 184, 0.22);
-        border-radius: 10px;
+        border: 1px solid {SOFT_STROKE};
+        border-radius: 26px;
         overflow: hidden;
-        background: rgba(15, 23, 42, 0.28);
+        background: rgba(20, 20, 22, 0.82);
+        box-shadow: {SOFT_SHADOW};
     }}
     .yoy-table {{
         width: 100%;
         border-collapse: collapse;
-        font-size: 0.92rem;
+        font-size: 0.94rem;
     }}
     .yoy-table thead th {{
-        padding: 0.72rem 0.75rem;
-        color: #e5e7eb;
-        background: linear-gradient(90deg, rgba(15, 23, 42, 0.95), rgba(30, 41, 59, 0.88));
-        border-bottom: 2px solid {accent};
+        padding: 0.92rem 0.9rem;
+        color: {SOFT_TEXT};
+        background: rgba(255, 255, 255, 0.045);
+        border-bottom: 1px solid rgba(255, 255, 255, 0.10);
         text-align: left;
         white-space: nowrap;
+        font-weight: 800;
     }}
     .yoy-table tbody td {{
-        padding: 0.68rem 0.75rem;
-        border-bottom: 1px solid rgba(148, 163, 184, 0.14);
-        color: #dbe4ee;
+        padding: 0.86rem 0.9rem;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.075);
+        color: {SOFT_TEXT};
         vertical-align: middle;
     }}
     .yoy-table tbody tr:nth-child(even) {{
-        background: rgba(148, 163, 184, 0.06);
+        background: rgba(255, 255, 255, 0.025);
     }}
     .yoy-table tbody tr:hover {{
-        background: rgba(45, 212, 191, 0.08);
+        background: rgba(137, 170, 204, 0.08);
     }}
     .yoy-table .rank {{
         width: 3.3rem;
-        color: #94a3b8;
-        font-weight: 700;
+        color: {SOFT_ACCENT};
+        font-weight: 800;
         text-align: center;
     }}
     .yoy-table .name {{
-        color: #f8fafc;
-        font-weight: 700;
+        color: {SOFT_TEXT};
+        font-weight: 800;
         max-width: 14rem;
     }}
     .yoy-table .number {{
@@ -756,18 +2405,19 @@ def render_yoy_rank_table(table: pd.DataFrame, positive: bool) -> None:
         display: inline-flex;
         justify-content: center;
         min-width: 5.2rem;
-        padding: 0.22rem 0.55rem;
+        padding: 0.28rem 0.68rem;
         border-radius: 999px;
         font-weight: 800;
         font-variant-numeric: tabular-nums;
+        box-shadow: {SOFT_SHADOW_INSET};
     }}
     .rate-up {{
-        color: #14b8a6;
-        background: rgba(20, 184, 166, 0.14);
+        color: {SOFT_TEAL};
+        background: rgba(74, 222, 128, 0.09);
     }}
     .rate-down {{
-        color: #fb7185;
-        background: rgba(251, 113, 133, 0.14);
+        color: {SOFT_ROSE};
+        background: rgba(251, 113, 133, 0.10);
     }}
     </style>
     <div class="yoy-table-wrap">
@@ -821,7 +2471,7 @@ def plot_cluster_pattern_heatmap(patterns: pd.DataFrame):
     fig = px.imshow(
         heatmap_data,
         aspect="auto",
-        color_continuous_scale="YlGnBu",
+        color_continuous_scale=[SOFT_SURFACE, SOFT_ACCENT_LIGHT, SOFT_ACCENT],
         title="군집별 시간대 승차 비율",
         labels=dict(x="시간대", y="군집 유형", color="승차 비율(%)"),
     )
@@ -857,7 +2507,7 @@ def render_cluster_pattern_summary(patterns: pd.DataFrame) -> None:
         cluster_no = int(row.get("cluster", idx))
 
         with card_cols[idx % len(card_cols)]:
-            st.metric(f"{cluster_name}", f"{peak_hour:02d}시", f"피크 {peak_share:.1f}%")
+            show_text_metric(f"{cluster_name}", f"{peak_hour:02d}시", f"피크 {peak_share:.1f}%")
             st.caption(f"군집 {cluster_no} · 출근 {morning_share:.1f}% · 퇴근 {evening_share:.1f}%")
 
     fig = plot_cluster_pattern_heatmap(patterns)
@@ -878,7 +2528,7 @@ def render_cluster_pattern_summary(patterns: pd.DataFrame) -> None:
             item[f"{int(hour):02d}시"] = f"{float(row[hour]) * 100:.1f}%"
         display_rows.append(item)
 
-    st.dataframe(pd.DataFrame(display_rows), use_container_width=True, hide_index=True)
+    render_pretty_table(pd.DataFrame(display_rows), "K-means 군집별 시간대 패턴 요약(%)", max_rows=10)
 
 
 def monthly_tab(monthly_df: pd.DataFrame, top_n: int) -> None:
@@ -886,6 +2536,12 @@ def monthly_tab(monthly_df: pd.DataFrame, top_n: int) -> None:
     if monthly_df.empty or not {"year", "month"}.issubset(monthly_df.columns):
         empty_message("월별 장기 데이터가 없어 장기 추세 분석을 표시할 수 없습니다.")
         return
+
+    render_section_header(
+        "Longitudinal View",
+        "장기 월별 추세",
+        "월별 이용량의 변화를 전년 동월 기준으로 비교하고, 급증·급감 정류소와 시간대 군집 패턴을 함께 봅니다.",
+    )
 
     metric = "boardings" if "boardings" in monthly_df.columns else "passengers"
     trend = build_target_year_yoy_trend(monthly_df, metric)
@@ -937,6 +2593,12 @@ def weather_bus_tab(bundle: dict, monthly_df: pd.DataFrame) -> None:
     """날씨와 버스 이용량의 월별 연관 분석 탭을 구성합니다."""
     weather_monthly = bundle.get("weather_monthly", pd.DataFrame())
 
+    render_section_header(
+        "Weather Gallery",
+        "날씨와 버스 이용",
+        "월별 날씨 변수와 버스 이용량을 결합해 온도, 강수량, 계절 변화와 이용 패턴의 동행성을 탐색합니다.",
+    )
+
     st.subheader("분석 기준")
     st.info(
         "월별 날씨 CSV를 표준 컬럼으로 정리한 뒤, 버스 이용량도 먼저 월별 한 행으로 집계해서 같은 연도·월 기준으로 결합합니다. "
@@ -969,7 +2631,7 @@ def weather_bus_tab(bundle: dict, monthly_df: pd.DataFrame) -> None:
             stop_options += sorted(monthly_df["stop_name"].dropna().astype(str).unique())
         selected_stop = st.selectbox("전체 대구 또는 정류소 선택", stop_options)
     with col3:
-        st.metric("날씨 관측 월 수", len(weather_monthly))
+        show_metric("날씨 관측 월 수", len(weather_monthly))
 
     bus_monthly = aggregate_bus_monthly(monthly_df, selected_stop)
     merged = merge_bus_weather_monthly(bus_monthly, weather_monthly)
@@ -1003,9 +2665,9 @@ def weather_bus_tab(bundle: dict, monthly_df: pd.DataFrame) -> None:
     )
     metric_cols = st.columns(3)
     with metric_cols[0]:
-        st.metric("Pearson", format_number(selected_corr.get("Pearson 상관계수"), 2))
+        show_metric("Pearson", selected_corr.get("Pearson 상관계수"), decimals=2)
     with metric_cols[1]:
-        st.metric("Spearman", format_number(selected_corr.get("Spearman 상관계수"), 2))
+        show_metric("Spearman", selected_corr.get("Spearman 상관계수"), decimals=2)
     with metric_cols[2]:
         show_metric("관측 월 수", selected_corr.get("관측 월 수"))
     st.write(selected_weather_correlation_summary(correlation_df, weather_col))
@@ -1085,6 +2747,11 @@ def weather_bus_tab(bundle: dict, monthly_df: pd.DataFrame) -> None:
 
 def data_limit_tab(bundle: dict) -> None:
     """데이터 점검 결과와 분석 한계를 표시합니다."""
+    render_section_header(
+        "Method Notes",
+        "데이터 및 분석 한계",
+        "대시보드 해석 전에 함께 확인해야 할 데이터 수집 조건과 분석상 제약입니다.",
+    )
     st.subheader("분석 한계")
     st.markdown(
         """
@@ -1107,12 +2774,9 @@ def main() -> None:
     st.set_page_config(page_title="대구 시내버스 정류소 분석", layout="wide")
     ensure_directories(BASE_DIR)
     set_korean_font()
-
-    st.title("대구 시내버스 정류소 이용 수요 및 노선 공급 불균형 분석")
-    st.write(
-        "대구 시내버스 정류소의 시간대별 승하차 데이터를 분석하여 수요가 집중되는 시간과 지역을 확인하고, "
-        "이용 수요 대비 경유 노선 수가 상대적으로 적은 정류소 후보를 탐색합니다."
-    )
+    apply_neumorphic_theme()
+    apply_retro_90s_overrides()
+    render_app_hero()
 
     bundle = load_project_data(str(DATA_DIR), data_fingerprint(DATA_DIR))
     stop_df = bundle.get("stop_summary", pd.DataFrame())
@@ -1152,8 +2816,7 @@ def main() -> None:
     with st.expander("핵심 분석 결과 표 보기"):
         for name, table in analysis_tables.items():
             if isinstance(table, pd.DataFrame) and not table.empty:
-                st.write(name)
-                st.dataframe(table, use_container_width=True)
+                render_pretty_table(table, str(name), max_rows=12)
 
     tabs = st.tabs(
         [
@@ -1189,6 +2852,8 @@ def main() -> None:
         weather_bus_tab(bundle, monthly_df)
     with tabs[7]:
         data_limit_tab(bundle)
+
+    render_marquee_footer()
 
 
 if __name__ == "__main__":

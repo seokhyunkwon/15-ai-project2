@@ -1,4 +1,5 @@
 from pathlib import Path
+from urllib.parse import quote
 
 import numpy as np
 import pandas as pd
@@ -8,6 +9,19 @@ from matplotlib import pyplot as plt
 from src.analysis import monthly_yoy_growth
 from src.utils import set_korean_font
 
+
+DARK_BG = "#C0C0C0"
+DARK_SURFACE = "#FFFFFF"
+DARK_TEXT = "#000000"
+DARK_MUTED = "#808080"
+DARK_STROKE = "#000000"
+ACCENT_BLUE = "#0000FF"
+ACCENT_BLUE_DEEP = "#000080"
+SUCCESS_GREEN = "#00AA00"
+ALERT_ROSE = "#FF0000"
+RETRO_YELLOW = "#FFFF00"
+RETRO_PANEL = "#FFFFCC"
+PLOTLY_COLORWAY = [ACCENT_BLUE, SUCCESS_GREEN, ALERT_ROSE, RETRO_YELLOW, "#800080", "#008080", "#808080"]
 
 LABELS = {
     "boardings": "승차 인원",
@@ -61,6 +75,60 @@ def get_plotly_graph_objects():
     return go
 
 
+def apply_dark_plotly_theme(fig):
+    """모든 Plotly 그래프에 동일한 90년대 레트로 테마를 적용합니다."""
+    if fig is None:
+        return None
+    for trace in fig.data:
+        trace_type = getattr(trace, "type", "")
+        if trace_type == "scatter":
+            trace.update(line=dict(width=3), marker=dict(size=7, line=dict(width=2, color=DARK_STROKE)))
+        if trace_type == "bar":
+            trace.update(marker_line_width=2, marker_line_color=DARK_STROKE, opacity=1)
+    fig.update_layout(
+        template="plotly_white",
+        paper_bgcolor=DARK_BG,
+        plot_bgcolor=DARK_SURFACE,
+        font=dict(family="Inter, Malgun Gothic, Apple SD Gothic Neo, sans-serif", color=DARK_TEXT, size=13),
+        title=dict(
+            font=dict(family="Arial Black, Impact, Malgun Gothic, sans-serif", color=DARK_TEXT, size=20),
+            x=0.02,
+            xanchor="left",
+        ),
+        colorway=PLOTLY_COLORWAY,
+        legend=dict(
+            bgcolor=RETRO_PANEL,
+            bordercolor=DARK_STROKE,
+            borderwidth=1,
+            font=dict(color=DARK_TEXT),
+            orientation="h",
+        ),
+        hoverlabel=dict(
+            bgcolor=RETRO_PANEL,
+            bordercolor=DARK_STROKE,
+            font=dict(color=DARK_TEXT, family="MS Sans Serif, Tahoma, Malgun Gothic, sans-serif"),
+        ),
+        margin=dict(l=28, r=28, t=68, b=34),
+    )
+    fig.update_xaxes(
+        color=DARK_TEXT,
+        gridcolor=DARK_MUTED,
+        zerolinecolor=DARK_STROKE,
+        linecolor=DARK_STROKE,
+        title_font=dict(color=DARK_TEXT),
+        tickfont=dict(color=DARK_TEXT),
+    )
+    fig.update_yaxes(
+        color=DARK_TEXT,
+        gridcolor=DARK_MUTED,
+        zerolinecolor=DARK_STROKE,
+        linecolor=DARK_STROKE,
+        title_font=dict(color=DARK_TEXT),
+        tickfont=dict(color=DARK_TEXT),
+    )
+    return fig
+
+
 def plot_top_stops(stop_df: pd.DataFrame, metric: str = "boardings", n: int = 10, title: str = ""):
     """정류소별 상위 N개 막대그래프를 만듭니다."""
     px = get_plotly_express()
@@ -82,9 +150,22 @@ def plot_top_stops(stop_df: pd.DataFrame, metric: str = "boardings", n: int = 10
         labels={metric: metric_label(metric), "stop_label": "정류소명", "district": "구·군"},
         text=metric,
     )
-    fig.update_traces(texttemplate="%{text:,.0f}", textposition="outside")
-    fig.update_layout(height=460, margin=dict(l=20, r=20, t=60, b=20))
-    return fig
+    max_value = data[metric].max()
+    fig.update_traces(
+        texttemplate="%{text:,.0f}",
+        textposition="inside",
+        insidetextanchor="end",
+        textfont=dict(color="#F8FAFC", size=12),
+        cliponaxis=False,
+    )
+    if pd.notna(max_value) and max_value > 0:
+        fig.update_xaxes(range=[0, max_value * 1.32])
+    fig.update_layout(
+        height=460,
+        margin=dict(l=20, r=40, t=76, b=20),
+        legend=dict(orientation="h", yanchor="bottom", y=1.03, xanchor="right", x=1),
+    )
+    return apply_dark_plotly_theme(fig)
 
 
 def plot_district_bar(stop_df: pd.DataFrame, metric: str = "boardings", title: str = ""):
@@ -105,9 +186,12 @@ def plot_district_bar(stop_df: pd.DataFrame, metric: str = "boardings", title: s
         labels={"district": "구·군", metric: metric_label(metric)},
         text=metric,
     )
-    fig.update_traces(texttemplate="%{text:,.0f}", textposition="outside")
-    fig.update_layout(height=460, margin=dict(l=20, r=20, t=60, b=20))
-    return fig
+    max_value = data[metric].max()
+    fig.update_traces(texttemplate="%{text:,.0f}", textposition="outside", cliponaxis=False)
+    if pd.notna(max_value) and max_value > 0:
+        fig.update_yaxes(range=[0, max_value * 1.16])
+    fig.update_layout(height=460, margin=dict(l=20, r=35, t=60, b=20))
+    return apply_dark_plotly_theme(fig)
 
 
 def plot_hourly_line(hourly_df: pd.DataFrame, metric: str = "boardings", title: str = ""):
@@ -130,7 +214,7 @@ def plot_hourly_line(hourly_df: pd.DataFrame, metric: str = "boardings", title: 
     )
     fig.update_xaxes(dtick=1)
     fig.update_layout(height=420, margin=dict(l=20, r=20, t=60, b=20))
-    return fig
+    return apply_dark_plotly_theme(fig)
 
 
 def plot_board_alight_line(hourly_df: pd.DataFrame):
@@ -149,7 +233,7 @@ def plot_board_alight_line(hourly_df: pd.DataFrame):
     fig = px.line(melted, x="hour", y="인원", color="구분", markers=True, title="시간대별 승차·하차 비교")
     fig.update_xaxes(dtick=1)
     fig.update_layout(height=420, margin=dict(l=20, r=20, t=60, b=20))
-    return fig
+    return apply_dark_plotly_theme(fig)
 
 
 def plot_stop_hour_heatmap(hourly_df: pd.DataFrame, stop_df: pd.DataFrame, metric: str = "boardings", top_n: int = 20):
@@ -170,11 +254,12 @@ def plot_stop_hour_heatmap(hourly_df: pd.DataFrame, stop_df: pd.DataFrame, metri
     fig = px.imshow(
         pivot,
         aspect="auto",
+        color_continuous_scale=[DARK_SURFACE, ACCENT_BLUE_DEEP, ACCENT_BLUE],
         title=f"정류소 × 시간대 {metric_label(metric)} 히트맵",
         labels=dict(x="시간대", y="정류소", color=metric_label(metric)),
     )
     fig.update_layout(height=560, margin=dict(l=20, r=20, t=60, b=20))
-    return fig
+    return apply_dark_plotly_theme(fig)
 
 
 def plot_district_hour_heatmap(hourly_df: pd.DataFrame, metric: str = "boardings"):
@@ -190,11 +275,12 @@ def plot_district_hour_heatmap(hourly_df: pd.DataFrame, metric: str = "boardings
     fig = px.imshow(
         pivot,
         aspect="auto",
+        color_continuous_scale=[DARK_SURFACE, ACCENT_BLUE_DEEP, ACCENT_BLUE],
         title=f"구·군 × 시간대 {metric_label(metric)} 히트맵",
         labels=dict(x="시간대", y="구·군", color=metric_label(metric)),
     )
     fig.update_layout(height=500, margin=dict(l=20, r=20, t=60, b=20))
-    return fig
+    return apply_dark_plotly_theme(fig)
 
 
 def plot_stop_comparison_line(
@@ -228,7 +314,7 @@ def plot_stop_comparison_line(
     )
     fig.update_xaxes(dtick=1)
     fig.update_layout(height=460, margin=dict(l=20, r=20, t=60, b=20))
-    return fig
+    return apply_dark_plotly_theme(fig)
 
 
 def plot_type_pie(stop_df: pd.DataFrame):
@@ -244,7 +330,7 @@ def plot_type_pie(stop_df: pd.DataFrame):
         return None
     fig = px.pie(data, names="stop_type", values="count", title="정류소 유형별 비율")
     fig.update_layout(height=460, margin=dict(l=20, r=20, t=60, b=20))
-    return fig
+    return apply_dark_plotly_theme(fig)
 
 
 def plot_supply_demand_scatter(stop_df: pd.DataFrame, thresholds: dict):
@@ -259,21 +345,22 @@ def plot_supply_demand_scatter(stop_df: pd.DataFrame, thresholds: dict):
     data = data[data["route_count"] > 0]
     if data.empty:
         return None
+    hover_data = {
+        "stop_name": True,
+        "boardings": ":,",
+        "route_count": ":,",
+        "boardings_per_route": ":,.1f",
+    }
+    for optional_col in ["district", "peak_hour_label", "stop_type"]:
+        if optional_col in data.columns:
+            hover_data[optional_col] = True
     fig = px.scatter(
         data,
         x="route_count",
         y="boardings",
         size="boardings_per_route",
         color="stop_type" if "stop_type" in data.columns else None,
-        hover_data={
-            "stop_name": True,
-            "district": True if "district" in data.columns else False,
-            "boardings": ":,",
-            "route_count": ":,",
-            "boardings_per_route": ":,.1f",
-            "peak_hour_label": True if "peak_hour_label" in data.columns else False,
-            "stop_type": True if "stop_type" in data.columns else False,
-        },
+        hover_data=hover_data,
         title="경유 노선 수와 전체 승차 인원",
         labels={
             "route_count": "경유 노선 수",
@@ -285,9 +372,9 @@ def plot_supply_demand_scatter(stop_df: pd.DataFrame, thresholds: dict):
     route_line = thresholds.get("route_threshold")
     demand_line = thresholds.get("demand_threshold")
     if pd.notna(route_line):
-        fig.add_vline(x=route_line, line_dash="dash", line_color="gray")
+        fig.add_vline(x=route_line, line_dash="dash", line_color=ACCENT_BLUE)
     if pd.notna(demand_line):
-        fig.add_hline(y=demand_line, line_dash="dash", line_color="gray")
+        fig.add_hline(y=demand_line, line_dash="dash", line_color=ACCENT_BLUE)
     if pd.notna(route_line) and pd.notna(demand_line):
         fig.add_shape(
             type="rect",
@@ -295,15 +382,35 @@ def plot_supply_demand_scatter(stop_df: pd.DataFrame, thresholds: dict):
             x1=route_line,
             y0=demand_line,
             y1=data["boardings"].max(),
-            fillcolor="rgba(255, 99, 71, 0.12)",
+            fillcolor="rgba(251, 113, 133, 0.14)",
             line_width=0,
             layer="below",
         )
     fig.update_layout(height=600, margin=dict(l=20, r=20, t=60, b=20))
-    return fig
+    return apply_dark_plotly_theme(fig)
 
 
-def create_pydeck_map(stop_df: pd.DataFrame):
+def bus_stop_icon_data_uri() -> str:
+    """지도 위에 표시할 버스 정류장 핀 SVG를 데이터 URI로 만듭니다."""
+    svg = """
+    <svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 128 128">
+      <path d="M64 124C54 110 27 78 27 50C27 29 44 12 64 12C84 12 101 29 101 50C101 78 74 110 64 124Z" fill="#FF4048"/>
+      <path d="M84 91C78 101 71 112 64 124C54 110 27 78 27 50C27 48 27 46 28 44C39 75 63 87 84 91Z" fill="#D92838" opacity="0.55"/>
+      <circle cx="64" cy="50" r="35" fill="#F5F5F5"/>
+      <path d="M47 35H81C87 35 91 39 91 45V72C91 78 87 82 81 82H47C41 82 37 78 37 72V45C37 39 41 35 47 35Z" fill="#B5293A"/>
+      <path d="M50 44H78C81 44 83 46 83 49V63H45V49C45 46 47 44 50 44Z" fill="#F5F5F5"/>
+      <circle cx="50" cy="72" r="6" fill="#F5F5F5"/>
+      <circle cx="78" cy="72" r="6" fill="#F5F5F5"/>
+      <rect x="42" y="82" width="12" height="12" fill="#B5293A"/>
+      <rect x="74" y="82" width="12" height="12" fill="#B5293A"/>
+      <rect x="29" y="51" width="9" height="5" fill="#B5293A"/>
+      <rect x="90" y="51" width="9" height="5" fill="#B5293A"/>
+    </svg>
+    """
+    return "data:image/svg+xml;charset=utf-8," + quote(" ".join(svg.split()))
+
+
+def create_pydeck_map(stop_df: pd.DataFrame, max_icons: int | None = 900):
     """위도·경도가 있는 경우 pydeck 지도 객체를 만듭니다."""
     try:
         import pydeck as pdk
@@ -315,6 +422,8 @@ def create_pydeck_map(stop_df: pd.DataFrame):
     data = stop_df.dropna(subset=["lat", "lon"]).copy()
     if data.empty:
         return None
+    if max_icons is not None and max_icons > 0 and len(data) > max_icons:
+        data = data.sort_values("boardings", ascending=False).head(max_icons).copy()
     per_route = data.get("boardings_per_route", pd.Series(0, index=data.index)).fillna(0)
     boardings = data["boardings"].fillna(0).clip(lower=0)
     boardings_base = boardings.quantile(0.95)
@@ -324,24 +433,32 @@ def create_pydeck_map(stop_df: pd.DataFrame):
     if pd.isna(route_base) or route_base <= 0:
         route_base = per_route.max() if per_route.max() > 0 else 1
 
-    # 지나치게 큰 원이 지도를 덮지 않도록 95분위 기준으로 반경을 제한합니다.
-    data["radius"] = (40 + np.sqrt((boardings / boardings_base).clip(0, 1)) * 180).round(1)
-    data["color_value"] = ((per_route / route_base).clip(0, 1) * 170 + 55).astype(int)
-    data["fill_color"] = data["color_value"].apply(lambda value: [int(value), 96, 120, 125])
+    # 원형 점 대신 버스 정류장 핀 아이콘을 사용합니다.
+    # 멀리 줌아웃했을 때 겹침이 심하지 않도록 아이콘 크기 범위를 작게 잡습니다.
+    icon_data = {
+        "url": bus_stop_icon_data_uri(),
+        "width": 128,
+        "height": 128,
+        "anchorY": 128,
+        "mask": False,
+    }
+    data["icon_data"] = [icon_data for _ in range(len(data))]
+    data["icon_size"] = (16 + np.sqrt((boardings / boardings_base).clip(0, 1)) * 14).round(1)
 
     center_lat = float(data["lat"].mean())
     center_lon = float(data["lon"].mean())
     layer = pdk.Layer(
-        "ScatterplotLayer",
+        "IconLayer",
         data=data,
         get_position="[lon, lat]",
-        get_radius="radius",
-        get_fill_color="fill_color",
+        get_icon="icon_data",
+        get_size="icon_size",
+        size_units="pixels",
+        size_scale=1,
+        size_min_pixels=14,
+        size_max_pixels=32,
         pickable=True,
         auto_highlight=True,
-        stroked=True,
-        get_line_color=[255, 255, 255, 80],
-        line_width_min_pixels=1,
     )
     tooltip = {
         "html": """
@@ -353,10 +470,23 @@ def create_pydeck_map(stop_df: pd.DataFrame):
         노선당 승차 인원: {boardings_per_route}<br/>
         정류소 유형: {stop_type}
         """,
-        "style": {"backgroundColor": "white", "color": "black"},
+        "style": {
+            "backgroundColor": RETRO_PANEL,
+            "color": DARK_TEXT,
+            "border": f"2px solid {DARK_STROKE}",
+            "borderRadius": "0px",
+            "boxShadow": "inset -1px -1px 0 #808080, inset 1px 1px 0 #ffffff",
+            "fontFamily": "MS Sans Serif, Malgun Gothic, sans-serif",
+            "padding": "12px",
+        },
     }
     view_state = pdk.ViewState(latitude=center_lat, longitude=center_lon, zoom=11, pitch=0)
-    return pdk.Deck(layers=[layer], initial_view_state=view_state, tooltip=tooltip)
+    return pdk.Deck(
+        layers=[layer],
+        initial_view_state=view_state,
+        tooltip=tooltip,
+        map_style="https://basemaps.cartocdn.com/gl/voyager-gl-style/style.json",
+    )
 
 
 def plot_weather_bus_dual_line(data: pd.DataFrame, weather_col: str, weather_label: str):
@@ -392,7 +522,7 @@ def plot_weather_bus_dual_line(data: pd.DataFrame, weather_col: str, weather_lab
         margin=dict(l=20, r=20, t=60, b=20),
         legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1),
     )
-    return fig
+    return apply_dark_plotly_theme(fig)
 
 
 def plot_weather_monthly_line(data: pd.DataFrame, y_col: str, y_label: str, title: str):
@@ -402,7 +532,7 @@ def plot_weather_monthly_line(data: pd.DataFrame, y_col: str, y_label: str, titl
         return None
     fig = px.line(data, x="period", y=y_col, markers=True, title=title, labels={"period": "연도·월", y_col: y_label})
     fig.update_layout(height=420, margin=dict(l=20, r=20, t=60, b=20))
-    return fig
+    return apply_dark_plotly_theme(fig)
 
 
 def plot_weather_scatter(data: pd.DataFrame, weather_col: str, weather_label: str, title: str):
@@ -420,7 +550,7 @@ def plot_weather_scatter(data: pd.DataFrame, weather_col: str, weather_label: st
         labels={weather_col: weather_label, "boardings": "월별 승차 인원", "season": "계절", "period": "연도·월"},
     )
     fig.update_layout(height=460, margin=dict(l=20, r=20, t=60, b=20))
-    return fig
+    return apply_dark_plotly_theme(fig)
 
 
 def plot_season_bus_box(data: pd.DataFrame):
@@ -439,7 +569,7 @@ def plot_season_bus_box(data: pd.DataFrame):
         labels={"season": "계절", "boardings": "월별 승차 인원"},
     )
     fig.update_layout(height=460, margin=dict(l=20, r=20, t=60, b=20))
-    return fig
+    return apply_dark_plotly_theme(fig)
 
 
 def plot_cluster_pattern_heatmap(patterns: pd.DataFrame):
@@ -462,7 +592,7 @@ def plot_cluster_pattern_heatmap(patterns: pd.DataFrame):
     fig = px.imshow(
         heatmap_data,
         aspect="auto",
-        color_continuous_scale="YlGnBu",
+        color_continuous_scale=[DARK_SURFACE, ACCENT_BLUE_DEEP, ACCENT_BLUE],
         title="군집별 시간대 승차 비율",
         labels=dict(x="시간대", y="군집 유형", color="승차 비율(%)"),
     )
@@ -471,7 +601,7 @@ def plot_cluster_pattern_heatmap(patterns: pd.DataFrame):
         hovertemplate="군집: %{y}<br>시간대: %{x}<br>승차 비율: %{z:.1f}%<extra></extra>",
     )
     fig.update_layout(height=420, margin=dict(l=20, r=20, t=60, b=20))
-    return fig
+    return apply_dark_plotly_theme(fig)
 
 
 def plot_weather_correlation_heatmap(correlation_df: pd.DataFrame):
@@ -488,7 +618,7 @@ def plot_weather_correlation_heatmap(correlation_df: pd.DataFrame):
         heatmap_data,
         zmin=-1,
         zmax=1,
-        color_continuous_scale="RdBu_r",
+        color_continuous_scale=[ACCENT_BLUE_DEEP, DARK_SURFACE, ALERT_ROSE],
         aspect="auto",
         title="날씨 변수 상관관계 히트맵",
         labels=dict(x="상관계수 종류", y="날씨 변수", color="상관계수"),
@@ -501,7 +631,7 @@ def save_current_figure(path: Path) -> None:
     """현재 Matplotlib 그림을 고해상도 PNG로 저장하고 닫습니다."""
     path.parent.mkdir(parents=True, exist_ok=True)
     plt.tight_layout()
-    plt.savefig(path, dpi=300, bbox_inches="tight")
+    plt.savefig(path, dpi=300, bbox_inches="tight", facecolor=DARK_BG)
     plt.close()
 
 
@@ -514,6 +644,19 @@ def save_static_figures(
 ) -> tuple[list[str], list[str]]:
     """발표 PPT에 사용할 정적 그래프 PNG 파일을 저장합니다."""
     set_korean_font()
+    sns.set_theme(
+        style="darkgrid",
+        rc={
+            "axes.facecolor": DARK_SURFACE,
+            "figure.facecolor": DARK_BG,
+            "axes.edgecolor": DARK_STROKE,
+            "axes.labelcolor": DARK_TEXT,
+            "xtick.color": DARK_MUTED,
+            "ytick.color": DARK_MUTED,
+            "text.color": DARK_TEXT,
+            "grid.color": "#26272C",
+        },
+    )
     output_dir = Path(output_dir)
     output_dir.mkdir(parents=True, exist_ok=True)
     saved: list[str] = []

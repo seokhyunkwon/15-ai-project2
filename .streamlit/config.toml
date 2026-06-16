@@ -1,0 +1,12 @@
+[theme]
+base = "light"
+primaryColor = "#0000FF"
+backgroundColor = "#C0C0C0"
+secondaryBackgroundColor = "#E8E8E8"
+textColor = "#000000"
+font = "sans serif"
+chartCategoricalColors = ["#0000FF", "#00AA00", "#FF0000", "#FFFF00", "#800080", "#008080", "#808080"]
+chartSequentialColors = ["#FFFFFF", "#FFFFCC", "#FFFF00", "#00AA00", "#000080"]
+
+[client]
+toolbarMode = "minimal"
