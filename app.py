@@ -932,6 +932,38 @@ def apply_retro_90s_overrides() -> None:
             text-transform: uppercase !important;
         }
 
+        div[data-testid="stDownloadButton"] {
+            display: inline-block !important;
+            width: auto !important;
+            max-width: 100% !important;
+            margin: 0.85rem 0 1.15rem !important;
+        }
+
+        div[data-testid="stDownloadButton"] button {
+            display: inline-flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            width: auto !important;
+            min-width: 240px !important;
+            max-width: 100% !important;
+            min-height: 42px !important;
+            height: 42px !important;
+            padding: 0.45rem 1rem !important;
+            white-space: nowrap !important;
+            word-break: keep-all !important;
+            writing-mode: horizontal-tb !important;
+            line-height: 1.2 !important;
+        }
+
+        div[data-testid="stDownloadButton"] button *,
+        div[data-testid="stDownloadButton"] button p,
+        div[data-testid="stDownloadButton"] button span {
+            white-space: nowrap !important;
+            word-break: keep-all !important;
+            writing-mode: horizontal-tb !important;
+            line-height: 1.2 !important;
+        }
+
         button[kind]:active,
         div[data-testid="stDownloadButton"] button:active,
         div[data-testid="stButton"] button:active {
@@ -984,7 +1016,7 @@ def apply_retro_90s_overrides() -> None:
             overflow: hidden !important;
         }
 
-        div[data-testid="stTabs"] button {
+        div[data-testid="stTabs"] [role="tab"] {
             flex: 1 1 0 !important;
             width: 0 !important;
             min-width: 0 !important;
@@ -1000,7 +1032,7 @@ def apply_retro_90s_overrides() -> None:
             text-align: center !important;
         }
 
-        div[data-testid="stTabs"] button p {
+        div[data-testid="stTabs"] [role="tab"] p {
             width: 100% !important;
             font-size: clamp(0.68rem, 0.72vw, 0.9rem) !important;
             line-height: 1.15 !important;
@@ -1011,15 +1043,15 @@ def apply_retro_90s_overrides() -> None:
             text-align: center !important;
         }
 
-        div[data-testid="stTabs"] button[aria-selected="true"] {
+        div[data-testid="stTabs"] [role="tab"][aria-selected="true"] {
             border-color: #808080 #ffffff #ffffff #808080 !important;
             background: #ffff00 !important;
             color: #000000 !important;
             text-shadow: none !important;
         }
 
-        div[data-testid="stTabs"] button[aria-selected="true"] *,
-        div[data-testid="stTabs"] button[aria-selected="true"] p {
+        div[data-testid="stTabs"] [role="tab"][aria-selected="true"] *,
+        div[data-testid="stTabs"] [role="tab"][aria-selected="true"] p {
             color: #000000 !important;
             text-shadow: none !important;
         }
@@ -1042,8 +1074,8 @@ def apply_retro_90s_overrides() -> None:
             width: 100% !important;
             max-width: 100% !important;
             box-sizing: border-box !important;
-            padding: 0.75rem !important;
-            margin-bottom: 1rem !important;
+            padding: 1.05rem 1.05rem 2.35rem !important;
+            margin-bottom: 1.45rem !important;
             overflow: hidden !important;
         }
 
@@ -1067,9 +1099,9 @@ def apply_retro_90s_overrides() -> None:
         }
 
         .soft-metric-card {
-            height: 112px !important;
-            min-height: 112px !important;
-            padding: 1.55rem 0.7rem 0.65rem !important;
+            height: 132px !important;
+            min-height: 132px !important;
+            padding: 1.75rem 0.75rem 0.82rem !important;
             border: 2px solid !important;
             border-color: #ffffff #808080 #808080 #ffffff !important;
             background: #c0c0c0 !important;
@@ -1078,7 +1110,7 @@ def apply_retro_90s_overrides() -> None:
             display: flex !important;
             flex-direction: column !important;
             justify-content: flex-start !important;
-            gap: 0.3rem !important;
+            gap: 0.42rem !important;
             overflow: hidden !important;
         }
 
@@ -1117,8 +1149,8 @@ def apply_retro_90s_overrides() -> None:
             font-weight: 800 !important;
             letter-spacing: 0 !important;
             text-transform: none !important;
-            min-height: 1rem !important;
-            line-height: 1.15 !important;
+            min-height: 1.08rem !important;
+            line-height: 1.2 !important;
             overflow: hidden !important;
         }
 
@@ -1126,19 +1158,20 @@ def apply_retro_90s_overrides() -> None:
             display: inline-block !important;
             max-width: 100% !important;
             width: fit-content !important;
+            min-height: 2rem !important;
             color: #00ff00 !important;
             background: #000000 !important;
             border: 2px solid !important;
             border-color: #808080 #ffffff #ffffff #808080 !important;
-            padding: 0.14rem 0.42rem !important;
+            padding: 0.2rem 0.5rem !important;
             font-family: "Courier New", Courier, monospace !important;
-            font-size: clamp(1rem, 1.35vw, 1.38rem) !important;
+            font-size: clamp(1.1rem, 1.45vw, 1.55rem) !important;
             font-style: normal !important;
             font-weight: 800 !important;
-            line-height: 1.15 !important;
+            line-height: 1.22 !important;
             word-break: keep-all !important;
             overflow-wrap: anywhere !important;
-            overflow: hidden !important;
+            overflow: visible !important;
             text-shadow: none !important;
         }
 
@@ -1146,7 +1179,7 @@ def apply_retro_90s_overrides() -> None:
             white-space: nowrap !important;
             overflow-wrap: normal !important;
             word-break: normal !important;
-            font-size: clamp(0.86rem, 1.05vw, 1.08rem) !important;
+            font-size: clamp(1rem, 1.22vw, 1.26rem) !important;
             letter-spacing: 0 !important;
         }
 
@@ -1175,6 +1208,10 @@ def apply_retro_90s_overrides() -> None:
             color: #ff0000 !important;
             border: 2px solid #000000 !important;
             box-shadow: none !important;
+            min-height: 1.7rem !important;
+            padding: 0.24rem 0.36rem !important;
+            line-height: 1.2 !important;
+            overflow: visible !important;
         }
 
         .weather-metric-align-spacer {
@@ -1406,7 +1443,7 @@ def apply_retro_90s_overrides() -> None:
                 flex-wrap: wrap !important;
             }
 
-            div[data-testid="stTabs"] button {
+            div[data-testid="stTabs"] [role="tab"] {
                 flex: 1 1 calc(50% - 0.5rem) !important;
                 width: auto !important;
             }
@@ -1538,7 +1575,7 @@ def style_plotly_figure(fig):
             font=dict(color="#000000"),
             orientation="h",
             yanchor="top",
-            y=-0.22,
+            y=-0.2,
             xanchor="left",
             x=0,
         ),
@@ -1548,7 +1585,7 @@ def style_plotly_figure(fig):
             bordercolor="#000000",
             font=dict(color="#000000", family="MS Sans Serif, Tahoma, Malgun Gothic, sans-serif"),
         ),
-        margin=dict(l=70, r=32, t=88, b=92),
+        margin=dict(l=82, r=108, t=90, b=210),
     )
     fig.update_xaxes(
         color="#000000",
@@ -3053,14 +3090,6 @@ def weather_bus_tab(bundle: dict, monthly_df: pd.DataFrame) -> None:
         mime="text/csv",
     )
 
-    col4, col5 = st.columns(2)
-    with col4:
-        fig = plot_weather_monthly_line(filtered, "boardings", "월별 승차 인원", "월별 버스 승차 인원 추세")
-        render_plotly_chart(fig, "월별 버스 승차 인원 추세를 표시할 수 없습니다.")
-    with col5:
-        fig = plot_weather_monthly_line(filtered, "monthly_avg_temp", "월평균 기온", "월별 기온 추세")
-        render_plotly_chart(fig, "월평균 기온 컬럼이 없어 기온 추세를 표시할 수 없습니다.")
-
     selected_scatter = plot_weather_scatter(
         filtered,
         weather_col,
@@ -3069,6 +3098,14 @@ def weather_bus_tab(bundle: dict, monthly_df: pd.DataFrame) -> None:
     )
     render_two_column_charts(
         [
+            (
+                plot_weather_monthly_line(filtered, "boardings", "월별 승차 인원", "월별 버스 승차 인원 추세"),
+                "월별 버스 승차 인원 추세를 표시할 수 없습니다.",
+            ),
+            (
+                plot_weather_monthly_line(filtered, "monthly_avg_temp", "월평균 기온", "월별 기온 추세"),
+                "월평균 기온 컬럼이 없어 기온 추세를 표시할 수 없습니다.",
+            ),
             (
                 plot_weather_bus_dual_line(filtered, weather_col, weather_options[weather_col]),
                 "버스 이용량과 날씨 추세 비교 그래프를 표시할 수 없습니다.",
@@ -3080,31 +3117,36 @@ def weather_bus_tab(bundle: dict, monthly_df: pd.DataFrame) -> None:
         ]
     )
 
-    col6, col7 = st.columns(2)
-    with col6:
-        fig = plot_weather_scatter(
-            filtered,
-            "monthly_avg_temp",
-            "월평균 기온",
-            "기온과 월별 승차 인원의 산점도",
-        )
-        render_plotly_chart(fig, "기온 산점도를 표시할 수 없습니다.")
-    with col7:
-        fig = plot_weather_scatter(
-            filtered,
-            "monthly_precipitation",
-            "월 누적 강수량",
-            "강수량과 월별 승차 인원의 산점도",
-        )
-        render_plotly_chart(fig, "강수량 산점도를 표시할 수 없습니다.")
-
-    col8, col9 = st.columns(2)
-    with col8:
-        fig = plot_season_bus_box(filtered)
-        render_plotly_chart(fig, "계절별 이용량 박스플롯을 표시할 수 없습니다.")
-    with col9:
-        fig = plot_weather_correlation_heatmap(correlation_df)
-        render_plotly_chart(fig, "날씨 변수 상관관계 히트맵을 표시할 수 없습니다.")
+    render_two_column_charts(
+        [
+            (
+                plot_weather_scatter(
+                    filtered,
+                    "monthly_avg_temp",
+                    "월평균 기온",
+                    "기온과 월별 승차 인원의 산점도",
+                ),
+                "기온 산점도를 표시할 수 없습니다.",
+            ),
+            (
+                plot_weather_scatter(
+                    filtered,
+                    "monthly_precipitation",
+                    "월 누적 강수량",
+                    "강수량과 월별 승차 인원의 산점도",
+                ),
+                "강수량 산점도를 표시할 수 없습니다.",
+            ),
+            (
+                plot_season_bus_box(filtered),
+                "계절별 이용량 박스플롯을 표시할 수 없습니다.",
+            ),
+            (
+                plot_weather_correlation_heatmap(correlation_df),
+                "날씨 변수 상관관계 히트맵을 표시할 수 없습니다.",
+            ),
+        ]
+    )
 
     st.subheader("날씨 변수별 상관계수")
     display_corr = correlation_df.drop(columns=["weather_column"], errors="ignore").copy()

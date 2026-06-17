@@ -119,7 +119,7 @@ def apply_dark_plotly_theme(fig):
             font=dict(color=DARK_TEXT),
             orientation="h",
             yanchor="top",
-            y=-0.22,
+            y=-0.2,
             xanchor="left",
             x=0,
         ),
@@ -128,7 +128,7 @@ def apply_dark_plotly_theme(fig):
             bordercolor=DARK_STROKE,
             font=dict(color=DARK_TEXT, family="MS Sans Serif, Tahoma, Malgun Gothic, sans-serif"),
         ),
-        margin=dict(l=92, r=126, t=112, b=118),
+        margin=dict(l=82, r=108, t=90, b=210),
     )
     fig.update_xaxes(
         color=DARK_TEXT,
@@ -187,8 +187,8 @@ def plot_top_stops(stop_df: pd.DataFrame, metric: str = "boardings", n: int = 10
         fig.update_xaxes(range=[0, max_value * 1.32])
     fig.update_layout(
         height=540,
-        margin=dict(l=92, r=126, t=112, b=118),
-        legend=dict(orientation="h", yanchor="top", y=-0.22, xanchor="left", x=0),
+        margin=dict(l=82, r=108, t=90, b=210),
+        legend=dict(orientation="h", yanchor="top", y=-0.2, xanchor="left", x=0),
     )
     return apply_dark_plotly_theme(fig)
 
@@ -541,11 +541,16 @@ def plot_weather_bus_dual_line(data: pd.DataFrame, weather_col: str, weather_lab
     fig.update_layout(
         title="월별 버스 이용량과 날씨 추세 비교",
         xaxis_title="연도·월",
-        yaxis=dict(title="승차 인원"),
-        yaxis2=dict(title=weather_label, overlaying="y", side="right"),
-        height=480,
-        margin=dict(l=20, r=20, t=60, b=20),
-        legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1),
+        yaxis=dict(title="승차 인원", automargin=True),
+        yaxis2=dict(
+            title=dict(text=weather_label, standoff=18),
+            overlaying="y",
+            side="right",
+            automargin=True,
+        ),
+        height=540,
+        margin=dict(l=82, r=108, t=90, b=210),
+        legend=dict(orientation="h", yanchor="top", y=-0.2, xanchor="left", x=0),
     )
     return apply_dark_plotly_theme(fig)
 
