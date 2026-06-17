@@ -1,0 +1,1198 @@
+{
+  "deck_prompt_meta": {
+    "design_system_name": "Editable Retro Transit Dashboard with Tightened Slide layout discipline",
+    "global_theme_summary": "대구 시내버스 정류소 분석 발표용 편집형 PPTX 디자인. 밝은 회색 배경, 검정 본문, 네이비 헤더, 파란 강조선, 노란 경고 태그를 사용한다. 레트로 대시보드 감성은 유지하되 최종 산출물은 텍스트, 표, 차트, 도형을 직접 클릭해 수정할 수 있어야 한다.",
+    "global_consistency_rules": [
+      "최종 PPTX에서 full-slide bitmap 사용 금지",
+      "제목, 본문, 수치, 표, 차트 라벨은 모두 편집 가능한 PowerPoint 객체로 구현",
+      "지도와 Streamlit 화면 캡처만 이미지로 허용",
+      "각 슬라이드는 header, body, footer 영역을 명확히 분리",
+      "본문 슬라이드는 3명 발표 구간을 유지하되 같은 카드, 표, 차트 문법을 반복",
+      "차트는 가능하면 native PowerPoint chart로 구현하고 PNG 그래프는 참고용으로만 사용",
+      "표는 raw CSV처럼 보이지 않게 한국어 컬럼명, 천 단위 쉼표, 퍼센트 단위를 적용",
+      "상관관계는 인과관계로 표현하지 않음",
+      "노선 부족은 확정 표현이 아니라 추가 검토 후보로 표현"
+    ],
+    "body_slide_system": "Tightened Slide의 S03, S04, S07, S08, S11, S15, S16, S17, S20, S21, S22 레이아웃 개념을 참조하되, 최종 구현은 editable PPTX 객체 기반으로 한다. 모든 슬라이드는 짧은 제목, 한 줄 핵심 메시지, 하나의 중심 시각화, 낮은 노이즈의 footer note를 갖는다.",
+    "json_version": "1.0"
+  },
+  "slides": [
+    {
+      "slide_number": 1,
+      "slide_role": "context",
+      "page_family": "body",
+      "slide_title": "왜 정류소 수요와 노선 공급을 함께 봐야 하는가",
+      "layout_family": "S03 Split Statement / editable section-framing body slide",
+      "prompt": {
+        "objective": "프로젝트가 단순 TOP 10 분석이 아니라 수요와 노선 공급의 균형을 함께 보는 분석임을 첫 본문 슬라이드에서 명확히 설명한다.",
+        "narrative_function": "발표자 1의 시작 슬라이드. 청중에게 프로젝트 질문과 전체 분석 방향을 잡아준다.",
+        "visual_intent": "좌측에는 큰 문제 정의 문장, 우측에는 세 개의 질문 카드가 있는 명료한 split layout.",
+        "content_blocks": [
+          {
+            "block_type": "title",
+            "purpose": "슬라이드의 핵심 질문 제시",
+            "content_instruction": "제목은 '왜 정류소 수요와 노선 공급을 함께 봐야 하는가'로 입력한다.",
+            "placement_instruction": "상단 header 왼쪽에 편집 가능한 텍스트박스로 배치한다.",
+            "style_instruction": "Malgun Gothic Bold 32-36pt, 검정색, 제목은 2줄 이내"
+          },
+          {
+            "block_type": "summary",
+            "purpose": "프로젝트 한 줄 정의",
+            "content_instruction": "대구 시내버스 정류소별 승하차 수요와 경유 노선 수를 함께 분석해 추가 검토 후보 정류소를 찾는 프로젝트라고 설명한다.",
+            "placement_instruction": "좌측 큰 statement 영역에 편집 가능한 텍스트박스로 배치한다.",
+            "style_instruction": "본문 20-24pt, 핵심어 '수요', '노선 공급', '추가 검토 후보'는 네이비 또는 노란 태그로 강조"
+          },
+          {
+            "block_type": "metric_cards",
+            "purpose": "분석 질문을 세 묶음으로 압축",
+            "content_instruction": "카드 3개: 수요 규모 확인, 시간·지역 패턴 분석, 수요·공급 불균형 후보 탐색.",
+            "placement_instruction": "우측에 세로 3단 카드로 배치하고 각 카드는 editable rectangle shape + text로 구현한다.",
+            "style_instruction": "회색 카드, 네이비 상단 라벨, 검정 본문. 카드 높이는 동일하게 맞춘다."
+          },
+          {
+            "block_type": "footer_note",
+            "purpose": "발표 구간 표시",
+            "content_instruction": "발표자 1: 프로젝트 개요와 데이터 기반",
+            "placement_instruction": "하단 footer 왼쪽에 작은 텍스트박스로 배치한다.",
+            "style_instruction": "10-11pt, 회색 또는 네이비"
+          }
+        ],
+        "layout_instructions": {
+          "structure": "2-column split. Left 55% statement, right 45% three question cards. Header title above, footer source note below.",
+          "header_body_footer": {
+            "header": "짧은 section label '01 / PROJECT FRAME'과 슬라이드 제목",
+            "body": "좌측 문제 정의, 우측 3개 질문 카드",
+            "footer": "발표자 1 담당 구간 표시"
+          },
+          "reading_order": ["section label", "title", "problem statement", "three question cards", "footer"],
+          "alignment": "좌측 상단 축 정렬, 카드 3개는 같은 폭과 높이",
+          "spacing": "카드 사이 여백은 일정하게, 화면 가장자리와 안전 여백 유지",
+          "density": "medium",
+          "body_slide_consistency": "이후 슬라이드에서도 상단 section label과 footer note 체계를 유지한다."
+        },
+        "design_constraints": {
+          "palette_rules": ["배경 #C0C0C0", "본문 #000000", "헤더/라벨 #000080", "강조 태그 #FFFF00"],
+          "typography_rules": ["제목은 Malgun Gothic Bold", "본문은 Malgun Gothic", "숫자는 monospace가 필요한 경우만 사용"],
+          "component_rules": ["카드는 editable shape", "텍스트는 모두 editable text box", "그림으로 만든 텍스트 금지"],
+          "chart_rules": ["차트 없음"],
+          "table_rules": ["표 없음"],
+          "icon_rules": ["아이콘은 카드별 1개 이하, line icon 스타일"],
+          "infographic_rules": ["세 카드가 분석 프레임으로 읽히게 구성"],
+          "diagram_rules": ["화살표는 사용하지 않거나 매우 얇게"],
+          "imagery_rules": ["이미지 사용 안 함"],
+          "anti_patterns_to_avoid": ["랜덤 아이콘 남발", "네 개 이상의 카드", "마케팅 랜딩페이지처럼 보이는 과한 장식"]
+        },
+        "content_constraints": {
+          "must_include": ["수요와 공급 균형", "추가 검토 후보", "정류소별 승하차 데이터"],
+          "must_not_include": ["노선 부족 확정 표현", "가짜 수치"],
+          "evidence_to_use": ["README.md", "slide_plan.json slide 1"],
+          "evidence_to_avoid": ["원본 파일명 나열"]
+        },
+        "generator_notes": {
+          "ppt_generation_note": "모든 요소는 editable text box와 shape로 작성한다.",
+          "image_generation_note": "이미지 생성용 시안이라면 텍스트가 깨질 수 있으므로 레이아웃 참고용으로만 사용한다.",
+          "fallback_if_content_is_sparse": "질문 카드의 본문을 1줄씩 줄이고 문제 정의 문장을 더 크게 배치한다."
+        }
+      }
+    },
+    {
+      "slide_number": 2,
+      "slide_role": "evidence",
+      "page_family": "body",
+      "slide_title": "원본 CSV에서 분석용 데이터셋까지",
+      "layout_family": "S11 Horizontal Timeline / editable process pipeline diagram",
+      "prompt": {
+        "objective": "원본 CSV를 앱에서 매번 처리하지 않고, 먼저 정제 CSV로 변환한 뒤 Streamlit에서 불러오는 구조를 설명한다.",
+        "narrative_function": "데이터 신뢰성과 앱 속도 개선을 보여주는 데이터 파이프라인 슬라이드.",
+        "visual_intent": "가로 파이프라인 다이어그램과 오른쪽 산출물 목록 카드.",
+        "content_blocks": [
+          {
+            "block_type": "title",
+            "purpose": "데이터 처리 흐름 주제 제시",
+            "content_instruction": "제목은 '원본 CSV에서 분석용 데이터셋까지'로 입력한다.",
+            "placement_instruction": "상단 header 왼쪽 텍스트박스.",
+            "style_instruction": "32-36pt, 검정, 굵게"
+          },
+          {
+            "block_type": "diagram_flow",
+            "purpose": "전처리 흐름 설명",
+            "content_instruction": "원본 CSV → 인코딩 탐지 → 컬럼 자동 매핑 → 정제·병합 → 파생변수 생성 → outputs/processed CSV → Streamlit 앱 흐름을 표시한다.",
+            "placement_instruction": "본문 중앙 가로 흐름. 각 단계는 editable rounded가 아닌 직각 rectangle shape와 connector로 구현한다.",
+            "style_instruction": "네이비 단계 번호, 회색 박스, 검정 텍스트. 단계별 설명은 1줄 이내."
+          },
+          {
+            "block_type": "table",
+            "purpose": "정제 산출물 목록 제시",
+            "content_instruction": "정제 산출물 예: stop_summary.csv, hourly_summary.csv, monthly_summary.csv, imbalance_candidates.csv, weather_monthly.csv.",
+            "placement_instruction": "오른쪽 또는 하단에 2열 native table로 배치한다.",
+            "style_instruction": "한국어 컬럼명 '산출물', '용도'. 표는 PowerPoint native table로 구현."
+          },
+          {
+            "block_type": "callout",
+            "purpose": "핵심 구현 방식 강조",
+            "content_instruction": "앱은 원본 CSV가 아니라 정제 CSV를 불러와 시작 속도와 재현성을 높인다.",
+            "placement_instruction": "파이프라인 아래 노란 강조 박스.",
+            "style_instruction": "노란 배경, 검정 글씨, 16-18pt"
+          }
+        ],
+        "layout_instructions": {
+          "structure": "Header title, middle horizontal process flow, lower or right output table, footer note.",
+          "header_body_footer": {
+            "header": "02 / DATA PIPELINE + 제목",
+            "body": "6단계 파이프라인 + 산출물 표",
+            "footer": "Source: README.md, prepare_data.py, outputs/processed"
+          },
+          "reading_order": ["title", "pipeline left to right", "output table", "callout", "source note"],
+          "alignment": "파이프라인 단계 박스의 상하 중앙선 정렬",
+          "spacing": "단계 간 connector 길이 동일",
+          "density": "medium-high",
+          "body_slide_consistency": "다이어그램은 직각 shape와 동일한 connector style 사용"
+        },
+        "design_constraints": {
+          "palette_rules": ["파이프라인 번호는 #000080", "강조 박스는 #FFFF00"],
+          "typography_rules": ["단계명은 15-17pt", "설명은 12-14pt"],
+          "component_rules": ["모든 단계 박스는 editable shape", "표는 native table"],
+          "chart_rules": ["차트 없음"],
+          "table_rules": ["표 컬럼은 한국어", "파일명은 monospace 또는 작은 캡션 스타일"],
+          "icon_rules": ["CSV, 정제, 병합, 대시보드 아이콘은 선택 사항이며 각 단계당 1개 이하"],
+          "infographic_rules": ["프로세스 흐름이 가장 먼저 보이게 구성"],
+          "diagram_rules": ["화살표 connector는 editable line shape"],
+          "imagery_rules": ["이미지 사용 안 함"],
+          "anti_patterns_to_avoid": ["파일명만 잔뜩 나열", "원본 데이터 점검표 전체 삽입", "작은 텍스트 과밀"]
+        },
+        "content_constraints": {
+          "must_include": ["인코딩 탐지", "컬럼 자동 매핑", "정제 CSV", "Streamlit은 정제 CSV 로딩"],
+          "must_not_include": ["실제 데이터에 없는 컬럼 생성 주장"],
+          "evidence_to_use": ["README.md", "prepare_data.py", "outputs/processed"],
+          "evidence_to_avoid": ["전체 data_check_report 원표"]
+        },
+        "generator_notes": {
+          "ppt_generation_note": "파이프라인은 native shapes/connectors로 구현해 사용자가 단계명 수정 가능하게 한다.",
+          "image_generation_note": "이미지 렌더링은 다이어그램 구도 확인용만 사용한다.",
+          "fallback_if_content_is_sparse": "산출물 표를 제거하고 파이프라인 단계 설명을 조금 늘린다."
+        }
+      }
+    },
+    {
+      "slide_number": 3,
+      "slide_role": "evidence",
+      "page_family": "body",
+      "slide_title": "분석에 사용한 핵심 지표",
+      "layout_family": "S04 Six Cells / editable metric definition cards",
+      "prompt": {
+        "objective": "승차 인원 중심 해석과 노선당 승차 인원, 출근·퇴근 집중도 등 핵심 파생변수를 정의한다.",
+        "narrative_function": "이후 차트와 후보 표를 읽기 위한 지표 사전 역할.",
+        "visual_intent": "2행 3열 지표 카드. 각 카드에는 지표명, 공식, 해석 주의점이 들어간다.",
+        "content_blocks": [
+          {
+            "block_type": "title",
+            "purpose": "지표 정의 슬라이드 제목",
+            "content_instruction": "제목은 '분석에 사용한 핵심 지표'로 입력한다.",
+            "placement_instruction": "상단 header 왼쪽 텍스트박스.",
+            "style_instruction": "32-36pt, 굵게"
+          },
+          {
+            "block_type": "metric_cards",
+            "purpose": "핵심 지표 6개 정의",
+            "content_instruction": "카드 6개: 전체 승차 인원, 전체 하차 인원, 전체 이용객, 노선당 승차 인원, 출근·퇴근 집중도, 승하차 불균형 지수.",
+            "placement_instruction": "본문 2행 3열 그리드. 각 카드는 editable shape + text box.",
+            "style_instruction": "상단 네이비 라벨, 본문 검정, 공식은 monospace 12-14pt."
+          },
+          {
+            "block_type": "callout",
+            "purpose": "해석 기준 강조",
+            "content_instruction": "하차 태그 누락 가능성이 있어 승차 인원을 핵심 지표로 사용하고 전체 이용객은 참고 지표로 표시한다.",
+            "placement_instruction": "하단 footer 바로 위 노란 경고 박스.",
+            "style_instruction": "노란 배경, 검정 텍스트, 15-16pt"
+          },
+          {
+            "block_type": "footer_note",
+            "purpose": "상관관계 해석 주의",
+            "content_instruction": "상관관계는 함께 움직이는 정도를 보여줄 뿐 인과관계를 의미하지 않는다.",
+            "placement_instruction": "하단 footer.",
+            "style_instruction": "10-11pt"
+          }
+        ],
+        "layout_instructions": {
+          "structure": "Header title, six definition cards, warning callout, footer note.",
+          "header_body_footer": {
+            "header": "03 / METRIC DEFINITIONS + 제목",
+            "body": "2x3 editable metric cards",
+            "footer": "해석 주의 문장"
+          },
+          "reading_order": ["title", "six cards left to right", "warning callout", "footer"],
+          "alignment": "카드 6개 폭과 높이 동일",
+          "spacing": "그리드 간격 균등, 공식과 설명 사이 여백 유지",
+          "density": "medium-high",
+          "body_slide_consistency": "이후 KPI 카드에서도 같은 네이비 라벨과 회색 카드 구조 사용"
+        },
+        "design_constraints": {
+          "palette_rules": ["카드 배경 #E8E8E8 또는 #FFFFFF", "라벨 #000080", "경고 #FFFF00"],
+          "typography_rules": ["지표명 16-18pt bold", "공식 12-14pt monospace", "설명 13-15pt"],
+          "component_rules": ["카드는 editable shape", "수식 텍스트도 editable"],
+          "chart_rules": ["차트 없음"],
+          "table_rules": ["표 없음"],
+          "icon_rules": ["아이콘은 지표당 1개 이하, 없어도 됨"],
+          "infographic_rules": ["공식이 가장 잘 읽히게 카드 내부 위계를 유지"],
+          "diagram_rules": ["다이어그램 없음"],
+          "imagery_rules": ["이미지 사용 안 함"],
+          "anti_patterns_to_avoid": ["공식 이미지화", "작은 글씨로 모든 세부 설명 압축", "하차 데이터를 핵심 지표처럼 과장"]
+        },
+        "content_constraints": {
+          "must_include": ["노선당 승차 인원 = 전체 승차 인원 / 경유 노선 수", "출근 집중도", "퇴근 집중도", "승차 인원 중심 해석"],
+          "must_not_include": ["하차 인원이 완전한 실제 하차 수요라고 단정"],
+          "evidence_to_use": ["README.md", "src/preprocessing.py", "src/analysis.py"],
+          "evidence_to_avoid": ["데이터에 없는 지표"]
+        },
+        "generator_notes": {
+          "ppt_generation_note": "수식과 지표명은 각각 독립 텍스트박스로 두어 발표 직전 수정 가능하게 한다.",
+          "image_generation_note": "이미지로 만들 경우 공식 텍스트가 깨질 수 있으므로 편집형 PPT 제작 시 직접 텍스트로 재입력한다.",
+          "fallback_if_content_is_sparse": "승하차 불균형 지수 카드를 제거하고 5개 카드로 넓게 배치한다."
+        }
+      }
+    },
+    {
+      "slide_number": 4,
+      "slide_role": "evidence",
+      "page_family": "body",
+      "slide_title": "대구 버스 수요는 어디에 집중되는가",
+      "layout_family": "S20 Stacked KPI Ledger + S07 Horizontal Bar / editable dashboard chart slide",
+      "prompt": {
+        "objective": "전체 승차·하차 규모와 최다 이용 정류소를 KPI와 TOP 10 차트로 보여준다.",
+        "narrative_function": "전체 수요 현황을 수치로 각인시키는 대표 결과 슬라이드.",
+        "visual_intent": "상단 KPI 카드 행, 하단 큰 horizontal bar chart.",
+        "content_blocks": [
+          {
+            "block_type": "title",
+            "purpose": "수요 집중 주제 제시",
+            "content_instruction": "제목은 '대구 버스 수요는 어디에 집중되는가'로 입력한다.",
+            "placement_instruction": "상단 header.",
+            "style_instruction": "32-36pt bold"
+          },
+          {
+            "block_type": "metric_cards",
+            "purpose": "대표 수치 제시",
+            "content_instruction": "KPI 카드: 전체 승차 인원 12,665,766, 전체 하차 인원 4,668,381, 분석 대상 정류소 수 3,898, 최다 이용 정류소 약령시건너(동성로입구).",
+            "placement_instruction": "제목 아래 가로 4개 카드. editable shape + text로 구현한다.",
+            "style_instruction": "숫자는 monospace 28-34pt, 정류소명은 길면 18-22pt로 자동 맞춤."
+          },
+          {
+            "block_type": "chart",
+            "purpose": "정류소별 승차 인원 상위권 표시",
+            "content_instruction": "정류소별 승차 인원 TOP 10 horizontal bar chart. 약령시건너(동성로입구)를 강조한다.",
+            "placement_instruction": "본문 하단 65% 영역에 native PowerPoint bar chart로 배치한다.",
+            "style_instruction": "막대는 네이비/블루 계열, 수치 라벨은 천 단위 쉼표, 축 제목은 한국어."
+          },
+          {
+            "block_type": "source_note",
+            "purpose": "자료 근거 표시",
+            "content_instruction": "Source: outputs/processed/stop_summary.csv, analysis_summary.md",
+            "placement_instruction": "footer 오른쪽.",
+            "style_instruction": "9-10pt"
+          }
+        ],
+        "layout_instructions": {
+          "structure": "Top KPI row, large ranked chart below, footer source.",
+          "header_body_footer": {
+            "header": "04 / DEMAND OVERVIEW + 제목",
+            "body": "KPI cards + TOP 10 bar chart",
+            "footer": "하차 데이터는 태그 누락 가능성이 있어 참고 지표라는 note"
+          },
+          "reading_order": ["title", "KPI cards", "bar chart", "source note"],
+          "alignment": "KPI 카드 기준선과 차트 좌측 축 정렬",
+          "spacing": "차트와 카드 사이 충분한 여백",
+          "density": "medium",
+          "body_slide_consistency": "KPI 카드 디자인은 slide 3의 카드 스타일과 연결"
+        },
+        "design_constraints": {
+          "palette_rules": ["KPI 라벨 네이비", "TOP 정류소 막대 강조는 블루 또는 노란 테두리"],
+          "typography_rules": ["KPI 숫자는 큰 monospace", "차트 라벨 12-14pt"],
+          "component_rules": ["KPI는 editable shape", "차트는 native chart"],
+          "chart_rules": ["horizontal bar chart", "수치 라벨 천 단위 쉼표", "정류소명은 잘리지 않게 왼쪽 여백 확보"],
+          "table_rules": ["표 사용하지 않음"],
+          "icon_rules": ["KPI 아이콘 최소화"],
+          "infographic_rules": ["KPI와 차트가 같은 수요 흐름으로 읽히게 구성"],
+          "diagram_rules": ["다이어그램 없음"],
+          "imagery_rules": ["PNG 차트는 참고만 하고 최종은 native chart"],
+          "anti_patterns_to_avoid": ["차트 스크린샷 붙이기", "정류소명 잘림", "하차 수치를 핵심 결론처럼 과장"]
+        },
+        "content_constraints": {
+          "must_include": ["약령시건너(동성로입구) 111,855", "전체 승차 인원 12,665,766", "전체 하차 인원 4,668,381", "분석 대상 정류소 수 3,898"],
+          "must_not_include": ["가짜 TOP 10", "노선 부족 단정"],
+          "evidence_to_use": ["outputs/processed/analysis_summary.md", "outputs/processed/stop_summary.csv", "outputs/figures/01_stop_boardings_top10.png"],
+          "evidence_to_avoid": ["지도 캡처"]
+        },
+        "generator_notes": {
+          "ppt_generation_note": "bar chart는 stop_summary.csv에서 native chart로 생성한다. 이미지 그래프를 붙이지 않는다.",
+          "image_generation_note": "이미지 시안은 카드와 차트 배치 참고용이다.",
+          "fallback_if_content_is_sparse": "KPI 카드를 3개로 줄이고 차트를 더 크게 배치한다."
+        }
+      }
+    },
+    {
+      "slide_number": 5,
+      "slide_role": "comparison",
+      "page_family": "body",
+      "slide_title": "구·군별 이용량은 뚜렷하게 다르다",
+      "layout_family": "S08 Duo Compare / editable district comparison slide",
+      "prompt": {
+        "objective": "구·군별 승차 인원 차이를 막대 차트와 상위 지역 요약으로 설명한다.",
+        "narrative_function": "발표자 1 구간의 마지막 슬라이드로 지역 단위 수요 차이를 정리하고 발표자 2의 시간대 분석으로 연결한다.",
+        "visual_intent": "좌측 구·군별 막대 차트, 우측 상위 5개 구·군 랭킹 카드.",
+        "content_blocks": [
+          {
+            "block_type": "title",
+            "purpose": "지역별 비교 주제 제시",
+            "content_instruction": "제목은 '구·군별 이용량은 뚜렷하게 다르다'로 입력한다.",
+            "placement_instruction": "상단 header.",
+            "style_instruction": "32-36pt bold"
+          },
+          {
+            "block_type": "chart",
+            "purpose": "구·군별 승차 인원 비교",
+            "content_instruction": "구·군별 전체 승차 인원 bar chart. 상위 지역은 달서구 2,545,880, 북구 2,210,851, 동구 1,966,586, 수성구 1,917,336, 중구 1,294,756.",
+            "placement_instruction": "좌측 60% 영역에 native PowerPoint chart로 구현.",
+            "style_instruction": "막대는 네이비, 상위 막대에 수치 라벨. y축 또는 x축 한국어."
+          },
+          {
+            "block_type": "table",
+            "purpose": "상위 5개 구·군 수치 요약",
+            "content_instruction": "순위, 구·군, 승차 인원 컬럼의 native table.",
+            "placement_instruction": "우측 40% 영역에 compact table.",
+            "style_instruction": "천 단위 쉼표, 상위 1위 행은 노란 강조."
+          },
+          {
+            "block_type": "footer_note",
+            "purpose": "해석 주의",
+            "content_instruction": "지역별 차이는 인구, 상권, 환승 거점 등 추가 정보와 함께 해석해야 한다.",
+            "placement_instruction": "하단 footer.",
+            "style_instruction": "10-11pt"
+          }
+        ],
+        "layout_instructions": {
+          "structure": "Duo compare: chart left, top-5 table/card right.",
+          "header_body_footer": {
+            "header": "05 / DISTRICT VIEW + 제목",
+            "body": "구·군별 chart + top-5 table",
+            "footer": "발표자 1 구간 마무리 note"
+          },
+          "reading_order": ["title", "bar chart", "top 5 table", "footer"],
+          "alignment": "차트와 표의 상단선 정렬",
+          "spacing": "좌우 영역 사이 명확한 gutter",
+          "density": "medium",
+          "body_slide_consistency": "table header는 slide 9, 12, 13의 표 스타일과 동일"
+        },
+        "design_constraints": {
+          "palette_rules": ["네이비 막대", "상위 1위 노란 강조", "표 헤더 네이비"],
+          "typography_rules": ["표 본문 12-14pt", "차트 축 12pt 이상"],
+          "component_rules": ["표는 native table", "차트는 native chart"],
+          "chart_rules": ["district labels legible", "avoid cluttered legends"],
+          "table_rules": ["한국어 컬럼명", "천 단위 쉼표"],
+          "icon_rules": ["지역 아이콘 사용하지 않아도 됨"],
+          "infographic_rules": ["랭킹 구조가 즉시 보이게"],
+          "diagram_rules": ["다이어그램 없음"],
+          "imagery_rules": ["이미지 사용 안 함"],
+          "anti_patterns_to_avoid": ["너무 많은 구·군 설명문", "차트 PNG 붙이기"]
+        },
+        "content_constraints": {
+          "must_include": ["달서구 2,545,880", "북구 2,210,851", "동구 1,966,586", "수성구 1,917,336", "중구 1,294,756"],
+          "must_not_include": ["지역 차이의 원인을 단정"],
+          "evidence_to_use": ["outputs/processed/analysis_summary.md", "outputs/processed/stop_summary.csv", "outputs/figures/02_district_boardings.png"],
+          "evidence_to_avoid": ["정류소별 상세 표 전체"]
+        },
+        "generator_notes": {
+          "ppt_generation_note": "chart와 table 모두 editable object로 구현한다.",
+          "image_generation_note": "이미지는 최종 사용하지 말고 레이아웃 시안으로만 본다.",
+          "fallback_if_content_is_sparse": "top-5 table 대신 5개 KPI mini card로 대체한다."
+        }
+      }
+    },
+    {
+      "slide_number": 6,
+      "slide_role": "evidence",
+      "page_family": "body",
+      "slide_title": "시간대별 피크는 16시에 가장 뚜렷하다",
+      "layout_family": "S08 Duo Compare / editable time-series chart slide",
+      "prompt": {
+        "objective": "시간대별 승차 인원과 승차·하차 비교를 통해 전체 피크 시간대를 설명한다.",
+        "narrative_function": "발표자 2 시작. 수요가 언제 몰리는지 보여준 뒤 정류소 유형 분류로 연결한다.",
+        "visual_intent": "두 개의 line chart가 좌우로 놓이고, 16시 피크 annotation이 강조된다.",
+        "content_blocks": [
+          {
+            "block_type": "title",
+            "purpose": "시간대 분석 주제 제시",
+            "content_instruction": "제목은 '시간대별 피크는 16시에 가장 뚜렷하다'로 입력한다.",
+            "placement_instruction": "상단 header.",
+            "style_instruction": "32-36pt bold"
+          },
+          {
+            "block_type": "chart",
+            "purpose": "시간대별 전체 승차 흐름",
+            "content_instruction": "시간대별 전체 승차 인원 line chart. 16시, 1,062,763명을 callout으로 표시한다.",
+            "placement_instruction": "좌측 50% 영역 native line chart.",
+            "style_instruction": "네이비 선, 원형 마커, 16시 지점 노란 callout."
+          },
+          {
+            "block_type": "chart",
+            "purpose": "승차와 하차 비교",
+            "content_instruction": "시간대별 승차·하차 비교 line chart. 승차는 네이비, 하차는 초록으로 표시한다.",
+            "placement_instruction": "우측 50% 영역 native line chart.",
+            "style_instruction": "두 series만 표시, legend는 상단 작게."
+          },
+          {
+            "block_type": "footer_note",
+            "purpose": "정류소 유형과 연결",
+            "content_instruction": "시간대별 승차 비율은 출근형·퇴근형·생활형 분류의 입력값이다.",
+            "placement_instruction": "하단 footer.",
+            "style_instruction": "10-11pt"
+          }
+        ],
+        "layout_instructions": {
+          "structure": "Two chart comparison with one peak callout.",
+          "header_body_footer": {
+            "header": "06 / TIME FLOW + 제목",
+            "body": "좌측 승차 line chart, 우측 승차·하차 comparison chart",
+            "footer": "발표자 2 구간 표시와 유형 분류 연결 문장"
+          },
+          "reading_order": ["title", "left chart", "right chart", "peak callout", "footer"],
+          "alignment": "두 차트의 plot area 높이를 맞춘다",
+          "spacing": "차트 사이 gutter 충분히 확보",
+          "density": "medium",
+          "body_slide_consistency": "chart annotation은 노란 callout 규칙 유지"
+        },
+        "design_constraints": {
+          "palette_rules": ["승차 #000080", "하차 #00AA00", "피크 강조 #FFFF00"],
+          "typography_rules": ["축 라벨 12pt 이상", "callout 14-16pt"],
+          "component_rules": ["callout은 editable shape + text"],
+          "chart_rules": ["native line chart", "x축 시간은 정수 시각", "gridline은 얇게"],
+          "table_rules": ["표 없음"],
+          "icon_rules": ["시계 아이콘 1개 이하"],
+          "infographic_rules": ["16시 피크가 가장 먼저 보이게"],
+          "diagram_rules": ["다이어그램 없음"],
+          "imagery_rules": ["PNG line chart는 참고용만 사용"],
+          "anti_patterns_to_avoid": ["마커 과다", "모든 시간대 수치 라벨 표시", "작은 legend"]
+        },
+        "content_constraints": {
+          "must_include": ["16시", "1,062,763", "승차·하차 비교", "시간대별 승차"],
+          "must_not_include": ["16시 혼잡 원인 단정"],
+          "evidence_to_use": ["outputs/processed/hourly_summary.csv", "outputs/processed/analysis_summary.md", "outputs/figures/03_hourly_boardings.png"],
+          "evidence_to_avoid": ["개별 정류소 전체 raw rows"]
+        },
+        "generator_notes": {
+          "ppt_generation_note": "두 line chart는 PowerPoint native chart로 구현한다.",
+          "image_generation_note": "이미지 시안은 차트 배치와 callout 위치 확인용이다.",
+          "fallback_if_content_is_sparse": "승차·하차 비교 chart를 작게 하고 16시 피크 KPI 카드를 추가한다."
+        }
+      }
+    },
+    {
+      "slide_number": 7,
+      "slide_role": "insight",
+      "page_family": "body",
+      "slide_title": "정류소는 이용 시간대에 따라 다른 유형으로 나뉜다",
+      "layout_family": "S21 Tech Spec Sheet / editable criteria table slide",
+      "prompt": {
+        "objective": "정류소 유형 분류가 어떤 기준으로 계산되었는지 설명하고 유형별 분포를 보여준다.",
+        "narrative_function": "시간대 차트를 정류소 유형이라는 해석 체계로 바꾸는 슬라이드.",
+        "visual_intent": "좌측 유형별 개수 chart, 우측 분류 기준 표.",
+        "content_blocks": [
+          {
+            "block_type": "title",
+            "purpose": "분류 기준 주제 제시",
+            "content_instruction": "제목은 '정류소는 이용 시간대에 따라 다른 유형으로 나뉜다'로 입력한다.",
+            "placement_instruction": "상단 header.",
+            "style_instruction": "30-34pt bold, 2줄 이내"
+          },
+          {
+            "block_type": "chart",
+            "purpose": "유형별 분포 표시",
+            "content_instruction": "정류소 유형별 개수 chart. 유형: 저이용형, 출퇴근형, 출근형, 퇴근형, 생활형, 분류 불가가 있으면 포함.",
+            "placement_instruction": "좌측 40% 영역 native bar or donut chart.",
+            "style_instruction": "유형별 색은 5개 이하로 제한, legend는 명확하게."
+          },
+          {
+            "block_type": "table",
+            "purpose": "분류 기준 설명",
+            "content_instruction": "native table 컬럼: 정류소 유형, 분류 기준, 해석. 저이용형은 전체 승차 인원 하위 25% 이하, 출퇴근형은 출근·퇴근 집중도 모두 25% 이상, 출근형은 출근 집중도 25% 이상이고 퇴근보다 큼, 퇴근형은 퇴근 집중도 25% 이상이고 출근보다 큼, 생활형은 나머지 조건.",
+            "placement_instruction": "우측 60% 영역 native table.",
+            "style_instruction": "표 헤더 네이비, 유형명은 작은 badge처럼 보이되 editable text."
+          },
+          {
+            "block_type": "callout",
+            "purpose": "계산식 안내",
+            "content_instruction": "집중도 = 해당 시간대 승차 인원 / 전체 승차 인원 × 100. 출근 시간은 7시부터 9시까지, 퇴근 시간은 17시부터 20시까지.",
+            "placement_instruction": "표 아래 노란 callout.",
+            "style_instruction": "15-16pt, 수식은 monospace"
+          }
+        ],
+        "layout_instructions": {
+          "structure": "Criteria sheet: chart left, criteria table right, formula callout bottom.",
+          "header_body_footer": {
+            "header": "07 / STOP TYPE RULES + 제목",
+            "body": "유형별 chart + 기준 table",
+            "footer": "저이용형은 다른 집중 조건보다 먼저 적용된다는 note"
+          },
+          "reading_order": ["title", "type count chart", "criteria table", "formula callout", "footer"],
+          "alignment": "표와 차트 상단 정렬",
+          "spacing": "표 행 높이는 균등하되 텍스트가 잘리지 않게",
+          "density": "high but readable",
+          "body_slide_consistency": "표 스타일은 후보 표와 한계 표에도 반복"
+        },
+        "design_constraints": {
+          "palette_rules": ["표 헤더 #000080", "계산식 callout #FFFF00", "생활형은 중립색"],
+          "typography_rules": ["표 본문 11-13pt", "callout 15pt 이상"],
+          "component_rules": ["표는 native table", "badge는 editable shape 또는 table cell fill"],
+          "chart_rules": ["유형별 count chart는 native chart"],
+          "table_rules": ["raw column name 금지", "기준 문장은 짧게"],
+          "icon_rules": ["유형별 아이콘은 쓰지 않아도 됨"],
+          "infographic_rules": ["기준표가 핵심이므로 장식 최소화"],
+          "diagram_rules": ["다이어그램 없음"],
+          "imagery_rules": ["이미지 사용 안 함"],
+          "anti_patterns_to_avoid": ["기준을 문단으로 길게 나열", "7~9처럼 Markdown 취소선 유발 표현", "분류가 임의라는 인상"]
+        },
+        "content_constraints": {
+          "must_include": ["하위 25%", "25% 이상", "7시부터 9시까지", "17시부터 20시까지", "집중도 공식"],
+          "must_not_include": ["K-means 기준과 직접 기준 혼동"],
+          "evidence_to_use": ["src/analysis.py", "outputs/processed/stop_summary.csv", "outputs/figures/07_stop_type_count.png"],
+          "evidence_to_avoid": ["K-means 세부 표"]
+        },
+        "generator_notes": {
+          "ppt_generation_note": "표는 반드시 native table로 작성해 발표자가 기준 문구를 수정할 수 있게 한다.",
+          "image_generation_note": "이미지 생성 시 표 텍스트가 흐려질 수 있으므로 최종 PPT에는 직접 표를 만든다.",
+          "fallback_if_content_is_sparse": "chart를 제거하고 기준표를 더 크게 배치한다."
+        }
+      }
+    },
+    {
+      "slide_number": 8,
+      "slide_role": "insight",
+      "page_family": "body",
+      "slide_title": "노선 수가 많다고 항상 이용객이 많은 것은 아니다",
+      "layout_family": "S15 Matrix + Hero Stat / editable correlation scatter slide",
+      "prompt": {
+        "objective": "경유 노선 수와 승차 인원의 관계를 산점도와 상관계수 카드로 설명한다.",
+        "narrative_function": "수요·공급 불균형 후보 선정의 두 축을 설명하는 근거 슬라이드.",
+        "visual_intent": "큰 scatter chart와 우측 상관계수 해석 카드.",
+        "content_blocks": [
+          {
+            "block_type": "title",
+            "purpose": "상관관계 주제 제시",
+            "content_instruction": "제목은 '노선 수가 많다고 항상 이용객이 많은 것은 아니다'로 입력한다.",
+            "placement_instruction": "상단 header.",
+            "style_instruction": "30-34pt bold"
+          },
+          {
+            "block_type": "chart",
+            "purpose": "경유 노선 수와 승차 인원 관계 표시",
+            "content_instruction": "x축 경유 노선 수, y축 승차 인원 scatter chart. 평균 또는 중앙값 기준선을 추가하고 수요 높고 노선 수 적은 영역을 연한 노란 배경으로 표시한다.",
+            "placement_instruction": "좌측 65% 영역 native scatter chart.",
+            "style_instruction": "점은 정류소 유형별 색상 또는 단일 네이비. 후보 영역은 editable translucent shape로 표시."
+          },
+          {
+            "block_type": "metric_cards",
+            "purpose": "상관계수 해석",
+            "content_instruction": "Pearson 0.56, 보통 수준의 선형관계. Spearman이 사용 가능하면 함께 표시. 상관관계는 인과관계를 의미하지 않는다는 문장 포함.",
+            "placement_instruction": "우측 35% 영역 2개 해석 카드.",
+            "style_instruction": "숫자는 36pt monospace, 해석 문장은 14-16pt."
+          },
+          {
+            "block_type": "footer_note",
+            "purpose": "인과관계 금지",
+            "content_instruction": "상관관계는 두 변수가 함께 움직이는 정도를 보여줄 뿐 노선 수가 이용객을 직접 증가시킨다는 뜻은 아니다.",
+            "placement_instruction": "하단 footer.",
+            "style_instruction": "10-11pt"
+          }
+        ],
+        "layout_instructions": {
+          "structure": "Hero scatter chart left, correlation interpretation rail right.",
+          "header_body_footer": {
+            "header": "08 / ROUTE SUPPLY RELATIONSHIP + 제목",
+            "body": "scatter chart + correlation cards",
+            "footer": "인과관계 금지 note"
+          },
+          "reading_order": ["title", "scatter chart", "candidate region", "correlation cards", "footer"],
+          "alignment": "우측 카드 두 개 폭 동일, 차트와 카드 상단선 정렬",
+          "spacing": "차트 점과 annotation이 겹치지 않게",
+          "density": "medium",
+          "body_slide_consistency": "상관계수 카드와 이후 날씨 상관계수 카드의 스타일 통일"
+        },
+        "design_constraints": {
+          "palette_rules": ["scatter point #000080", "candidate region #FFFF00 with low opacity", "risk text #FF0000 only for warning"],
+          "typography_rules": ["상관계수 숫자 34-40pt", "축 라벨 12pt 이상"],
+          "component_rules": ["후보 영역 음영은 editable shape", "상관계수 카드는 editable shape"],
+          "chart_rules": ["native scatter chart", "axis labels Korean", "avoid decorative fake regression unless computed"],
+          "table_rules": ["표 없음"],
+          "icon_rules": ["상관관계 아이콘 1개 이하"],
+          "infographic_rules": ["상관계수 카드가 차트 해석을 보완"],
+          "diagram_rules": ["다이어그램 없음"],
+          "imagery_rules": ["차트 PNG 사용 금지"],
+          "anti_patterns_to_avoid": ["인과 표현", "과도한 trendline", "정류소 라벨 전부 표시"]
+        },
+        "content_constraints": {
+          "must_include": ["Pearson 0.56", "보통 수준", "인과관계 아님", "경유 노선 수", "승차 인원"],
+          "must_not_include": ["노선 수가 많아서 이용객이 늘었다는 표현"],
+          "evidence_to_use": ["outputs/processed/analysis_summary.md", "outputs/processed/stop_summary.csv", "outputs/figures/05_route_count_boardings_scatter.png"],
+          "evidence_to_avoid": ["날씨 상관계수"]
+        },
+        "generator_notes": {
+          "ppt_generation_note": "PowerPoint scatter chart로 구현하고 후보 영역은 반투명 shape로 덧댄다.",
+          "image_generation_note": "이미지 시안에서는 점 개수보다 후보 영역과 해석 카드 배치를 확인한다.",
+          "fallback_if_content_is_sparse": "scatter chart를 크게 유지하고 Spearman 카드를 숨긴다."
+        }
+      }
+    },
+    {
+      "slide_number": 9,
+      "slide_role": "evidence",
+      "page_family": "body",
+      "slide_title": "수요 대비 노선 공급이 부족할 가능성이 있는 후보",
+      "layout_family": "S21 Tech Spec Sheet + S20 KPI Ledger / editable candidate table slide",
+      "prompt": {
+        "objective": "프로젝트 핵심 결과인 추가 검토 후보 정류소를 조건 카드와 표로 제시한다.",
+        "narrative_function": "불균형 분석의 결론을 가장 구체적으로 보여주는 슬라이드.",
+        "visual_intent": "상단 3조건 카드, 하단 후보 정류소 표.",
+        "content_blocks": [
+          {
+            "block_type": "title",
+            "purpose": "핵심 후보 주제 제시",
+            "content_instruction": "제목은 '수요 대비 노선 공급이 부족할 가능성이 있는 후보'로 입력한다.",
+            "placement_instruction": "상단 header.",
+            "style_instruction": "30-34pt bold, 길면 2줄 허용"
+          },
+          {
+            "block_type": "metric_cards",
+            "purpose": "후보 선정 조건 제시",
+            "content_instruction": "조건 카드 3개: 전체 승차 인원 상위 기준, 경유 노선 수 하위 기준, 노선당 승차 인원 상위 기준. 정확한 quantile 값은 앱 필터 기준에 따라 바뀔 수 있음을 표시한다.",
+            "placement_instruction": "상단 body에 3개 카드 가로 배치.",
+            "style_instruction": "카드 라벨 네이비, 조건식은 monospace, 경고 문구는 작은 노란 태그."
+          },
+          {
+            "block_type": "table",
+            "purpose": "후보 정류소 목록 제시",
+            "content_instruction": "native table 컬럼: 정류소명, 구·군, 승차 인원, 하차 인원, 경유 노선 수, 노선당 승차 인원, 출근 집중도, 퇴근 집중도, 유형. 대표 후보: 옥포LH천년나무3단지앞, 불로우방아파트앞, 대덕맨션앞, 영대병원역, 진아리채앞.",
+            "placement_instruction": "하단 65% 영역 native table. 행은 5~8개만 표시한다.",
+            "style_instruction": "수치는 천 단위 쉼표, 집중도는 %, 유형은 컬러 태그. 표는 raw CSV 느낌 금지."
+          },
+          {
+            "block_type": "callout",
+            "purpose": "해석 주의",
+            "content_instruction": "이 결과는 노선 부족 확정이 아니라 추가 검토가 필요한 후보 정류소 목록이다.",
+            "placement_instruction": "표 위 또는 footer 바로 위 노란 callout.",
+            "style_instruction": "노란 배경, 검정 글씨, 15-16pt"
+          }
+        ],
+        "layout_instructions": {
+          "structure": "Three filter cards on top, candidate table below, caution callout.",
+          "header_body_footer": {
+            "header": "09 / SUPPLY GAP CANDIDATES + 제목",
+            "body": "조건 카드 + 후보 native table",
+            "footer": "배차 간격, 차량 크기, 실제 혼잡도 데이터 부재 note"
+          },
+          "reading_order": ["title", "filter cards", "candidate table", "caution callout", "footer"],
+          "alignment": "조건 카드 3개는 동일 폭, 표는 슬라이드 좌우 안전 여백 안에 맞춤",
+          "spacing": "표 행 높이 충분히 확보",
+          "density": "high but readable",
+          "body_slide_consistency": "표 스타일은 slide 7, 12, 13과 동일"
+        },
+        "design_constraints": {
+          "palette_rules": ["표 헤더 #000080", "후보 강조 #FFFF00", "위험 단정 경고는 #FF0000 소량"],
+          "typography_rules": ["표 본문 10.5-12.5pt", "정류소명은 줄바꿈 허용"],
+          "component_rules": ["표는 native table", "조건 카드는 editable shape"],
+          "chart_rules": ["이 슬라이드에는 보조 차트보다 표 우선"],
+          "table_rules": ["raw CSV 컬럼명 금지", "너무 많은 열이면 집중도 2개 중 하나를 줄일 수 있음"],
+          "icon_rules": ["필터 아이콘 1개 이하"],
+          "infographic_rules": ["3조건이 후보 표의 기준임을 명확히 연결"],
+          "diagram_rules": ["다이어그램 없음"],
+          "imagery_rules": ["이미지 사용 안 함"],
+          "anti_patterns_to_avoid": ["후보를 확정 노선 부족으로 표현", "전체 CSV 표를 작게 붙이기", "표 텍스트 9pt 이하"]
+        },
+        "content_constraints": {
+          "must_include": ["추가 검토 후보", "옥포LH천년나무3단지앞", "불로우방아파트앞", "영대병원역", "노선당 승차 인원"],
+          "must_not_include": ["노선 부족 확정", "혼잡도 확정"],
+          "evidence_to_use": ["outputs/processed/imbalance_candidates.csv", "outputs/processed/analysis_summary.md", "outputs/figures/06_boardings_per_route_top10.png"],
+          "evidence_to_avoid": ["날씨 분석 표"]
+        },
+        "generator_notes": {
+          "ppt_generation_note": "후보 표는 PowerPoint native table로 구현해 정류소명과 수치를 직접 수정 가능하게 한다.",
+          "image_generation_note": "이미지 생성 시 표 텍스트는 깨지기 쉬우므로 layout reference only.",
+          "fallback_if_content_is_sparse": "후보 표를 5행으로 줄이고 우측에 대표 후보 detail card를 추가한다."
+        }
+      }
+    },
+    {
+      "slide_number": 10,
+      "slide_role": "evidence",
+      "page_family": "body",
+      "slide_title": "지도에서 보면 후보 정류소의 공간적 분포가 보인다",
+      "layout_family": "S22 Image Hero + S08 Tightened Map Component / editable map callout slide",
+      "prompt": {
+        "objective": "정류소 위치와 후보 정류소의 공간적 맥락을 지도 화면으로 설명한다.",
+        "narrative_function": "표와 산점도에서 본 후보를 실제 공간 위에 놓아 발표자 2 구간을 마무리한다.",
+        "visual_intent": "큰 지도 이미지 위에 2~4개 editable callout이 배치된 map-led slide.",
+        "content_blocks": [
+          {
+            "block_type": "title",
+            "purpose": "지도 분석 주제 제시",
+            "content_instruction": "제목은 '지도에서 보면 후보 정류소의 공간적 분포가 보인다'로 입력한다.",
+            "placement_instruction": "상단 header.",
+            "style_instruction": "30-34pt bold"
+          },
+          {
+            "block_type": "image",
+            "purpose": "지도 기반 분포 표시",
+            "content_instruction": "Streamlit 지도 분석 탭 또는 outputs/processed/app_screen.png를 사용한다. 지도 이미지는 유일하게 허용되는 큰 이미지 중 하나다.",
+            "placement_instruction": "본문 70% 이상을 차지하는 image hero 영역. crop은 대구권 정류소 분포가 보이게.",
+            "style_instruction": "이미지 위에 텍스트를 직접 굽지 말고 editable callout을 별도로 얹는다."
+          },
+          {
+            "block_type": "callout",
+            "purpose": "대표 후보 위치 설명",
+            "content_instruction": "대표 후보 2~4개를 선택해 정류소명, 구·군, 노선당 승차 인원 또는 유형을 짧게 표시한다.",
+            "placement_instruction": "지도 위 또는 오른쪽 rail에 editable callout shapes.",
+            "style_instruction": "네이비 테두리, 노란 번호 태그. callout 선은 editable connector."
+          },
+          {
+            "block_type": "footer_note",
+            "purpose": "이미지 사용 기준 설명",
+            "content_instruction": "지도 이미지는 위치 맥락을 위한 캡처이며, 설명 문구와 callout은 편집 가능한 객체로 구성한다.",
+            "placement_instruction": "footer.",
+            "style_instruction": "10-11pt"
+          }
+        ],
+        "layout_instructions": {
+          "structure": "Large map image with editable callout overlay and footer note.",
+          "header_body_footer": {
+            "header": "10 / SPATIAL VIEW + 제목",
+            "body": "map image + callout annotations",
+            "footer": "발표자 2 구간 마무리와 이미지 사용 note"
+          },
+          "reading_order": ["title", "map image", "numbered callouts", "footer"],
+          "alignment": "지도는 안전 여백 안에서 최대 크기, callout은 지도 주요 지점을 가리지 않게",
+          "spacing": "callout 4개 이하",
+          "density": "medium",
+          "body_slide_consistency": "이미지 위 텍스트는 모두 editable overlay로 처리"
+        },
+        "design_constraints": {
+          "palette_rules": ["callout 라벨 #000080", "번호 태그 #FFFF00"],
+          "typography_rules": ["callout title 14-16pt", "callout detail 11-13pt"],
+          "component_rules": ["지도는 image", "callout은 editable shape/text/connector"],
+          "chart_rules": ["차트 없음"],
+          "table_rules": ["표 없음"],
+          "icon_rules": ["버스 정류장 아이콘은 callout에만 작게 사용 가능"],
+          "infographic_rules": ["지도 자체가 중심 시각화"],
+          "diagram_rules": ["callout connector는 얇고 명확하게"],
+          "imagery_rules": ["지도/Streamlit 캡처만 이미지 허용", "설명 텍스트를 이미지 안에 굽지 않음"],
+          "anti_patterns_to_avoid": ["너무 많은 정류소 callout", "지도 위에 작은 표 붙이기", "지도 스크린샷 전체를 해석 없이 배치"]
+        },
+        "content_constraints": {
+          "must_include": ["지도", "후보 정류소 callout", "공간적 맥락"],
+          "must_not_include": ["지도만 있고 설명 없는 슬라이드", "이미지 안 텍스트에만 의존"],
+          "evidence_to_use": ["outputs/processed/app_screen.png", "outputs/processed/stop_summary.csv", "outputs/processed/imbalance_candidates.csv"],
+          "evidence_to_avoid": ["날씨 산점도"]
+        },
+        "generator_notes": {
+          "ppt_generation_note": "지도는 image로 삽입하되 모든 라벨, 화살표, 설명은 editable objects.",
+          "image_generation_note": "이미지 시안에서는 map crop과 callout 위치만 확인한다.",
+          "fallback_if_content_is_sparse": "지도 캡처가 부족하면 지도 대신 후보 정류소 구·군 분포 카드 3개로 대체한다."
+        }
+      }
+    },
+    {
+      "slide_number": 11,
+      "slide_role": "evidence",
+      "page_family": "body",
+      "slide_title": "월별 데이터로 이용량 변화 방향을 확인한다",
+      "layout_family": "S08 Duo Compare + S20 KPI Ledger / editable monthly trend slide",
+      "prompt": {
+        "objective": "월별 장기 데이터로 전체 이용량 흐름과 2025년 대비 2026년 전년 동월 증감을 설명한다.",
+        "narrative_function": "발표자 3 시작. 단기 시간대 분석에서 장기 월별 추세로 관점을 확장한다.",
+        "visual_intent": "월별 line chart와 2025 vs 2026 비교 table/bar chart를 함께 배치.",
+        "content_blocks": [
+          {
+            "block_type": "title",
+            "purpose": "장기 추세 주제 제시",
+            "content_instruction": "제목은 '월별 데이터로 이용량 변화 방향을 확인한다'로 입력한다.",
+            "placement_instruction": "상단 header.",
+            "style_instruction": "32-36pt bold"
+          },
+          {
+            "block_type": "chart",
+            "purpose": "월별 이용량 흐름 표시",
+            "content_instruction": "월별 승차 인원 line chart. 데이터 범위가 2020년 1월부터 2026년 4월까지라면 해당 기간을 기준으로 표시한다.",
+            "placement_instruction": "상단 또는 좌측 큰 native line chart.",
+            "style_instruction": "네이비 선, 연도 구분은 x축 또는 약한 vertical marker."
+          },
+          {
+            "block_type": "table",
+            "purpose": "2025년 대비 2026년 월별 증감 요약",
+            "content_instruction": "native table 컬럼: 월, 2025년 승차 인원, 2026년 승차 인원, 증감 인원, 증감률. 2026년 4월까지 비교 가능한 월만 사용한다.",
+            "placement_instruction": "오른쪽 또는 하단 compact native table.",
+            "style_instruction": "증가는 초록, 감소는 빨강. 천 단위 쉼표와 % 표시."
+          },
+          {
+            "block_type": "footer_note",
+            "purpose": "비교 기준 명시",
+            "content_instruction": "증감률은 비교 가능한 전년 동월 기준이며, 과거 임의 연도 비교가 아니라 2025년 대비 2026년을 중심으로 해석한다.",
+            "placement_instruction": "footer.",
+            "style_instruction": "10-11pt"
+          }
+        ],
+        "layout_instructions": {
+          "structure": "Monthly trend chart + YoY comparison table.",
+          "header_body_footer": {
+            "header": "11 / LONGITUDINAL VIEW + 제목",
+            "body": "line chart + 2025 vs 2026 table",
+            "footer": "비교 기준 note"
+          },
+          "reading_order": ["title", "monthly line chart", "YoY table", "footer"],
+          "alignment": "chart and table top aligned",
+          "spacing": "표와 차트가 서로 침범하지 않게",
+          "density": "medium-high",
+          "body_slide_consistency": "증감 색상 규칙은 이후 표에서도 동일하게 사용"
+        },
+        "design_constraints": {
+          "palette_rules": ["기준선 #000080", "증가 #00AA00", "감소 #FF0000"],
+          "typography_rules": ["표 본문 11-13pt", "차트 라벨 12pt 이상"],
+          "component_rules": ["line chart native", "YoY table native"],
+          "chart_rules": ["월별 x축 라벨은 과밀하면 연도 단위로 간소화"],
+          "table_rules": ["2025년 대비 2026년 중심", "증감률은 %"],
+          "icon_rules": ["추세 화살표 1개 이하"],
+          "infographic_rules": ["장기 흐름과 비교 표가 연결되게"],
+          "diagram_rules": ["다이어그램 없음"],
+          "imagery_rules": ["PNG 추세 그래프는 참고용"],
+          "anti_patterns_to_avoid": ["2021년 등 발표 목적과 무관한 과거 증감 TOP 중심", "가짜 최신 월"]
+        },
+        "content_constraints": {
+          "must_include": ["2025년 대비 2026년", "전년 동월", "월별 승차 인원", "2026년 4월까지 가능 시 표시"],
+          "must_not_include": ["2021년 증감률 TOP을 핵심 결론으로 강조"],
+          "evidence_to_use": ["outputs/processed/monthly_summary.csv", "outputs/figures/09_monthly_trend.png", "outputs/figures/10_yoy_growth_top10.png"],
+          "evidence_to_avoid": ["정류소별 모든 월별 raw table"]
+        },
+        "generator_notes": {
+          "ppt_generation_note": "월별 chart와 비교 table 모두 editable object로 만든다.",
+          "image_generation_note": "이미지 시안에서 표 숫자는 정확히 렌더링하지 말고 영역과 위계만 확인한다.",
+          "fallback_if_content_is_sparse": "YoY table을 4개월만 표시하고 line chart를 더 크게 배치한다."
+        }
+      }
+    },
+    {
+      "slide_number": 12,
+      "slide_role": "insight",
+      "page_family": "body",
+      "slide_title": "날씨와 이용량의 관계는 뚜렷하기보다 약한 경향이다",
+      "layout_family": "S15 Matrix + Hero Stat / editable weather correlation matrix",
+      "prompt": {
+        "objective": "월별 날씨 변수와 버스 이용량의 상관관계를 표와 산점도로 설명하되 인과관계 표현을 피한다.",
+        "narrative_function": "외부 요인 분석을 통해 프로젝트가 수요 변화의 보조 요인을 검토했음을 보여준다.",
+        "visual_intent": "상관계수 요약 table과 기온·강수량 산점도 2개.",
+        "content_blocks": [
+          {
+            "block_type": "title",
+            "purpose": "날씨 분석 주제 제시",
+            "content_instruction": "제목은 '날씨와 이용량의 관계는 뚜렷하기보다 약한 경향이다'로 입력한다.",
+            "placement_instruction": "상단 header.",
+            "style_instruction": "30-34pt bold"
+          },
+          {
+            "block_type": "table",
+            "purpose": "상관계수 요약",
+            "content_instruction": "native table 컬럼: 날씨 변수, 관측 월 수, Pearson, Spearman, 해석. 관측 월 수 76. 월평균 기온 Pearson 0.30, 월 누적 강수량 Pearson 0.18, 월평균 풍속 Pearson -0.35 등 대표값을 포함한다.",
+            "placement_instruction": "좌측 또는 상단 55% 영역 native table.",
+            "style_instruction": "상관계수는 소수 둘째 자리, 강도 badge는 '약함', '다소 약함'."
+          },
+          {
+            "block_type": "chart",
+            "purpose": "기온과 이용량 관계 표시",
+            "content_instruction": "월평균 기온과 월별 버스 승차 인원 scatter chart.",
+            "placement_instruction": "우측 상단 mini native scatter chart.",
+            "style_instruction": "네이비 점, trendline은 선택 사항이며 인과처럼 보이지 않게 연하게."
+          },
+          {
+            "block_type": "chart",
+            "purpose": "강수량과 이용량 관계 표시",
+            "content_instruction": "월 누적 강수량과 월별 버스 승차 인원 scatter chart.",
+            "placement_instruction": "우측 하단 mini native scatter chart.",
+            "style_instruction": "파란 점, 축 라벨 한국어."
+          },
+          {
+            "block_type": "callout",
+            "purpose": "해석 주의",
+            "content_instruction": "강수량이 높은 달에 이용량이 감소했다고 단정하지 않고, 높은 달에 이용량이 함께 움직이는 경향이 관찰되었다고 표현한다.",
+            "placement_instruction": "footer 위 노란 callout.",
+            "style_instruction": "15pt, 핵심 문장 1줄"
+          }
+        ],
+        "layout_instructions": {
+          "structure": "Correlation table + two small scatter charts + caution callout.",
+          "header_body_footer": {
+            "header": "12 / WEATHER RELATIONSHIP + 제목",
+            "body": "상관계수 table + 기온/강수량 scatter charts",
+            "footer": "월별 자료 한계와 인과관계 금지 note"
+          },
+          "reading_order": ["title", "correlation table", "temperature scatter", "precipitation scatter", "callout"],
+          "alignment": "table and chart column top aligned",
+          "spacing": "scatter chart 두 개는 같은 크기",
+          "density": "high but readable",
+          "body_slide_consistency": "상관계수 카드/표는 slide 8의 correlation style과 연결"
+        },
+        "design_constraints": {
+          "palette_rules": ["상관계수 양수 #000080", "음수 #FF0000", "주의 callout #FFFF00"],
+          "typography_rules": ["표 본문 10.5-12pt", "차트 라벨 11-12pt"],
+          "component_rules": ["표 native", "scatter chart native"],
+          "chart_rules": ["trendline은 얇고 설명은 경향으로 제한"],
+          "table_rules": ["해석 문장은 짧게", "관측 월 수 76 표시"],
+          "icon_rules": ["기온과 강수 아이콘 각 1개 이하"],
+          "infographic_rules": ["상관 강도 badge는 표 안에서만 사용"],
+          "diagram_rules": ["다이어그램 없음"],
+          "imagery_rules": ["이미지 사용 안 함"],
+          "anti_patterns_to_avoid": ["비 때문에 이용객 감소 같은 인과 문장", "표가 너무 작은 raw dataframe처럼 보임", "상관계수 자릿수 과다"]
+        },
+        "content_constraints": {
+          "must_include": ["관측 월 수 76", "Pearson", "Spearman", "인과관계 아님", "월별 자료 한계"],
+          "must_not_include": ["날씨가 버스 이용량을 직접 변화시켰다는 단정"],
+          "evidence_to_use": ["outputs/processed/weather_correlation_results.csv", "outputs/processed/bus_weather_monthly_merged.csv"],
+          "evidence_to_avoid": ["일별 강수 즉각 영향 주장"]
+        },
+        "generator_notes": {
+          "ppt_generation_note": "상관계수 table과 scatter chart는 모두 editable object로 구현한다.",
+          "image_generation_note": "이미지 시안에서는 table text가 깨질 수 있어 구조만 참고한다.",
+          "fallback_if_content_is_sparse": "scatter chart 2개를 제거하고 상관계수 table + 해석 callout 중심으로 구성한다."
+        }
+      }
+    },
+    {
+      "slide_number": 13,
+      "slide_role": "comparison",
+      "page_family": "body",
+      "slide_title": "분석 한계는 추가 데이터로 줄일 수 있다",
+      "layout_family": "S21 Tech Spec Sheet / editable limitation-and-mitigation matrix",
+      "prompt": {
+        "objective": "현재 분석의 한계와 이를 줄이기 위한 추가 데이터·방법을 한 표로 정리한다.",
+        "narrative_function": "분석 결과를 과신하지 않고 보완 방향을 제시하는 균형 잡힌 슬라이드.",
+        "visual_intent": "좌측 한계, 우측 보완 방법의 2열 matrix.",
+        "content_blocks": [
+          {
+            "block_type": "title",
+            "purpose": "한계와 보완 주제 제시",
+            "content_instruction": "제목은 '분석 한계는 추가 데이터로 줄일 수 있다'로 입력한다.",
+            "placement_instruction": "상단 header.",
+            "style_instruction": "32-36pt bold"
+          },
+          {
+            "block_type": "table",
+            "purpose": "한계와 보완 방향 정리",
+            "content_instruction": "native table 컬럼: 현재 한계, 왜 중요한가, 줄이는 방법. 포함 항목: 하차 태그 누락, 현금 승차 제외 가능성, 경유 노선 수와 실제 배차 횟수 차이, 배차 간격·차량 크기 부재, 공휴일·방학, 노선 개편, 지역 행사, 유가 변화, 코로나19, 월별 자료의 강수일 즉각 영향 확인 어려움.",
+            "placement_instruction": "본문 대부분을 차지하는 wide native table.",
+            "style_instruction": "행은 6~8개로 묶어 표현하고, 너무 많으면 범주화한다."
+          },
+          {
+            "block_type": "callout",
+            "purpose": "결과 해석의 경계선 제시",
+            "content_instruction": "분석 결과는 노선 부족 확정이 아니라 추가 검토 후보를 찾는 것이다.",
+            "placement_instruction": "하단 노란 callout.",
+            "style_instruction": "16pt, 굵게"
+          },
+          {
+            "block_type": "footer_note",
+            "purpose": "데이터 한계 출처 표시",
+            "content_instruction": "Source: README.md, 데이터 및 분석 한계 탭",
+            "placement_instruction": "footer 오른쪽.",
+            "style_instruction": "9-10pt"
+          }
+        ],
+        "layout_instructions": {
+          "structure": "Large limitation matrix with conclusion callout.",
+          "header_body_footer": {
+            "header": "13 / LIMITATIONS + 제목",
+            "body": "한계·중요성·보완 방법 table",
+            "footer": "추가 검토 후보 note"
+          },
+          "reading_order": ["title", "matrix table", "callout", "source note"],
+          "alignment": "표 전체 폭은 slide safe area에 맞추고 행 높이 균일",
+          "spacing": "표와 callout 사이 충분한 여백",
+          "density": "high but readable",
+          "body_slide_consistency": "표 헤더/행 스타일은 slide 9와 동일"
+        },
+        "design_constraints": {
+          "palette_rules": ["한계 열은 연한 회색", "보완 방법 열은 연한 파란색", "핵심 callout 노란색"],
+          "typography_rules": ["표 본문 10.5-12.5pt", "callout 16pt"],
+          "component_rules": ["표 native", "callout editable shape"],
+          "chart_rules": ["차트 없음"],
+          "table_rules": ["긴 문장을 짧은 명사구로 압축", "줄바꿈 허용"],
+          "icon_rules": ["범주 아이콘은 행마다 넣지 말고 섹션 라벨에만 사용"],
+          "infographic_rules": ["한계에서 보완으로 가는 방향성이 보이게"],
+          "diagram_rules": ["다이어그램 없음"],
+          "imagery_rules": ["이미지 사용 안 함"],
+          "anti_patterns_to_avoid": ["한계만 나열하고 해결 방향 없음", "표 글씨 9pt 이하", "결론 단정"]
+        },
+        "content_constraints": {
+          "must_include": ["하차 태그 누락", "현금 승차 제외", "배차 간격", "차량 크기", "공휴일과 방학", "노선 개편", "지역 행사", "코로나19", "월별 자료 한계"],
+          "must_not_include": ["현재 데이터로 실제 혼잡도를 확정한다는 표현"],
+          "evidence_to_use": ["README.md", "앱 데이터 및 분석 한계 탭"],
+          "evidence_to_avoid": ["정책 효과 수치 추정"]
+        },
+        "generator_notes": {
+          "ppt_generation_note": "matrix는 반드시 PowerPoint native table로 구현한다.",
+          "image_generation_note": "이미지 시안에서는 표 구조만 참고하고, 최종 표 텍스트는 직접 입력한다.",
+          "fallback_if_content_is_sparse": "3열 table 대신 2열 '한계 / 보완 데이터' table로 단순화한다."
+        }
+      }
+    },
+    {
+      "slide_number": 14,
+      "slide_role": "roadmap",
+      "page_family": "body",
+      "slide_title": "후보 정류소는 현장 점검 우선순위로 활용할 수 있다",
+      "layout_family": "S17 System Diagram / editable policy roadmap slide",
+      "prompt": {
+        "objective": "분석 결과가 실제 정책·현장 점검에서 어떻게 활용될 수 있는지 단계적으로 설명한다.",
+        "narrative_function": "한계 설명 이후에도 프로젝트의 실용적 가치를 보여준다.",
+        "visual_intent": "분석 결과에서 현장 점검과 조정 검토까지 이어지는 4단계 로드맵.",
+        "content_blocks": [
+          {
+            "block_type": "title",
+            "purpose": "활용 가능성 주제 제시",
+            "content_instruction": "제목은 '후보 정류소는 현장 점검 우선순위로 활용할 수 있다'로 입력한다.",
+            "placement_instruction": "상단 header.",
+            "style_instruction": "30-34pt bold"
+          },
+          {
+            "block_type": "diagram_flow",
+            "purpose": "활용 흐름 제시",
+            "content_instruction": "4단계 roadmap: 분석 후보 도출 → 배차·환승·주변 시설 데이터 결합 → 현장 혼잡도 점검 → 노선·배차 조정 검토.",
+            "placement_instruction": "본문 중앙 가로 4단계 flow. 각 단계는 editable shape와 connector.",
+            "style_instruction": "각 단계 번호는 네이비, 핵심 action verb는 굵게."
+          },
+          {
+            "block_type": "metric_cards",
+            "purpose": "대표 후보 사례 연결",
+            "content_instruction": "후보 정류소 2~3개 예시를 작은 카드로 표시: 옥포LH천년나무3단지앞, 영대병원역, 진아리채앞 등.",
+            "placement_instruction": "로드맵 아래 작은 카드 행.",
+            "style_instruction": "정류소명은 editable text, 긴 이름은 자동 줄바꿈."
+          },
+          {
+            "block_type": "footer_note",
+            "purpose": "정책 해석 주의",
+            "content_instruction": "분석 결과는 의사결정 보조 자료이며, 실제 조정 전 현장 조사와 운영 데이터가 필요하다.",
+            "placement_instruction": "footer.",
+            "style_instruction": "10-11pt"
+          }
+        ],
+        "layout_instructions": {
+          "structure": "Four-step roadmap diagram plus candidate example cards.",
+          "header_body_footer": {
+            "header": "14 / ACTION ROADMAP + 제목",
+            "body": "roadmap diagram + candidate cards",
+            "footer": "현장 조사 필요 note"
+          },
+          "reading_order": ["title", "roadmap left to right", "candidate cards", "footer"],
+          "alignment": "4단계 박스의 높이와 폭 동일",
+          "spacing": "단계 간 connector 균일, 후보 카드와 roadmap 간격 충분히",
+          "density": "medium",
+          "body_slide_consistency": "process shape style은 slide 2와 연결"
+        },
+        "design_constraints": {
+          "palette_rules": ["단계 번호 #000080", "후보 카드 강조 #FFFF00", "본문 검정"],
+          "typography_rules": ["단계명 16-18pt", "설명 12-14pt"],
+          "component_rules": ["roadmap은 editable shapes/connectors", "후보 카드는 editable shapes"],
+          "chart_rules": ["차트 없음"],
+          "table_rules": ["표 없음"],
+          "icon_rules": ["분석, 조사, 현장, 검토 아이콘 각 1개 이하"],
+          "infographic_rules": ["4단계가 명확히 순서대로 읽히게"],
+          "diagram_rules": ["connector는 직선 또는 직각, 과한 화살표 금지"],
+          "imagery_rules": ["이미지 사용 안 함"],
+          "anti_patterns_to_avoid": ["정책 효과 단정", "아이콘 장식 과다", "로드맵 단계 5개 이상으로 확장"]
+        },
+        "content_constraints": {
+          "must_include": ["현장 점검 우선순위", "배차 간격", "환승 수요", "주변 시설", "실제 혼잡도"],
+          "must_not_include": ["즉시 노선 개편 필요라고 단정"],
+          "evidence_to_use": ["outputs/processed/analysis_summary.md", "outputs/processed/imbalance_candidates.csv"],
+          "evidence_to_avoid": ["날씨 상관계수 상세"]
+        },
+        "generator_notes": {
+          "ppt_generation_note": "roadmap은 PowerPoint shape와 connector로 구현해 단계명 수정 가능하게 한다.",
+          "image_generation_note": "이미지 시안은 roadmap geometry reference only.",
+          "fallback_if_content_is_sparse": "후보 카드 없이 4단계 roadmap만 크게 배치한다."
+        }
+      }
+    },
+    {
+      "slide_number": 15,
+      "slide_role": "summary",
+      "page_family": "body",
+      "slide_title": "핵심 발견을 하나의 의사결정 프레임으로 묶기",
+      "layout_family": "S16 Multi-card Brief / editable synthesis cards",
+      "prompt": {
+        "objective": "본문 15장의 마지막에서 세 발표 구간을 하나의 의사결정 프레임으로 종합한다.",
+        "narrative_function": "별도 마무리 슬라이드로 넘어가기 전 본문 내용의 핵심을 압축한다.",
+        "visual_intent": "3명 발표자별 핵심 메시지 카드 3개와 중앙 결론 callout.",
+        "content_blocks": [
+          {
+            "block_type": "title",
+            "purpose": "본문 종합 주제 제시",
+            "content_instruction": "제목은 '핵심 발견을 하나의 의사결정 프레임으로 묶기'로 입력한다.",
+            "placement_instruction": "상단 header.",
+            "style_instruction": "32-36pt bold"
+          },
+          {
+            "block_type": "metric_cards",
+            "purpose": "발표자별 핵심 메시지 요약",
+            "content_instruction": "카드 3개: 발표자 1 데이터 기반과 전체 현황, 발표자 2 시간대 패턴과 불균형 후보, 발표자 3 장기 추세·날씨·한계와 활용.",
+            "placement_instruction": "본문 중앙 3열 카드.",
+            "style_instruction": "각 카드에는 발표자 번호, 한 줄 메시지, 대표 근거 1개를 포함."
+          },
+          {
+            "block_type": "callout",
+            "purpose": "최종 판단 프레임 강조",
+            "content_instruction": "수요 규모, 시간대 집중, 노선 공급 지표를 결합해 추가 검토 후보를 찾는다.",
+            "placement_instruction": "3개 카드 아래 또는 가운데 네이비 강조 박스.",
+            "style_instruction": "네이비 배경, 흰 글씨, 18-22pt"
+          },
+          {
+            "block_type": "footer_note",
+            "purpose": "마무리 슬라이드로 연결",
+            "content_instruction": "다음 슬라이드: 핵심 결론과 Q&A. 이 슬라이드는 본문 요약이며 별도 마무리 슬라이드는 따로 제작한다.",
+            "placement_instruction": "footer.",
+            "style_instruction": "10-11pt"
+          }
+        ],
+        "layout_instructions": {
+          "structure": "Three-column synthesis cards plus central decision-frame callout.",
+          "header_body_footer": {
+            "header": "15 / SYNTHESIS + 제목",
+            "body": "3 speaker section cards + conclusion callout",
+            "footer": "별도 마무리/Q&A 연결"
+          },
+          "reading_order": ["title", "three cards left to right", "central callout", "footer"],
+          "alignment": "카드 3개 동일 폭과 높이",
+          "spacing": "카드 사이 충분한 gutter, callout과 카드 간격 확보",
+          "density": "medium",
+          "body_slide_consistency": "slide 1의 3카드 프레임과 시각적으로 대응"
+        },
+        "design_constraints": {
+          "palette_rules": ["카드 라벨 #000080", "중앙 결론 callout #000080 with white text", "강조 태그 #FFFF00"],
+          "typography_rules": ["카드 제목 17-19pt", "카드 본문 14-16pt", "callout 18-22pt"],
+          "component_rules": ["카드와 callout은 editable shapes/text"],
+          "chart_rules": ["차트 없음"],
+          "table_rules": ["표 없음"],
+          "icon_rules": ["발표자 구간별 아이콘 1개 이하"],
+          "infographic_rules": ["세 구간이 하나의 프레임으로 합쳐지는 느낌"],
+          "diagram_rules": ["필요 시 카드에서 중앙 callout으로 얇은 connector"],
+          "imagery_rules": ["이미지 사용 안 함"],
+          "anti_patterns_to_avoid": ["새로운 분석 수치 추가", "마무리 슬라이드 역할까지 과도하게 수행", "카드마다 디자인 다르게 적용"]
+        },
+        "content_constraints": {
+          "must_include": ["수요 규모", "시간대 집중", "노선 공급", "추가 검토 후보", "데이터 한계"],
+          "must_not_include": ["노선 부족 확정", "새로운 가짜 결론"],
+          "evidence_to_use": ["outputs/processed/analysis_summary.md", "README.md", "slide_plan.json"],
+          "evidence_to_avoid": ["새로운 표나 차트"]
+        },
+        "generator_notes": {
+          "ppt_generation_note": "마지막 본문 슬라이드이므로 모든 메시지는 editable text cards로 만들고, 이후 별도 ending slide와 연결되게 한다.",
+          "image_generation_note": "이미지 시안은 세 카드 균형과 callout 위치만 확인한다.",
+          "fallback_if_content_is_sparse": "중앙 callout을 크게 하고 카드 본문을 한 줄씩 줄인다."
+        }
+      }
+    }
+  ]
+}
