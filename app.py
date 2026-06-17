@@ -1066,18 +1066,24 @@ def apply_retro_90s_overrides() -> None:
             overflow-wrap: normal !important;
             word-break: normal !important;
             font-size: clamp(0.86rem, 1.05vw, 1.08rem) !important;
-            letter-spacing: -0.04em !important;
+            letter-spacing: 0 !important;
         }
 
         .soft-metric-card__value--text-long {
-            font-size: clamp(0.82rem, 1vw, 1.02rem) !important;
-            line-height: 1.14 !important;
+            display: block !important;
+            width: 100% !important;
+            box-sizing: border-box !important;
+            font-size: clamp(0.68rem, 0.82vw, 0.86rem) !important;
+            line-height: 1.1 !important;
             max-height: 3.9rem !important;
         }
 
         .soft-metric-card__value--text-xlong {
-            font-size: clamp(0.7rem, 0.86vw, 0.9rem) !important;
-            line-height: 1.1 !important;
+            display: block !important;
+            width: 100% !important;
+            box-sizing: border-box !important;
+            font-size: clamp(0.6rem, 0.72vw, 0.76rem) !important;
+            line-height: 1.08 !important;
             max-height: 4.15rem !important;
             padding-left: 0.32rem !important;
             padding-right: 0.32rem !important;
@@ -1472,9 +1478,9 @@ def render_soft_metric(label: str, value, delta: str | None = None) -> None:
     value_classes = ["soft-metric-card__value"]
     if compact_value:
         value_classes.append("soft-metric-card__value--compact")
-    elif len(value_text) >= 14:
+    elif len(value_text) >= 11:
         value_classes.append("soft-metric-card__value--text-xlong")
-    elif len(value_text) >= 9:
+    elif len(value_text) >= 7:
         value_classes.append("soft-metric-card__value--text-long")
     value_class = " ".join(value_classes)
     delta_html = f"<div class='soft-metric-card__delta'>{escape(str(delta))}</div>" if delta else ""
@@ -1650,6 +1656,63 @@ def render_pretty_table(table: pd.DataFrame, title: str, max_rows: int = 20) -> 
         """,
         unsafe_allow_html=True,
     )
+
+
+def render_stop_type_criteria(stop_df: pd.DataFrame) -> None:
+    """정류소 유형이 어떤 기준으로 분류되는지 앱 화면에 설명합니다."""
+    low_cutoff_text = "계산 불가"
+    if not stop_df.empty and "boardings" in stop_df.columns and stop_df["boardings"].notna().any():
+        low_cutoff = stop_df["boardings"].quantile(LOW_USAGE_QUANTILE)
+        low_cutoff_text = f"{format_number(low_cutoff)}명 이하"
+
+    criteria = pd.DataFrame(
+        [
+            {
+                "정류소 유형": "저이용형",
+                "분류 기준": f"전체 승차 인원이 현재 필터 데이터의 하위 {LOW_USAGE_QUANTILE:.0%} 이하",
+                "현재 기준값": low_cutoff_text,
+                "해석": "이용량 자체가 적은 정류소입니다. 다른 시간대 집중 조건보다 먼저 적용됩니다.",
+            },
+            {
+                "정류소 유형": "출퇴근형",
+                "분류 기준": f"출근 집중도 {HIGH_CONCENTRATION_THRESHOLD:.0f}% 이상 + 퇴근 집중도 {HIGH_CONCENTRATION_THRESHOLD:.0f}% 이상",
+                "현재 기준값": f"각각 {HIGH_CONCENTRATION_THRESHOLD:.0f}% 이상",
+                "해석": "오전과 저녁 피크가 모두 뚜렷한 정류소입니다.",
+            },
+            {
+                "정류소 유형": "출근형",
+                "분류 기준": f"출근 집중도 {HIGH_CONCENTRATION_THRESHOLD:.0f}% 이상 + 출근 집중도가 퇴근 집중도보다 큼",
+                "현재 기준값": f"{HIGH_CONCENTRATION_THRESHOLD:.0f}% 이상",
+                "해석": "오전 7~9시 승차 비중이 상대적으로 큰 정류소입니다.",
+            },
+            {
+                "정류소 유형": "퇴근형",
+                "분류 기준": f"퇴근 집중도 {HIGH_CONCENTRATION_THRESHOLD:.0f}% 이상 + 퇴근 집중도가 출근 집중도보다 큼",
+                "현재 기준값": f"{HIGH_CONCENTRATION_THRESHOLD:.0f}% 이상",
+                "해석": "오후 5~8시 승차 비중이 상대적으로 큰 정류소입니다.",
+            },
+            {
+                "정류소 유형": "생활형",
+                "분류 기준": "저이용형, 출퇴근형, 출근형, 퇴근형 조건에 해당하지 않음",
+                "현재 기준값": "-",
+                "해석": "특정 피크 시간대에 과도하게 몰리지 않는 정류소입니다.",
+            },
+            {
+                "정류소 유형": "분류 불가",
+                "분류 기준": "승차 인원 또는 출근·퇴근 집중도 계산에 필요한 값이 부족함",
+                "현재 기준값": "-",
+                "해석": "현재 데이터만으로 시간대 유형을 안정적으로 판단하기 어렵습니다.",
+            },
+        ]
+    )
+
+    with st.expander("정류소 유형 분류 기준 보기"):
+        st.caption(
+            f"출근 시간은 {MORNING_START_HOUR}시부터 {MORNING_END_HOUR}시까지, "
+            f"퇴근 시간은 {EVENING_START_HOUR}시부터 {EVENING_END_HOUR}시까지로 계산합니다. "
+            "집중도는 해당 시간대 승차 인원 / 전체 승차 인원 × 100입니다."
+        )
+        render_pretty_table(criteria, "정류소 유형 분류 기준", max_rows=10)
 
 
 def empty_message(message: str) -> None:
@@ -1992,6 +2055,7 @@ def overview_tab(stop_df: pd.DataFrame, hourly_df: pd.DataFrame, top_n: int, met
     with col4:
         fig = plot_type_pie(stop_df)
         render_plotly_chart(fig, "정류소 유형을 계산할 수 없습니다.")
+        render_stop_type_criteria(stop_df)
 
 
 def hourly_tab(stop_df: pd.DataFrame, hourly_df: pd.DataFrame, top_n: int, metric_col: str) -> None:
