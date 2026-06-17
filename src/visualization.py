@@ -38,6 +38,16 @@ def metric_label(metric: str) -> str:
     return LABELS.get(metric, metric)
 
 
+def readable_bar_text_color(marker_color) -> str:
+    """노란 막대 위 숫자는 검정, 그 외 강한 색 막대 위 숫자는 흰색으로 표시합니다."""
+    if isinstance(marker_color, (list, tuple, np.ndarray, pd.Series)) and len(marker_color) > 0:
+        marker_color = marker_color[0]
+    color = str(marker_color or "").lower()
+    if color in {"#ffff00", "yellow", "rgb(255, 255, 0)", "rgba(255, 255, 0, 1)"}:
+        return "#000000"
+    return "#FFFFFF"
+
+
 def add_unique_stop_label(data: pd.DataFrame) -> pd.DataFrame:
     """같은 정류소명이 여러 행에 있을 때 그래프 라벨이 겹치지 않도록 보조 라벨을 만듭니다."""
     labeled = data.copy()
@@ -85,15 +95,21 @@ def apply_dark_plotly_theme(fig):
             trace.update(line=dict(width=3), marker=dict(size=7, line=dict(width=2, color=DARK_STROKE)))
         if trace_type == "bar":
             trace.update(marker_line_width=2, marker_line_color=DARK_STROKE, opacity=1)
+            trace.update(textfont=dict(color=readable_bar_text_color(getattr(trace.marker, "color", None)), size=12))
+    current_height = fig.layout.height
+    if current_height is None or current_height < 520:
+        fig.update_layout(height=520)
     fig.update_layout(
         template="plotly_white",
         paper_bgcolor=DARK_BG,
         plot_bgcolor=DARK_SURFACE,
+        autosize=True,
         font=dict(family="Inter, Malgun Gothic, Apple SD Gothic Neo, sans-serif", color=DARK_TEXT, size=13),
         title=dict(
             font=dict(family="Arial Black, Impact, Malgun Gothic, sans-serif", color=DARK_TEXT, size=20),
             x=0.02,
             xanchor="left",
+            pad=dict(t=10, b=20),
         ),
         colorway=PLOTLY_COLORWAY,
         legend=dict(
@@ -102,13 +118,17 @@ def apply_dark_plotly_theme(fig):
             borderwidth=1,
             font=dict(color=DARK_TEXT),
             orientation="h",
+            yanchor="top",
+            y=-0.2,
+            xanchor="left",
+            x=0,
         ),
         hoverlabel=dict(
             bgcolor=RETRO_PANEL,
             bordercolor=DARK_STROKE,
             font=dict(color=DARK_TEXT, family="MS Sans Serif, Tahoma, Malgun Gothic, sans-serif"),
         ),
-        margin=dict(l=28, r=28, t=68, b=34),
+        margin=dict(l=82, r=108, t=90, b=210),
     )
     fig.update_xaxes(
         color=DARK_TEXT,
@@ -117,6 +137,8 @@ def apply_dark_plotly_theme(fig):
         linecolor=DARK_STROKE,
         title_font=dict(color=DARK_TEXT),
         tickfont=dict(color=DARK_TEXT),
+        automargin=True,
+        title_standoff=26,
     )
     fig.update_yaxes(
         color=DARK_TEXT,
@@ -125,6 +147,8 @@ def apply_dark_plotly_theme(fig):
         linecolor=DARK_STROKE,
         title_font=dict(color=DARK_TEXT),
         tickfont=dict(color=DARK_TEXT),
+        automargin=True,
+        title_standoff=30,
     )
     return fig
 
@@ -158,12 +182,13 @@ def plot_top_stops(stop_df: pd.DataFrame, metric: str = "boardings", n: int = 10
         textfont=dict(color="#F8FAFC", size=12),
         cliponaxis=False,
     )
+    fig.update_yaxes(categoryorder="total ascending")
     if pd.notna(max_value) and max_value > 0:
         fig.update_xaxes(range=[0, max_value * 1.32])
     fig.update_layout(
-        height=460,
-        margin=dict(l=20, r=40, t=76, b=20),
-        legend=dict(orientation="h", yanchor="bottom", y=1.03, xanchor="right", x=1),
+        height=540,
+        margin=dict(l=82, r=108, t=90, b=210),
+        legend=dict(orientation="h", yanchor="top", y=-0.2, xanchor="left", x=0),
     )
     return apply_dark_plotly_theme(fig)
 
@@ -516,11 +541,16 @@ def plot_weather_bus_dual_line(data: pd.DataFrame, weather_col: str, weather_lab
     fig.update_layout(
         title="월별 버스 이용량과 날씨 추세 비교",
         xaxis_title="연도·월",
-        yaxis=dict(title="승차 인원"),
-        yaxis2=dict(title=weather_label, overlaying="y", side="right"),
-        height=480,
-        margin=dict(l=20, r=20, t=60, b=20),
-        legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1),
+        yaxis=dict(title="승차 인원", automargin=True),
+        yaxis2=dict(
+            title=dict(text=weather_label, standoff=18),
+            overlaying="y",
+            side="right",
+            automargin=True,
+        ),
+        height=540,
+        margin=dict(l=82, r=108, t=90, b=210),
+        legend=dict(orientation="h", yanchor="top", y=-0.2, xanchor="left", x=0),
     )
     return apply_dark_plotly_theme(fig)
 
