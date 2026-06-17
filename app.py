@@ -744,9 +744,33 @@ def apply_retro_90s_overrides() -> None:
             scroll-behavior: auto !important;
         }
 
+        html,
+        body,
+        .stApp,
+        [data-testid="stAppViewContainer"],
+        [data-testid="stMain"] {
+            width: 100% !important;
+            max-width: 100% !important;
+            overflow-x: hidden !important;
+        }
+
         .block-container {
-            max-width: 1320px !important;
+            max-width: none !important;
+            width: 100% !important;
+            box-sizing: border-box !important;
+            padding-left: 1rem !important;
+            padding-right: 1rem !important;
             padding-top: 1.2rem !important;
+            padding-bottom: 2.2rem !important;
+        }
+
+        div[data-testid="stHorizontalBlock"] {
+            width: 100% !important;
+            align-items: stretch !important;
+        }
+
+        div[data-testid="stHorizontalBlock"] > div[data-testid="column"] {
+            min-width: 0 !important;
         }
 
         h1, h2, h3, h4, h5, h6,
@@ -813,10 +837,11 @@ def apply_retro_90s_overrides() -> None:
         }
 
         .app-hero__title {
-            max-width: 1000px !important;
+            max-width: none !important;
             margin: 0 0 0.8rem !important;
-            font-size: clamp(1.8rem, 3.4vw, 3.3rem) !important;
+            font-size: clamp(1.7rem, 2.7vw, 3rem) !important;
             word-break: keep-all !important;
+            white-space: nowrap !important;
         }
 
         .app-hero__body,
@@ -923,24 +948,67 @@ def apply_retro_90s_overrides() -> None:
             outline-offset: 2px !important;
         }
 
+        button[kind="icon"],
+        button[kind="headerNoPadding"],
+        button[data-testid="stBaseButton-headerNoPadding"],
+        div[data-testid="stTooltipHoverTarget"] button {
+            min-width: 1.1rem !important;
+            width: 1.1rem !important;
+            height: 1.1rem !important;
+            padding: 0 !important;
+            border: 0 !important;
+            background: transparent !important;
+            box-shadow: none !important;
+            color: #404040 !important;
+            text-transform: none !important;
+        }
+
+        button[kind="icon"] svg,
+        button[kind="headerNoPadding"] svg,
+        button[data-testid="stBaseButton-headerNoPadding"] svg,
+        div[data-testid="stTooltipHoverTarget"] button svg {
+            width: 0.95rem !important;
+            height: 0.95rem !important;
+        }
+
         div[data-testid="stTabs"] [data-baseweb="tab-list"] {
+            display: flex !important;
             width: 100% !important;
-            padding: 0.2rem !important;
+            box-sizing: border-box !important;
+            padding: 0.7rem !important;
+            gap: 0.5rem !important;
             border: 2px solid !important;
             border-color: #ffffff #808080 #808080 #ffffff !important;
             background: #c0c0c0 !important;
             box-shadow: inset -1px -1px 0 #404040, inset 1px 1px 0 #dfdfdf !important;
-            overflow-x: auto !important;
+            overflow: hidden !important;
         }
 
         div[data-testid="stTabs"] button {
-            min-height: 34px !important;
+            flex: 1 1 0 !important;
+            width: 0 !important;
+            min-width: 0 !important;
+            min-height: 54px !important;
+            padding: 0.55rem 0.3rem !important;
             border: 2px solid !important;
             border-color: #ffffff #808080 #808080 #ffffff !important;
             background: #c0c0c0 !important;
             color: #000000 !important;
             font-weight: 800 !important;
-            white-space: nowrap !important;
+            white-space: normal !important;
+            justify-content: center !important;
+            text-align: center !important;
+        }
+
+        div[data-testid="stTabs"] button p {
+            width: 100% !important;
+            font-size: clamp(0.68rem, 0.72vw, 0.9rem) !important;
+            line-height: 1.15 !important;
+            margin: 0 !important;
+            white-space: normal !important;
+            word-break: keep-all !important;
+            overflow-wrap: anywhere !important;
+            text-align: center !important;
         }
 
         div[data-testid="stTabs"] button[aria-selected="true"] {
@@ -971,8 +1039,21 @@ def apply_retro_90s_overrides() -> None:
 
         div[data-testid="stPlotlyChart"],
         div[data-testid="stPydeckChart"] {
-            padding: 0.5rem !important;
+            width: 100% !important;
+            max-width: 100% !important;
+            box-sizing: border-box !important;
+            padding: 0.75rem !important;
+            margin-bottom: 1rem !important;
             overflow: hidden !important;
+        }
+
+        div[data-testid="stPlotlyChart"] > div,
+        div[data-testid="stPlotlyChart"] .js-plotly-plot,
+        div[data-testid="stPlotlyChart"] .plot-container,
+        div[data-testid="stPlotlyChart"] .svg-container {
+            width: 100% !important;
+            max-width: 100% !important;
+            box-sizing: border-box !important;
         }
 
         div[data-testid="stHorizontalBlock"] > div:nth-child(even) div[data-testid="stPlotlyChart"],
@@ -1096,6 +1177,11 @@ def apply_retro_90s_overrides() -> None:
             box-shadow: none !important;
         }
 
+        .weather-metric-align-spacer {
+            height: 1.58rem !important;
+            margin: 0 0 0.2rem !important;
+        }
+
         .yoy-table-wrap {
             border: 2px solid !important;
             border-color: #ffffff #808080 #808080 #ffffff !important;
@@ -1116,7 +1202,7 @@ def apply_retro_90s_overrides() -> None:
         }
 
         .pretty-table-window {
-            margin: 0.8rem 0 1.2rem !important;
+            margin: 1rem 0 1.5rem !important;
             border: 2px solid !important;
             border-color: #ffffff #808080 #808080 #ffffff !important;
             background: #c0c0c0 !important;
@@ -1150,13 +1236,18 @@ def apply_retro_90s_overrides() -> None:
         }
 
         .pretty-table-scroll {
+            width: 100% !important;
+            max-width: 100% !important;
             overflow-x: auto !important;
             overflow-y: visible !important;
-            padding: 0.45rem !important;
+            box-sizing: border-box !important;
+            padding: 0.65rem !important;
         }
 
         .pretty-table {
             width: 100% !important;
+            min-width: 100% !important;
+            table-layout: auto !important;
             border-collapse: collapse !important;
             background: #ffffff !important;
             color: #000000 !important;
@@ -1165,22 +1256,26 @@ def apply_retro_90s_overrides() -> None:
         }
 
         .pretty-table th {
-            padding: 0.5rem 0.55rem !important;
+            padding: 0.62rem 0.78rem !important;
             border: 1px solid #000000 !important;
             background: #ffffcc !important;
             color: #000000 !important;
             font-weight: 900 !important;
             text-align: left !important;
-            white-space: nowrap !important;
+            white-space: normal !important;
+            word-break: keep-all !important;
+            overflow-wrap: anywhere !important;
         }
 
         .pretty-table td {
-            padding: 0.46rem 0.55rem !important;
+            padding: 0.58rem 0.78rem !important;
             border: 1px solid #808080 !important;
             background: #ffffff !important;
             color: #000000 !important;
             vertical-align: middle !important;
             line-height: 1.28 !important;
+            word-break: keep-all !important;
+            overflow-wrap: anywhere !important;
         }
 
         .pretty-table tr:nth-child(even) td {
@@ -1194,8 +1289,8 @@ def apply_retro_90s_overrides() -> None:
         }
 
         .pretty-table .name {
-            min-width: 10rem !important;
-            max-width: 18rem !important;
+            min-width: 12rem !important;
+            max-width: 26rem !important;
             font-weight: 800 !important;
             word-break: keep-all !important;
             overflow-wrap: anywhere !important;
@@ -1230,28 +1325,43 @@ def apply_retro_90s_overrides() -> None:
         }
 
         .cosmic-footer {
+            width: 100% !important;
+            max-width: 100% !important;
+            box-sizing: border-box !important;
             margin-top: 2rem !important;
             padding: 0.65rem !important;
             border: 4px solid #000000 !important;
             background: repeating-linear-gradient(45deg, #ffff00, #ffff00 10px, #000000 10px, #000000 20px) !important;
+            overflow: hidden !important;
         }
 
         .cosmic-marquee {
             display: flex !important;
             width: max-content !important;
+            min-width: max-content !important;
             animation: cosmic-marquee 22s linear infinite !important;
-            font-family: "Arial Black", Impact, sans-serif !important;
-            font-size: clamp(1.4rem, 3.2vw, 3rem) !important;
-            font-style: normal !important;
-            line-height: 1 !important;
-            white-space: nowrap !important;
+            will-change: transform !important;
             background: #c0c0c0 !important;
             border: 2px solid !important;
             border-color: #808080 #ffffff #ffffff #808080 !important;
-            padding: 0.35rem !important;
+            font-family: "Arial Black", Impact, sans-serif !important;
+            font-size: clamp(1.15rem, 2.5vw, 2.45rem) !important;
+            font-style: normal !important;
+            line-height: 1 !important;
+            white-space: nowrap !important;
+        }
+
+        .cosmic-marquee__track {
+            display: flex !important;
+            flex: 0 0 auto !important;
+            align-items: center !important;
+            min-width: max-content !important;
+            padding: 0.35rem 0 !important;
         }
 
         .cosmic-marquee span {
+            display: inline-block !important;
+            padding-right: 2rem !important;
             color: #0000ff !important;
             background: none !important;
             -webkit-background-clip: initial !important;
@@ -1260,6 +1370,11 @@ def apply_retro_90s_overrides() -> None:
         }
 
         .cosmic-footer__meta {
+            display: flex !important;
+            flex-wrap: wrap !important;
+            align-items: center !important;
+            justify-content: space-between !important;
+            gap: 0.75rem !important;
             color: #000000 !important;
             background: #ffffcc !important;
             border: 2px solid #000000 !important;
@@ -1272,14 +1387,33 @@ def apply_retro_90s_overrides() -> None:
             box-shadow: none !important;
         }
 
+        @keyframes cosmic-marquee {
+            from { transform: translateX(0); }
+            to { transform: translateX(-50%); }
+        }
+
         @keyframes retro-blink {
             0%, 49% { visibility: visible; }
             50%, 100% { visibility: hidden; }
         }
 
+        @media (max-width: 900px) {
+            .app-hero__title {
+                white-space: normal !important;
+            }
+
+            div[data-testid="stTabs"] [data-baseweb="tab-list"] {
+                flex-wrap: wrap !important;
+            }
+
+            div[data-testid="stTabs"] button {
+                flex: 1 1 calc(50% - 0.5rem) !important;
+                width: auto !important;
+            }
+        }
+
         @media (prefers-reduced-motion: reduce) {
-            .section-kicker__eyebrow,
-            .cosmic-marquee {
+            .section-kicker__eyebrow {
                 animation: none !important;
             }
         }
@@ -1295,7 +1429,7 @@ def render_app_hero() -> None:
         """
         <section class="app-hero">
             <div class="app-hero__eyebrow">DAEGU BUS DEMAND LAB</div>
-            <h1 class="app-hero__title">대구 시내버스 정류소 이용 수요 및 노선 공급 불균형 분석</h1>
+            <h1 class="app-hero__title">대구 시내버스 수급 불균형 분석</h1>
             <p class="app-hero__body">
                 대구 시내버스 정류소의 시간대별 승하차 데이터를 분석하여 수요가 집중되는 시간과 지역을 확인하고,
                 이용 수요 대비 경유 노선 수가 상대적으로 적은 정류소 후보를 탐색합니다.
@@ -1307,15 +1441,19 @@ def render_app_hero() -> None:
 
 
 def render_marquee_footer() -> None:
-    """대시보드 하단에 영화적 마키 푸터를 표시합니다."""
+    """대시보드 하단에 반복해서 흐르는 마키 푸터를 표시합니다."""
     st.markdown(
         """
         <footer class="cosmic-footer">
             <div class="cosmic-marquee" aria-hidden="true">
-                <span>DAEGU BUS DEMAND INTELLIGENCE • </span>
-                <span>ROUTES • STOPS • HOURS • WEATHER • </span>
-                <span>DAEGU BUS DEMAND INTELLIGENCE • </span>
-                <span>ROUTES • STOPS • HOURS • WEATHER • </span>
+                <div class="cosmic-marquee__track">
+                    <span>DAEGU BUS DEMAND INTELLIGENCE • ROUTES • STOPS • HOURS • WEATHER •</span>
+                    <span>DAEGU BUS DEMAND INTELLIGENCE • ROUTES • STOPS • HOURS • WEATHER •</span>
+                </div>
+                <div class="cosmic-marquee__track">
+                    <span>DAEGU BUS DEMAND INTELLIGENCE • ROUTES • STOPS • HOURS • WEATHER •</span>
+                    <span>DAEGU BUS DEMAND INTELLIGENCE • ROUTES • STOPS • HOURS • WEATHER •</span>
+                </div>
             </div>
             <div class="cosmic-footer__meta">
                 <div><span class="cosmic-dot"></span>현재 필터 기준 분석 결과를 표시 중입니다.</div>
@@ -1342,6 +1480,16 @@ def render_section_header(eyebrow: str, title: str, body: str = "") -> None:
     )
 
 
+def readable_bar_text_color(marker_color) -> str:
+    """노란 막대 안의 숫자는 검정색으로 바꿔 가독성을 확보합니다."""
+    if isinstance(marker_color, (list, tuple)) and marker_color:
+        marker_color = marker_color[0]
+    color = str(marker_color or "").lower()
+    if color in {"#ffff00", "yellow", "rgb(255, 255, 0)", "rgba(255, 255, 0, 1)"}:
+        return "#000000"
+    return "#FFFFFF"
+
+
 def style_plotly_figure(fig):
     """Plotly 그래프가 프리미엄 다크 대시보드 배경과 자연스럽게 섞이도록 공통 스타일을 적용합니다."""
     if fig is None:
@@ -1351,22 +1499,37 @@ def style_plotly_figure(fig):
             trace.update(
                 textposition="inside",
                 insidetextanchor="end",
-                textfont=dict(color="#FFFFFF", size=12, family="Courier New, monospace"),
+                textfont=dict(
+                    color=readable_bar_text_color(getattr(trace.marker, "color", None)),
+                    size=12,
+                    family="Courier New, monospace",
+                ),
                 cliponaxis=False,
             )
+            fig.update_yaxes(categoryorder="total ascending")
         if getattr(trace, "type", None) == "bar":
-            trace.update(marker_line_width=2, marker_line_color="#000000", opacity=1)
+            trace.update(
+                marker_line_width=2,
+                marker_line_color="#000000",
+                opacity=1,
+                textfont=dict(color=readable_bar_text_color(getattr(trace.marker, "color", None))),
+            )
         if getattr(trace, "type", None) == "scatter":
             trace.update(line=dict(width=3), marker=dict(size=7, line=dict(width=2, color="#000000")))
+    current_height = fig.layout.height
+    if current_height is None or current_height < 540:
+        fig.update_layout(height=540)
     fig.update_layout(
         template="plotly_white",
         paper_bgcolor="#C0C0C0",
         plot_bgcolor="#FFFFFF",
+        autosize=True,
         font=dict(family="MS Sans Serif, Tahoma, Malgun Gothic, sans-serif", color="#000000", size=13),
         title=dict(
             font=dict(family="Arial Black, Impact, Malgun Gothic, sans-serif", color="#000000", size=20),
             x=0.02,
             xanchor="left",
+            pad=dict(t=10, b=20),
         ),
         legend=dict(
             bgcolor="#FFFFCC",
@@ -1374,6 +1537,10 @@ def style_plotly_figure(fig):
             borderwidth=1,
             font=dict(color="#000000"),
             orientation="h",
+            yanchor="top",
+            y=-0.22,
+            xanchor="left",
+            x=0,
         ),
         colorway=["#0000FF", "#00AA00", "#FF0000", "#FFFF00", "#800080", "#008080", "#808080"],
         hoverlabel=dict(
@@ -1381,7 +1548,7 @@ def style_plotly_figure(fig):
             bordercolor="#000000",
             font=dict(color="#000000", family="MS Sans Serif, Tahoma, Malgun Gothic, sans-serif"),
         ),
-        margin=dict(l=28, r=28, t=68, b=34),
+        margin=dict(l=70, r=32, t=88, b=92),
     )
     fig.update_xaxes(
         color="#000000",
@@ -1390,6 +1557,8 @@ def style_plotly_figure(fig):
         linecolor="#000000",
         title_font=dict(color="#000000"),
         tickfont=dict(color="#000000"),
+        automargin=True,
+        title_standoff=26,
     )
     fig.update_yaxes(
         color="#000000",
@@ -1398,6 +1567,8 @@ def style_plotly_figure(fig):
         linecolor="#000000",
         title_font=dict(color="#000000"),
         tickfont=dict(color="#000000"),
+        automargin=True,
+        title_standoff=30,
     )
     return fig
 
@@ -1559,6 +1730,18 @@ def table_column_label(column) -> str:
     return TABLE_COLUMN_LABELS.get(text, text)
 
 
+def clean_merge_key_value(value) -> str:
+    """표에 보이는 병합 기준에서 내부 접두어를 제거합니다."""
+    text = str(value)
+    if text.startswith("id:"):
+        return text.replace("id:", "", 1)
+    if text.startswith("name:"):
+        cleaned = text.replace("name:", "", 1).strip("|")
+        parts = [part for part in cleaned.split("|") if part]
+        return " / ".join(parts) if parts else cleaned
+    return text
+
+
 def table_value_is_number(value) -> bool:
     """표 셀 값이 숫자로 표시 가능한지 확인합니다."""
     if value is None or pd.isna(value):
@@ -1576,6 +1759,9 @@ def format_pretty_table_value(value, column) -> str:
         return "-"
 
     column_key = str(column)
+    if column_key == "_merge_key":
+        return clean_merge_key_value(value)
+
     if isinstance(value, str) and "%" in value:
         return value
 
@@ -1656,6 +1842,54 @@ def render_pretty_table(table: pd.DataFrame, title: str, max_rows: int = 20) -> 
         """,
         unsafe_allow_html=True,
     )
+
+
+def render_analysis_tables_grid(tables: dict, max_rows: int = 12) -> None:
+    """핵심 분석 표를 너무 큰 빈 영역 없이 1열 또는 2열로 배치합니다."""
+    narrow_buffer: list[tuple[str, pd.DataFrame]] = []
+
+    def flush_narrow_buffer() -> None:
+        nonlocal narrow_buffer
+        while narrow_buffer:
+            pair = narrow_buffer[:2]
+            narrow_buffer = narrow_buffer[2:]
+            cols = st.columns(len(pair))
+            for col, (title, table) in zip(cols, pair):
+                with col:
+                    render_pretty_table(table, title, max_rows=max_rows)
+
+    for name, table in tables.items():
+        if not isinstance(table, pd.DataFrame) or table.empty:
+            continue
+        if len(table.columns) <= 3:
+            narrow_buffer.append((str(name), table))
+            if len(narrow_buffer) == 2:
+                flush_narrow_buffer()
+        else:
+            flush_narrow_buffer()
+            render_pretty_table(table, str(name), max_rows=max_rows)
+    flush_narrow_buffer()
+
+
+def build_core_analysis_tables(
+    stop_df: pd.DataFrame,
+    hourly_df: pd.DataFrame,
+    monthly_df: pd.DataFrame,
+    top_n: int,
+) -> dict:
+    """핵심 분석 표를 만들고 장기 증감 표는 2025년 대비 2026년 비교만 남깁니다."""
+    tables = create_analysis_tables(stop_df, hourly_df, monthly_df, top_n=top_n)
+    tables = {
+        name: table
+        for name, table in tables.items()
+        if "이용량 증가율" not in str(name) and "이용량 감소율" not in str(name)
+    }
+
+    metric = "boardings" if "boardings" in monthly_df.columns else "passengers"
+    target_trend = build_target_year_yoy_trend(monthly_df, metric)
+    if not target_trend.empty:
+        tables[f"{YOY_BASE_YEAR}년 대비 {YOY_TARGET_YEAR}년 월별 증감 요약"] = target_trend
+    return tables
 
 
 def render_stop_type_criteria(stop_df: pd.DataFrame) -> None:
@@ -1803,6 +2037,23 @@ def load_project_data(data_dir: str, fingerprint: tuple) -> dict:
     return bundle
 
 
+def get_project_data() -> dict:
+    """한 번 불러온 정제 데이터를 세션에 저장해 반복 리로드를 줄입니다."""
+    if "project_data_bundle" in st.session_state:
+        return st.session_state["project_data_bundle"]
+
+    bundle = load_project_data(str(DATA_DIR), data_fingerprint(DATA_DIR))
+    st.session_state["project_data_bundle"] = bundle
+    return bundle
+
+
+def reload_project_data() -> dict:
+    """사용자가 원할 때만 정제 CSV를 다시 읽습니다."""
+    st.session_state.pop("project_data_bundle", None)
+    load_project_data.clear()
+    return get_project_data()
+
+
 def write_processed_outputs(bundle: dict, candidates: pd.DataFrame) -> None:
     """전처리 데이터, 분석 결과 CSV, 데이터 점검 결과, 요약 문서를 저장합니다."""
     PROCESSED_DIR.mkdir(parents=True, exist_ok=True)
@@ -1937,6 +2188,23 @@ def render_plotly_chart(fig, empty_text: str, caption: bool = False) -> None:
         empty_message(empty_text)
 
 
+def render_two_column_charts(chart_items: list[tuple]) -> None:
+    """Plotly 그래프를 한 행에 두 개씩 배치해 가로 공간을 꽉 채웁니다."""
+    for start_index in range(0, len(chart_items), 2):
+        row_items = chart_items[start_index:start_index + 2]
+        columns = st.columns(2, gap="large")
+
+        for column_index, column in enumerate(columns):
+            if column_index >= len(row_items):
+                continue
+
+            fig, empty_text, *options = row_items[column_index]
+            caption = bool(options[0]) if options else False
+
+            with column:
+                render_plotly_chart(fig, empty_text, caption=caption)
+
+
 def sidebar_filters(stop_df: pd.DataFrame, monthly_df: pd.DataFrame) -> dict:
     """Streamlit 사이드바 필터 값을 모아서 반환합니다."""
     st.sidebar.header("필터")
@@ -2015,7 +2283,7 @@ def overview_tab(stop_df: pd.DataFrame, hourly_df: pd.DataFrame, top_n: int, met
         "필터 조건에 맞는 정류소 수요, 하차, 시간대 피크, 노선당 승차 밀도를 한 화면에서 비교합니다.",
     )
 
-    metric_cols = st.columns(6)
+    metric_cols = st.columns(6, gap="small")
     with metric_cols[0]:
         show_metric("전체 승차 인원", stop_df.get("boardings", pd.Series(dtype=float)).sum())
     with metric_cols[1]:
@@ -2040,22 +2308,32 @@ def overview_tab(stop_df: pd.DataFrame, hourly_df: pd.DataFrame, top_n: int, met
             per_route_stop = stop_df.sort_values("boardings_per_route", ascending=False).iloc[0].get("stop_name", "-")
         show_text_metric("노선당 승차 인원 최고", per_route_stop)
 
-    col1, col2 = st.columns(2)
-    with col1:
-        fig = plot_top_stops(stop_df, metric=metric_col, n=top_n, title=f"정류소별 {plot_metric_label(metric_col)} TOP {top_n}")
-        render_plotly_chart(fig, "정류소 순위 그래프를 그릴 수 없습니다.")
-    with col2:
-        fig = plot_district_bar(stop_df, metric=metric_col, title="구·군별 승차 인원")
-        render_plotly_chart(fig, "구·군 컬럼이 없어 구·군별 그래프를 표시할 수 없습니다.")
-
-    col3, col4 = st.columns(2)
-    with col3:
-        fig = plot_hourly_line(hourly_df, metric=metric_col, title="시간대별 승차 인원")
-        render_plotly_chart(fig, "시간대 컬럼이 없어 시간대별 그래프를 표시할 수 없습니다.")
-    with col4:
-        fig = plot_type_pie(stop_df)
-        render_plotly_chart(fig, "정류소 유형을 계산할 수 없습니다.")
-        render_stop_type_criteria(stop_df)
+    render_two_column_charts(
+        [
+            (
+                plot_top_stops(
+                    stop_df,
+                    metric=metric_col,
+                    n=top_n,
+                    title=f"정류소별 {plot_metric_label(metric_col)} TOP {top_n}",
+                ),
+                "정류소 순위 그래프를 그릴 수 없습니다.",
+            ),
+            (
+                plot_district_bar(stop_df, metric=metric_col, title="구·군별 승차 인원"),
+                "구·군 컬럼이 없어 구·군별 그래프를 표시할 수 없습니다.",
+            ),
+            (
+                plot_hourly_line(hourly_df, metric=metric_col, title="시간대별 승차 인원"),
+                "시간대 컬럼이 없어 시간대별 그래프를 표시할 수 없습니다.",
+            ),
+            (
+                plot_type_pie(stop_df),
+                "정류소 유형을 계산할 수 없습니다.",
+            ),
+        ]
+    )
+    render_stop_type_criteria(stop_df)
 
 
 def hourly_tab(stop_df: pd.DataFrame, hourly_df: pd.DataFrame, top_n: int, metric_col: str) -> None:
@@ -2070,31 +2348,55 @@ def hourly_tab(stop_df: pd.DataFrame, hourly_df: pd.DataFrame, top_n: int, metri
         "하루의 이동 리듬을 시간대, 정류소, 구·군 단위로 쪼개어 피크와 반복 패턴을 확인합니다.",
     )
 
-    col1, col2 = st.columns(2)
-    with col1:
-        fig = plot_hourly_line(hourly_df, metric=metric_col, title="시간대별 전체 승차 인원")
-        render_plotly_chart(fig, "시간대별 전체 승차 인원을 표시할 수 없습니다.")
-    with col2:
-        fig = plot_board_alight_line(hourly_df)
-        render_plotly_chart(fig, "승차·하차 비교에 필요한 컬럼이 부족합니다.")
+    morning = (
+        stop_df.sort_values("morning_boardings", ascending=False).head(top_n)
+        if "morning_boardings" in stop_df.columns
+        else pd.DataFrame()
+    )
+    evening = (
+        stop_df.sort_values("evening_boardings", ascending=False).head(top_n)
+        if "evening_boardings" in stop_df.columns
+        else pd.DataFrame()
+    )
 
-    col3, col4 = st.columns(2)
-    with col3:
-        fig = plot_stop_hour_heatmap(hourly_df, stop_df, metric=metric_col, top_n=20)
-        render_plotly_chart(fig, "정류소 × 시간대 히트맵을 표시할 수 없습니다.")
-    with col4:
-        fig = plot_district_hour_heatmap(hourly_df, metric=metric_col)
-        render_plotly_chart(fig, "구·군 × 시간대 히트맵을 표시할 수 없습니다.")
-
-    morning = stop_df.sort_values("morning_boardings", ascending=False).head(top_n) if "morning_boardings" in stop_df.columns else pd.DataFrame()
-    evening = stop_df.sort_values("evening_boardings", ascending=False).head(top_n) if "evening_boardings" in stop_df.columns else pd.DataFrame()
-    col5, col6 = st.columns(2)
-    with col5:
-        fig = plot_top_stops(morning, metric="morning_boardings", n=top_n, title=f"출근 시간 이용객 TOP {top_n}")
-        render_plotly_chart(fig, "출근 시간 이용객을 계산할 수 없습니다.")
-    with col6:
-        fig = plot_top_stops(evening, metric="evening_boardings", n=top_n, title=f"퇴근 시간 이용객 TOP {top_n}")
-        render_plotly_chart(fig, "퇴근 시간 이용객을 계산할 수 없습니다.")
+    render_two_column_charts(
+        [
+            (
+                plot_hourly_line(hourly_df, metric=metric_col, title="시간대별 전체 승차 인원"),
+                "시간대별 전체 승차 인원을 표시할 수 없습니다.",
+            ),
+            (
+                plot_board_alight_line(hourly_df),
+                "승차·하차 비교에 필요한 컬럼이 부족합니다.",
+            ),
+            (
+                plot_stop_hour_heatmap(hourly_df, stop_df, metric=metric_col, top_n=20),
+                "정류소 × 시간대 히트맵을 표시할 수 없습니다.",
+            ),
+            (
+                plot_district_hour_heatmap(hourly_df, metric=metric_col),
+                "구·군 × 시간대 히트맵을 표시할 수 없습니다.",
+            ),
+            (
+                plot_top_stops(
+                    morning,
+                    metric="morning_boardings",
+                    n=top_n,
+                    title=f"출근 시간 이용객 TOP {top_n}",
+                ),
+                "출근 시간 이용객을 계산할 수 없습니다.",
+            ),
+            (
+                plot_top_stops(
+                    evening,
+                    metric="evening_boardings",
+                    n=top_n,
+                    title=f"퇴근 시간 이용객 TOP {top_n}",
+                ),
+                "퇴근 시간 이용객을 계산할 수 없습니다.",
+            ),
+        ]
+    )
 
     if "stop_name" in stop_df.columns:
         selected = st.multiselect(
@@ -2365,11 +2667,18 @@ def render_target_year_yoy_trend(trend: pd.DataFrame) -> None:
         return
 
     st.subheader(f"{YOY_BASE_YEAR}년 대비 {YOY_TARGET_YEAR}년 월별 승차 인원")
-    render_plotly_chart(
-        build_yoy_comparison_line(trend),
-        f"{YOY_BASE_YEAR}년 대비 {YOY_TARGET_YEAR}년 월별 비교 차트를 표시할 수 없습니다.",
+    render_two_column_charts(
+        [
+            (
+                build_yoy_comparison_line(trend),
+                f"{YOY_BASE_YEAR}년 대비 {YOY_TARGET_YEAR}년 월별 비교 차트를 표시할 수 없습니다.",
+            ),
+            (
+                build_yoy_growth_bar(trend),
+                "전년 동월 대비 증감률 차트를 표시할 수 없습니다.",
+            ),
+        ]
     )
-    render_plotly_chart(build_yoy_growth_bar(trend), "전년 동월 대비 증감률 차트를 표시할 수 없습니다.")
 
     display = trend[["period", "base_value", "target_value", "change", "growth_rate"]].rename(
         columns={
@@ -2681,13 +2990,12 @@ def weather_bus_tab(bundle: dict, monthly_df: pd.DataFrame) -> None:
         empty_message("분석 가능한 날씨 변수가 없습니다.")
         return
 
-    col1, col2, col3 = st.columns(3)
+    col1, col2, col3 = st.columns([1.1, 1.1, 1], gap="large")
     with col1:
         weather_col = st.selectbox(
             "날씨 변수 선택",
             list(weather_options.keys()),
             format_func=lambda col: weather_options[col],
-            help="선택한 변수는 아래 상관관계 카드, 이중축 추세 그래프, 선택 변수 산점도에 반영됩니다.",
         )
     with col2:
         stop_options = ["전체 대구"]
@@ -2695,6 +3003,7 @@ def weather_bus_tab(bundle: dict, monthly_df: pd.DataFrame) -> None:
             stop_options += sorted(monthly_df["stop_name"].dropna().astype(str).unique())
         selected_stop = st.selectbox("전체 대구 또는 정류소 선택", stop_options)
     with col3:
+        st.markdown("<div class='weather-metric-align-spacer'></div>", unsafe_allow_html=True)
         show_metric("날씨 관측 월 수", len(weather_monthly))
 
     bus_monthly = aggregate_bus_monthly(monthly_df, selected_stop)
@@ -2752,16 +3061,24 @@ def weather_bus_tab(bundle: dict, monthly_df: pd.DataFrame) -> None:
         fig = plot_weather_monthly_line(filtered, "monthly_avg_temp", "월평균 기온", "월별 기온 추세")
         render_plotly_chart(fig, "월평균 기온 컬럼이 없어 기온 추세를 표시할 수 없습니다.")
 
-    fig = plot_weather_bus_dual_line(filtered, weather_col, weather_options[weather_col])
-    render_plotly_chart(fig, "버스 이용량과 날씨 추세 비교 그래프를 표시할 수 없습니다.")
-
     selected_scatter = plot_weather_scatter(
         filtered,
         weather_col,
         weather_options[weather_col],
         f"{weather_options[weather_col]}와 월별 승차 인원의 산점도",
     )
-    render_plotly_chart(selected_scatter, "선택한 날씨 변수 산점도를 표시할 수 없습니다.")
+    render_two_column_charts(
+        [
+            (
+                plot_weather_bus_dual_line(filtered, weather_col, weather_options[weather_col]),
+                "버스 이용량과 날씨 추세 비교 그래프를 표시할 수 없습니다.",
+            ),
+            (
+                selected_scatter,
+                "선택한 날씨 변수 산점도를 표시할 수 없습니다.",
+            ),
+        ]
+    )
 
     col6, col7 = st.columns(2)
     with col6:
@@ -2794,55 +3111,58 @@ def weather_bus_tab(bundle: dict, monthly_df: pd.DataFrame) -> None:
     for col in ["Pearson 상관계수", "Spearman 상관계수"]:
         if col in display_corr.columns:
             display_corr[col] = display_corr[col].round(2)
-    st.dataframe(display_corr, use_container_width=True, hide_index=True)
+    render_pretty_table(display_corr, "날씨 변수별 상관계수", max_rows=12)
 
-    st.subheader("날씨 연관 분석 한계")
+    st.subheader("날씨 분석에서 함께 확인한 사항")
     st.markdown(
         """
-- 공휴일과 방학은 월별 이용량에 영향을 줄 수 있지만 현재 분석에는 별도로 반영하지 않았습니다.
-- 노선 개편과 배차 변화가 있으면 날씨와 무관하게 이용량이 달라질 수 있습니다.
-- 지역 행사와 대형 집객 시설의 일정은 월별 수요 변화를 만들 수 있습니다.
-- 유가 변화와 대체 교통수단 이용 변화는 버스 이용량에 영향을 줄 수 있습니다.
-- 코로나19와 같은 외부 요인은 장기 추세를 크게 바꿀 수 있습니다.
-- 월별 자료에서는 개별 강수일의 즉각적인 영향을 확인하기 어렵습니다.
+- 공휴일과 방학이 월별 이용량을 함께 움직일 수 있다는 점을 확인했습니다.
+- 노선 개편과 배차 변화가 날씨와 별도로 이용량 변화를 만들 수 있다는 점을 확인했습니다.
+- 지역 행사와 대형 집객 시설 일정이 월별 수요 변화와 함께 나타날 수 있습니다.
+- 유가 변화와 대체 교통수단 이용 변화도 버스 이용량 해석에 함께 고려할 조건입니다.
+- 코로나19와 같은 외부 요인은 장기 추세를 크게 바꿀 수 있는 배경 조건입니다.
+- 월별 자료에서는 개별 강수일의 즉각적인 영향보다 월 단위 경향을 확인하는 데 적합합니다.
 """
     )
 
 
 def data_limit_tab(bundle: dict) -> None:
-    """데이터 점검 결과와 분석 한계를 표시합니다."""
+    """데이터 해석 전에 함께 확인한 참고사항을 표시합니다."""
     render_section_header(
         "Method Notes",
-        "데이터 및 분석 한계",
-        "대시보드 해석 전에 함께 확인해야 할 데이터 수집 조건과 분석상 제약입니다.",
+        "데이터 해석 참고사항",
+        "분석 결과를 더 정확하게 읽기 위해 함께 확인한 데이터 수집 조건과 해석 기준입니다.",
     )
-    st.subheader("분석 한계")
+    st.subheader("분석에서 함께 확인한 사항")
     st.markdown(
         """
-- 하차 태그를 하지 않은 승객이 있을 수 있어 실제 하차 인원과 차이가 날 수 있습니다.
-- 현금 승차가 데이터에서 제외될 수 있습니다.
-- 경유 노선 수가 많다고 실제 배차 횟수가 많은 것은 아닙니다.
-- 버스 배차 간격과 차량 크기 데이터가 없습니다.
-- 이용객 수만으로 실제 차량 내부 혼잡도를 확정할 수 없습니다.
-- 특정 정류소의 이용량이 높은 이유는 주변 학교, 상권, 병원, 환승센터 등 추가 정보가 필요합니다.
-- 분석 결과는 노선 부족을 확정하는 것이 아니라 추가 검토 후보를 찾는 것입니다.
-- 데이터 수집 기간에 따라 계절성과 일시적 이벤트의 영향을 받을 수 있습니다.
-- 공휴일과 방학, 노선 개편, 지역 행사, 유가 변화, 코로나19 등의 외부 요인이 이용량에 영향을 줄 수 있습니다.
-- 월별 자료에서는 개별 강수일의 즉각적인 영향을 확인하기 어렵습니다.
+- 하차 태그를 하지 않은 승객이 있을 수 있어 하차 인원은 보조 지표로 함께 확인했습니다.
+- 현금 승차가 데이터에 포함되지 않을 수 있어 승차 인원 해석 시 집계 범위를 함께 확인했습니다.
+- 경유 노선 수와 실제 배차 횟수는 다를 수 있어 노선 수는 공급 규모의 1차 지표로 사용했습니다.
+- 버스 배차 간격과 차량 크기 자료가 추가되면 후보 정류소의 검토 우선순위를 더 정교하게 만들 수 있습니다.
+- 이용객 수는 실제 차량 내부 혼잡도를 직접 확정하기보다 혼잡 가능성을 살피는 출발점으로 사용했습니다.
+- 특정 정류소의 높은 이용량은 주변 학교, 상권, 병원, 환승센터 등 지역 맥락과 함께 해석했습니다.
+- 분석 결과는 노선 부족 확정이 아니라 추가 검토 후보를 좁히는 데 활용했습니다.
+- 데이터 수집 기간에 따라 계절성과 일시적 이벤트가 함께 나타날 수 있다는 점을 확인했습니다.
+- 공휴일과 방학, 노선 개편, 지역 행사, 유가 변화, 코로나19 등의 외부 요인도 이용량 해석 조건으로 확인했습니다.
+- 월별 자료는 개별 강수일의 즉각적 영향보다 월 단위 흐름을 확인하는 데 적합합니다.
 """
     )
 
 
 def main() -> None:
     """Streamlit 앱의 시작점입니다."""
-    st.set_page_config(page_title="대구 시내버스 정류소 분석", layout="wide")
+    st.set_page_config(page_title="대구 시내버스 수급 불균형 분석", layout="wide")
     ensure_directories(BASE_DIR)
     set_korean_font()
-    apply_neumorphic_theme()
     apply_retro_90s_overrides()
     render_app_hero()
 
-    bundle = load_project_data(str(DATA_DIR), data_fingerprint(DATA_DIR))
+    if st.sidebar.button("정제 데이터 다시 불러오기"):
+        bundle = reload_project_data()
+        st.sidebar.success("정제 CSV를 다시 불러왔습니다.")
+    else:
+        bundle = get_project_data()
     stop_df = bundle.get("stop_summary", pd.DataFrame())
     hourly_df = bundle.get("hourly_summary", pd.DataFrame())
     monthly_df = bundle.get("monthly_summary", pd.DataFrame())
@@ -2875,12 +3195,15 @@ def main() -> None:
         save_outputs_on_request(bundle, filtered_stop, filtered_hourly)
         st.sidebar.success("outputs/processed에 저장했습니다.")
 
-    analysis_tables = create_analysis_tables(filtered_stop, filtered_hourly, monthly_df, top_n=filters["top_n"])
+    analysis_tables = build_core_analysis_tables(
+        filtered_stop,
+        filtered_hourly,
+        monthly_df,
+        top_n=filters["top_n"],
+    )
 
     with st.expander("핵심 분석 결과 표 보기"):
-        for name, table in analysis_tables.items():
-            if isinstance(table, pd.DataFrame) and not table.empty:
-                render_pretty_table(table, str(name), max_rows=12)
+        render_analysis_tables_grid(analysis_tables, max_rows=12)
 
     tabs = st.tabs(
         [
@@ -2891,7 +3214,7 @@ def main() -> None:
             "지도 분석",
             "장기 추세 분석",
             "날씨와 버스 이용",
-            "데이터 및 분석 한계",
+            "데이터 해석 참고사항",
         ]
     )
 
