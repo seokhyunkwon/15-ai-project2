@@ -411,28 +411,94 @@ def plot_supply_demand_scatter(stop_df: pd.DataFrame, thresholds: dict):
             line_width=0,
             layer="below",
         )
+        fig.add_annotation(
+            x=route_line / 2 if route_line else 0,
+            y=data["boardings"].max() * 0.96,
+            text="추가 검토 후보 영역<br>노선 수는 적고 승차 수요는 높음",
+            showarrow=False,
+            align="left",
+            bgcolor=RETRO_PANEL,
+            bordercolor=DARK_STROKE,
+            borderwidth=1,
+            font=dict(color=DARK_TEXT, size=12),
+        )
+        fig.add_annotation(
+            x=route_line,
+            y=data["boardings"].min(),
+            text=f"노선 {route_line:,.0f}개 이하",
+            showarrow=False,
+            yshift=-34,
+            bgcolor=RETRO_PANEL,
+            bordercolor=DARK_STROKE,
+            borderwidth=1,
+            font=dict(color=DARK_TEXT, size=11),
+        )
+        fig.add_annotation(
+            x=data["route_count"].max(),
+            y=demand_line,
+            text=f"승차 {demand_line:,.0f}명 이상",
+            showarrow=False,
+            xanchor="right",
+            yshift=12,
+            bgcolor=RETRO_PANEL,
+            bordercolor=DARK_STROKE,
+            borderwidth=1,
+            font=dict(color=DARK_TEXT, size=11),
+        )
     fig.update_layout(height=600, margin=dict(l=20, r=20, t=60, b=20))
     return apply_dark_plotly_theme(fig)
 
 
-def bus_stop_icon_data_uri() -> str:
+def bus_stop_icon_data_uri(pin_color: str = "#2563EB") -> str:
     """지도 위에 표시할 버스 정류장 핀 SVG를 데이터 URI로 만듭니다."""
     svg = """
     <svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 128 128">
-      <path d="M64 124C54 110 27 78 27 50C27 29 44 12 64 12C84 12 101 29 101 50C101 78 74 110 64 124Z" fill="#FF4048"/>
-      <path d="M84 91C78 101 71 112 64 124C54 110 27 78 27 50C27 48 27 46 28 44C39 75 63 87 84 91Z" fill="#D92838" opacity="0.55"/>
-      <circle cx="64" cy="50" r="35" fill="#F5F5F5"/>
-      <path d="M47 35H81C87 35 91 39 91 45V72C91 78 87 82 81 82H47C41 82 37 78 37 72V45C37 39 41 35 47 35Z" fill="#B5293A"/>
-      <path d="M50 44H78C81 44 83 46 83 49V63H45V49C45 46 47 44 50 44Z" fill="#F5F5F5"/>
-      <circle cx="50" cy="72" r="6" fill="#F5F5F5"/>
-      <circle cx="78" cy="72" r="6" fill="#F5F5F5"/>
-      <rect x="42" y="82" width="12" height="12" fill="#B5293A"/>
-      <rect x="74" y="82" width="12" height="12" fill="#B5293A"/>
-      <rect x="29" y="51" width="9" height="5" fill="#B5293A"/>
-      <rect x="90" y="51" width="9" height="5" fill="#B5293A"/>
+      <path d="M64 124C54 110 27 78 27 50C27 29 44 12 64 12C84 12 101 29 101 50C101 78 74 110 64 124Z" fill="{pin_color}" stroke="#111111" stroke-width="2.5"/>
+      <path d="M84 91C78 101 71 112 64 124C54 110 27 78 27 50C27 48 27 46 28 44C39 75 63 87 84 91Z" fill="#000000" opacity="0.16"/>
+      <circle cx="64" cy="50" r="35" fill="#F8F8F8" stroke="#111111" stroke-width="1.8"/>
+      <path d="M47 35H81C87 35 91 39 91 45V72C91 78 87 82 81 82H47C41 82 37 78 37 72V45C37 39 41 35 47 35Z" fill="#111111"/>
+      <path d="M50 44H78C81 44 83 46 83 49V63H45V49C45 46 47 44 50 44Z" fill="#F8F8F8"/>
+      <circle cx="50" cy="72" r="6" fill="#F8F8F8"/>
+      <circle cx="78" cy="72" r="6" fill="#F8F8F8"/>
+      <rect x="42" y="82" width="12" height="12" fill="#111111"/>
+      <rect x="74" y="82" width="12" height="12" fill="#111111"/>
+      <rect x="29" y="51" width="9" height="5" fill="#111111"/>
+      <rect x="90" y="51" width="9" height="5" fill="#111111"/>
     </svg>
     """
-    return "data:image/svg+xml;charset=utf-8," + quote(" ".join(svg.split()))
+    return "data:image/svg+xml;charset=utf-8," + quote(" ".join(svg.format(pin_color=pin_color).split()))
+
+
+def map_density_style(value: float, high_cutoff: float, very_high_cutoff: float) -> tuple[str, str]:
+    """노선당 승차 인원 수준을 3단계 색상과 라벨로 바꿉니다."""
+    try:
+        number = float(value)
+    except (TypeError, ValueError):
+        number = 0.0
+    if pd.isna(number):
+        number = 0.0
+    if number >= very_high_cutoff:
+        return "#FF4048", "매우 높음"
+    if number >= high_cutoff:
+        return "#FFD400", "높음"
+    return "#2563EB", "보통"
+
+
+def map_size_style(value: float, medium_cutoff: float, large_cutoff: float, huge_cutoff: float) -> tuple[int, str]:
+    """전체 승차 인원을 지도 아이콘 크기 4단계로 바꿉니다."""
+    try:
+        number = float(value)
+    except (TypeError, ValueError):
+        number = 0.0
+    if pd.isna(number):
+        number = 0.0
+    if number >= huge_cutoff:
+        return 42, "매우 큼"
+    if number >= large_cutoff:
+        return 26, "큼"
+    if number >= medium_cutoff:
+        return 16, "보통"
+    return 10, "작음"
 
 
 def create_pydeck_map(stop_df: pd.DataFrame, max_icons: int | None = 900):
@@ -459,16 +525,34 @@ def create_pydeck_map(stop_df: pd.DataFrame, max_icons: int | None = 900):
         route_base = per_route.max() if per_route.max() > 0 else 1
 
     # 원형 점 대신 버스 정류장 핀 아이콘을 사용합니다.
-    # 멀리 줌아웃했을 때 겹침이 심하지 않도록 아이콘 크기 범위를 작게 잡습니다.
-    icon_data = {
-        "url": bus_stop_icon_data_uri(),
-        "width": 128,
-        "height": 128,
-        "anchorY": 128,
-        "mask": False,
+    # 연속값 크기는 지도에서 차이가 약하게 보여서, 발표 화면에서도 구분되는 4단계 크기로 나눕니다.
+    medium_cutoff = boardings.quantile(0.50)
+    large_cutoff = boardings.quantile(0.80)
+    huge_cutoff = boardings.quantile(0.95)
+    if pd.isna(medium_cutoff):
+        medium_cutoff = 0
+    if pd.isna(large_cutoff) or large_cutoff <= medium_cutoff:
+        large_cutoff = medium_cutoff + 1
+    if pd.isna(huge_cutoff) or huge_cutoff <= large_cutoff:
+        huge_cutoff = large_cutoff + 1
+    size_styles = [map_size_style(value, medium_cutoff, large_cutoff, huge_cutoff) for value in boardings]
+    data["icon_size"] = [item[0] for item in size_styles]
+    data["icon_size_level"] = [item[1] for item in size_styles]
+    high_cutoff = per_route.quantile(0.70)
+    very_high_cutoff = per_route.quantile(0.90)
+    if pd.isna(high_cutoff):
+        high_cutoff = 0
+    if pd.isna(very_high_cutoff) or very_high_cutoff <= high_cutoff:
+        very_high_cutoff = per_route.max() if per_route.max() > 0 else high_cutoff + 1
+    styles = [map_density_style(value, high_cutoff, very_high_cutoff) for value in per_route]
+    data["density_color"] = [item[0] for item in styles]
+    data["density_level"] = [item[1] for item in styles]
+    icon_cache = {
+        "#2563EB": {"url": bus_stop_icon_data_uri("#2563EB"), "width": 128, "height": 128, "anchorY": 128, "mask": False},
+        "#FFD400": {"url": bus_stop_icon_data_uri("#FFD400"), "width": 128, "height": 128, "anchorY": 128, "mask": False},
+        "#FF4048": {"url": bus_stop_icon_data_uri("#FF4048"), "width": 128, "height": 128, "anchorY": 128, "mask": False},
     }
-    data["icon_data"] = [icon_data for _ in range(len(data))]
-    data["icon_size"] = (16 + np.sqrt((boardings / boardings_base).clip(0, 1)) * 14).round(1)
+    data["icon_data"] = [icon_cache[color] for color in data["density_color"]]
 
     center_lat = float(data["lat"].mean())
     center_lon = float(data["lon"].mean())
@@ -480,8 +564,8 @@ def create_pydeck_map(stop_df: pd.DataFrame, max_icons: int | None = 900):
         get_size="icon_size",
         size_units="pixels",
         size_scale=1,
-        size_min_pixels=14,
-        size_max_pixels=32,
+        size_min_pixels=8,
+        size_max_pixels=46,
         pickable=True,
         auto_highlight=True,
     )
@@ -493,6 +577,8 @@ def create_pydeck_map(stop_df: pd.DataFrame, max_icons: int | None = 900):
         하차 인원: {alightings}<br/>
         경유 노선 수: {route_count}<br/>
         노선당 승차 인원: {boardings_per_route}<br/>
+        노선당 승차 밀도: {density_level}<br/>
+        아이콘 크기: {icon_size_level}<br/>
         정류소 유형: {stop_type}
         """,
         "style": {

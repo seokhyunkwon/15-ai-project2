@@ -1,5 +1,6 @@
 from pathlib import Path
 from html import escape
+import importlib
 
 import pandas as pd
 import streamlit as st
@@ -47,6 +48,8 @@ from src.weather_analysis import (
     merge_bus_weather_monthly,
     selected_weather_correlation_summary,
 )
+
+import src.analysis as analysis_module
 
 
 BASE_DIR = Path(__file__).resolve().parent
@@ -1352,6 +1355,79 @@ def apply_retro_90s_overrides() -> None:
             font-size: 0.78rem !important;
         }
 
+        .map-legend-panel {
+            margin: 0.75rem 0 1rem !important;
+            padding: 0.65rem 0.75rem !important;
+            border: 2px solid !important;
+            border-color: #ffffff #808080 #808080 #ffffff !important;
+            background: #ffffcc !important;
+            box-shadow: inset -1px -1px 0 #404040, inset 1px 1px 0 #dfdfdf !important;
+            color: #000000 !important;
+            font-family: "MS Sans Serif", Tahoma, "Malgun Gothic", sans-serif !important;
+        }
+
+        .map-legend-title {
+            margin-bottom: 0.55rem !important;
+            font-weight: 900 !important;
+        }
+
+        .map-legend-grid {
+            display: flex !important;
+            flex-wrap: wrap !important;
+            gap: 0.55rem !important;
+            align-items: stretch !important;
+        }
+
+        .map-legend-item {
+            display: inline-flex !important;
+            align-items: center !important;
+            gap: 0.42rem !important;
+            min-height: 2rem !important;
+            padding: 0.34rem 0.55rem !important;
+            border: 1px solid #000000 !important;
+            background: #ffffff !important;
+            color: #000000 !important;
+            font-size: 0.82rem !important;
+            font-weight: 800 !important;
+            white-space: nowrap !important;
+        }
+
+        .map-color-chip {
+            display: inline-block !important;
+            width: 1rem !important;
+            height: 1rem !important;
+            border: 2px solid #000000 !important;
+            flex: 0 0 auto !important;
+        }
+
+        .map-size-dot {
+            display: inline-block !important;
+            border: 2px solid #000000 !important;
+            border-radius: 999px !important;
+            background: #ff4048 !important;
+            flex: 0 0 auto !important;
+        }
+
+        .map-size-dot--small {
+            width: 0.45rem !important;
+            height: 0.45rem !important;
+        }
+
+        .map-size-dot--large {
+            width: 0.95rem !important;
+            height: 0.95rem !important;
+        }
+
+        .map-size-dot--medium {
+            width: 0.68rem !important;
+            height: 0.68rem !important;
+        }
+
+        .map-size-dot--huge {
+            width: 1.28rem !important;
+            height: 1.28rem !important;
+        }
+
         a, .stMarkdown a {
             color: #0000ff !important;
             text-decoration: underline !important;
@@ -2002,6 +2078,19 @@ def data_fingerprint(data_dir: Path) -> tuple:
     return tuple(fingerprint)
 
 
+def processed_fingerprint(processed_dir: Path) -> tuple:
+    """정제 CSV가 바뀌면 Streamlit 캐시가 갱신되도록 파일 상태를 요약합니다."""
+    if not processed_dir.exists():
+        return tuple()
+    fingerprint = []
+    for file_name in sorted(set(PROCESSED_CACHE_FILES.values())):
+        path = processed_dir / file_name
+        if path.exists():
+            stat = path.stat()
+            fingerprint.append((file_name, int(stat.st_mtime), stat.st_size))
+    return tuple(fingerprint)
+
+
 def processed_cache_is_fresh(data_dir: Path, processed_dir: Path) -> bool:
     """전처리 CSV가 원본 CSV보다 최신이면 빠른 로딩에 사용할 수 있는지 확인합니다."""
     required = ["stop_summary", "hourly_summary", "monthly_summary", "weather_monthly", "data_check_report"]
@@ -2056,10 +2145,10 @@ def load_processed_cache(processed_dir: Path) -> dict:
 
 
 @st.cache_data(show_spinner="정제된 분석 CSV를 불러오는 중입니다.")
-def load_project_data(data_dir: str, fingerprint: tuple) -> dict:
+def load_project_data(data_dir: str, raw_fingerprint: tuple, cache_fingerprint: tuple) -> dict:
     """Streamlit에서는 원본 CSV가 아니라 정제된 CSV만 불러옵니다."""
     data_path = Path(data_dir)
-    del fingerprint
+    del raw_fingerprint, cache_fingerprint
     if not processed_cache_exists(PROCESSED_DIR):
         return {
             "audit": [],
@@ -2076,17 +2165,23 @@ def load_project_data(data_dir: str, fingerprint: tuple) -> dict:
 
 def get_project_data() -> dict:
     """한 번 불러온 정제 데이터를 세션에 저장해 반복 리로드를 줄입니다."""
-    if "project_data_bundle" in st.session_state:
+    current_fingerprint = (data_fingerprint(DATA_DIR), processed_fingerprint(PROCESSED_DIR))
+    if (
+        "project_data_bundle" in st.session_state
+        and st.session_state.get("project_data_fingerprint") == current_fingerprint
+    ):
         return st.session_state["project_data_bundle"]
 
-    bundle = load_project_data(str(DATA_DIR), data_fingerprint(DATA_DIR))
+    bundle = load_project_data(str(DATA_DIR), current_fingerprint[0], current_fingerprint[1])
     st.session_state["project_data_bundle"] = bundle
+    st.session_state["project_data_fingerprint"] = current_fingerprint
     return bundle
 
 
 def reload_project_data() -> dict:
     """사용자가 원할 때만 정제 CSV를 다시 읽습니다."""
     st.session_state.pop("project_data_bundle", None)
+    st.session_state.pop("project_data_fingerprint", None)
     load_project_data.clear()
     return get_project_data()
 
@@ -2168,18 +2263,28 @@ def filter_stop_data(stop_df: pd.DataFrame, filters: dict) -> pd.DataFrame:
 
 def filter_hourly_data(hourly_df: pd.DataFrame, stop_df: pd.DataFrame, hours: tuple[int, int]) -> pd.DataFrame:
     """정류소 필터와 시간대 필터를 시간대별 데이터에 적용합니다."""
-    if hourly_df.empty or stop_df.empty or "_merge_key" not in hourly_df.columns:
+    if hourly_df.empty or stop_df.empty:
         return pd.DataFrame()
-    valid_keys = set(stop_df["_merge_key"].dropna())
-    filtered = hourly_df[hourly_df["_merge_key"].isin(valid_keys)].copy()
+    if "_merge_key" in hourly_df.columns and "_merge_key" in stop_df.columns:
+        valid_keys = set(stop_df["_merge_key"].dropna())
+        filtered = hourly_df[hourly_df["_merge_key"].isin(valid_keys)].copy()
+    else:
+        filtered = pd.DataFrame()
+    if filtered.empty and "stop_name" in hourly_df.columns and "stop_name" in stop_df.columns:
+        valid_names = set(stop_df["stop_name"].dropna().astype(str))
+        filtered = hourly_df[hourly_df["stop_name"].astype(str).isin(valid_names)].copy()
     metadata_cols = [
         col
         for col in ["district", "stop_type", "route_count"]
         if col in stop_df.columns and col not in filtered.columns
     ]
-    if metadata_cols and "_merge_key" in stop_df.columns:
-        metadata = stop_df[["_merge_key"] + metadata_cols].dropna(subset=["_merge_key"]).drop_duplicates("_merge_key")
-        filtered = filtered.merge(metadata, on="_merge_key", how="left")
+    if metadata_cols and not filtered.empty:
+        if "_merge_key" in filtered.columns and "_merge_key" in stop_df.columns:
+            metadata = stop_df[["_merge_key"] + metadata_cols].dropna(subset=["_merge_key"]).drop_duplicates("_merge_key")
+            filtered = filtered.merge(metadata, on="_merge_key", how="left")
+        elif "stop_name" in filtered.columns and "stop_name" in stop_df.columns:
+            metadata = stop_df[["stop_name"] + metadata_cols].dropna(subset=["stop_name"]).drop_duplicates("stop_name")
+            filtered = filtered.merge(metadata, on="stop_name", how="left")
     if "total_riders" not in filtered.columns:
         if {"boardings", "alightings"}.issubset(filtered.columns):
             filtered["total_riders"] = filtered["boardings"].fillna(0) + filtered["alightings"].fillna(0)
@@ -2317,7 +2422,7 @@ def overview_tab(stop_df: pd.DataFrame, hourly_df: pd.DataFrame, top_n: int, met
     render_section_header(
         "Overview",
         "전체 현황",
-        "필터 조건에 맞는 정류소 수요, 하차, 시간대 피크, 노선당 승차 밀도를 한 화면에서 비교합니다.",
+        "승차·하차 수요는 2024~2025년 월별 이용자수 데이터 기준이며, 시간대 피크와 집중도는 시간대별 승하차 데이터로 함께 비교합니다.",
     )
 
     metric_cols = st.columns(6, gap="small")
@@ -2520,25 +2625,58 @@ def imbalance_tab(stop_df: pd.DataFrame, top_n: int) -> pd.DataFrame:
     )
 
     st.caption("이 분석은 실제 노선 부족을 확정하지 않고, 추가 검토가 필요한 후보 정류소를 찾는 용도입니다.")
-    col1, col2, col3 = st.columns(3)
-    with col1:
-        demand_q = st.slider("전체 승차 인원 상위 기준", 0.50, 0.95, 0.75, 0.05)
-    with col2:
-        route_q = st.slider("경유 노선 수 하위 기준", 0.10, 0.90, 0.50, 0.05)
-    with col3:
-        per_route_q = st.slider("노선당 승차 인원 상위 기준", 0.50, 0.99, 0.90, 0.01)
+    criteria_mode = st.radio(
+        "후보 기준 방식",
+        ["발표용 절대 기준", "데이터 분위수 기준"],
+        horizontal=True,
+        help="발표용 절대 기준은 설명이 쉬운 숫자를 직접 사용하고, 데이터 분위수 기준은 전체 정류소 분포의 상위·하위 비율을 사용합니다.",
+    )
 
-    candidates, thresholds = imbalance_candidates(
-        stop_df,
-        demand_quantile=demand_q,
-        route_quantile=route_q,
-        per_route_quantile=per_route_q,
-    )
-    st.write(
-        f"후보 기준: 전체 승차 인원 {format_number(thresholds.get('demand_threshold'))} 이상, "
-        f"경유 노선 수 {format_number(thresholds.get('route_threshold'))} 이하, "
-        f"노선당 승차 인원 {format_number(thresholds.get('per_route_threshold'))} 이상"
-    )
+    if criteria_mode == "발표용 절대 기준":
+        col1, col2, col3 = st.columns(3)
+        with col1:
+            demand_threshold = st.number_input("승차 인원 기준", min_value=0, value=200000, step=10000)
+        with col2:
+            route_threshold = st.number_input("경유 노선 수 기준", min_value=1, value=3, step=1)
+        with col3:
+            per_route_threshold = st.number_input("노선당 승차 인원 기준", min_value=0, value=150000, step=10000)
+
+        current_analysis = importlib.reload(analysis_module)
+        candidates, thresholds = current_analysis.imbalance_candidates(
+            stop_df,
+            demand_threshold=demand_threshold,
+            route_threshold=route_threshold,
+            per_route_threshold=per_route_threshold,
+        )
+        st.write(
+            f"후보 기준: 승차 인원 {format_number(demand_threshold)}명 이상, "
+            f"경유 노선 수 {format_number(route_threshold)}개 이하, "
+            f"노선당 승차 인원 {format_number(per_route_threshold)}명/노선 이상"
+        )
+    else:
+        col1, col2, col3 = st.columns(3)
+        with col1:
+            demand_q = st.slider("전체 승차 인원 상위 기준", 0.50, 0.95, 0.75, 0.05)
+        with col2:
+            route_q = st.slider("경유 노선 수 하위 기준", 0.10, 0.90, 0.50, 0.05)
+        with col3:
+            per_route_q = st.slider("노선당 승차 인원 상위 기준", 0.50, 0.99, 0.90, 0.01)
+
+        current_analysis = importlib.reload(analysis_module)
+        candidates, thresholds = current_analysis.imbalance_candidates(
+            stop_df,
+            demand_quantile=demand_q,
+            route_quantile=route_q,
+            per_route_quantile=per_route_q,
+        )
+        st.write(
+            f"후보 기준: 승차 인원 상위 {(1 - demand_q) * 100:.0f}% "
+            f"({format_number(thresholds.get('demand_threshold'))}명 이상), "
+            f"경유 노선 수 하위 {route_q * 100:.0f}% "
+            f"({format_number(thresholds.get('route_threshold'))}개 이하), "
+            f"노선당 승차 인원 상위 {(1 - per_route_q) * 100:.0f}% "
+            f"({format_number(thresholds.get('per_route_threshold'))}명/노선 이상)"
+        )
 
     fig = plot_supply_demand_scatter(stop_df, thresholds)
     render_plotly_chart(fig, "산점도에 필요한 승차 인원 또는 경유 노선 수 컬럼이 부족합니다.")
@@ -2583,7 +2721,7 @@ def map_tab(stop_df: pd.DataFrame, show_map: bool) -> None:
     render_section_header(
         "Urban Field",
         "지도 기반 정류소 분포",
-        "대구 전역의 정류소 수요와 노선당 승차 밀도를 버스 정류장 아이콘 지도 위에서 공간적으로 탐색합니다.",
+        "아이콘 크기는 승차 인원, 아이콘 색상은 노선당 승차 인원 밀도를 반영해 정류소 분포를 공간적으로 탐색합니다.",
     )
     if not show_map:
         empty_message("사이드바에서 지도 표시 여부가 꺼져 있습니다.")
@@ -2601,8 +2739,36 @@ def map_tab(stop_df: pd.DataFrame, show_map: bool) -> None:
         )
         st.caption(
             f"현재 지도에는 승차 인원 기준 상위 {format_number(max_icons)}개 정류소를 표시합니다. "
-            "확대해서 더 많은 정류소를 보고 싶으면 이 값을 올리세요."
+            "표시 개수를 조절하면 상위 이용 정류소부터 단계적으로 후보 분포를 확인할 수 있습니다."
         )
+    visible_map_data = pd.DataFrame()
+    if {"lat", "lon", "boardings"}.issubset(stop_df.columns):
+        visible_map_data = stop_df.dropna(subset=["lat", "lon"]).copy()
+        if max_icons is not None and max_icons > 0 and len(visible_map_data) > max_icons:
+            visible_map_data = visible_map_data.sort_values("boardings", ascending=False).head(max_icons).copy()
+
+    if not visible_map_data.empty:
+        per_route = pd.to_numeric(
+            visible_map_data.get("boardings_per_route", pd.Series(0, index=visible_map_data.index)),
+            errors="coerce",
+        ).fillna(0)
+        boardings = pd.to_numeric(visible_map_data["boardings"], errors="coerce").fillna(0).clip(lower=0)
+        high_cutoff = per_route.quantile(0.70)
+        very_high_cutoff = per_route.quantile(0.90)
+        medium_size_cutoff = boardings.quantile(0.50)
+        large_size_cutoff = boardings.quantile(0.80)
+        huge_size_cutoff = boardings.quantile(0.95)
+        if pd.isna(high_cutoff):
+            high_cutoff = 0
+        if pd.isna(very_high_cutoff) or very_high_cutoff <= high_cutoff:
+            very_high_cutoff = per_route.max() if per_route.max() > 0 else high_cutoff + 1
+        if pd.isna(medium_size_cutoff):
+            medium_size_cutoff = 0
+        if pd.isna(large_size_cutoff) or large_size_cutoff <= medium_size_cutoff:
+            large_size_cutoff = medium_size_cutoff + 1
+        if pd.isna(huge_size_cutoff) or huge_size_cutoff <= large_size_cutoff:
+            huge_size_cutoff = large_size_cutoff + 1
+
     import importlib
     import src.visualization as visualization_module
 
@@ -2611,7 +2777,7 @@ def map_tab(stop_df: pd.DataFrame, show_map: bool) -> None:
     if deck is None:
         empty_message("위치정보 데이터가 없어 지도 분석을 표시할 수 없습니다.")
         return
-    map_key = f"bus_stop_icon_map_v3_{max_icons or 'all'}"
+    map_key = f"bus_stop_icon_map_v6_{max_icons or 'all'}"
     st.pydeck_chart(deck, use_container_width=True, key=map_key)
 
 

@@ -25,6 +25,9 @@ PROCESSED_DIR = BASE_DIR / "outputs" / "processed"
 
 HIGH_CONCENTRATION_THRESHOLD = 25.0
 LOW_USAGE_QUANTILE = 0.25
+DEFAULT_DEMAND_THRESHOLD = 200000
+DEFAULT_ROUTE_THRESHOLD = 3
+DEFAULT_PER_ROUTE_THRESHOLD = 150000
 
 
 def build_processed_outputs() -> dict:
@@ -48,7 +51,12 @@ def build_processed_outputs() -> dict:
             low_usage_quantile=LOW_USAGE_QUANTILE,
         )
 
-    candidates, _ = imbalance_candidates(bundle.get("stop_summary", pd.DataFrame()))
+    candidates, _ = imbalance_candidates(
+        bundle.get("stop_summary", pd.DataFrame()),
+        demand_threshold=DEFAULT_DEMAND_THRESHOLD,
+        route_threshold=DEFAULT_ROUTE_THRESHOLD,
+        per_route_threshold=DEFAULT_PER_ROUTE_THRESHOLD,
+    )
 
     save_dataframe_csv(audit_to_dataframe(audit), PROCESSED_DIR / "data_check_report.csv")
     for name in [
