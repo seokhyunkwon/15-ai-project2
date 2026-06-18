@@ -87,7 +87,10 @@ def correlation_analysis(stop_df: pd.DataFrame, x: str = "route_count", y: str =
     if len(data) < 3 or data[x].nunique() < 2 or data[y].nunique() < 2:
         return {"pearson": np.nan, "spearman": np.nan, "pearson_sentence": "상관관계를 계산할 데이터가 부족합니다."}
     pearson = data[x].corr(data[y], method="pearson")
-    spearman = data[x].corr(data[y], method="spearman")
+    try:
+        spearman = data[x].corr(data[y], method="spearman")
+    except ModuleNotFoundError:
+        spearman = data[x].rank().corr(data[y].rank(), method="pearson")
     pearson_strength = interpret_correlation(pearson)
     spearman_strength = interpret_correlation(spearman)
     return {
@@ -128,6 +131,9 @@ def imbalance_candidates(
     demand_quantile: float = 0.75,
     route_quantile: float = 0.50,
     per_route_quantile: float = 0.90,
+    demand_threshold: float | None = None,
+    route_threshold: float | None = None,
+    per_route_threshold: float | None = None,
 ) -> tuple[pd.DataFrame, dict]:
     """수요는 높고 경유 노선 수는 적은 추가 검토 후보 정류소를 찾습니다."""
     required = {"boardings", "route_count", "boardings_per_route"}
@@ -140,9 +146,24 @@ def imbalance_candidates(
         return pd.DataFrame(), {"demand_threshold": np.nan, "route_threshold": np.nan, "per_route_threshold": np.nan}
 
     thresholds = {
-        "demand_threshold": data["boardings"].quantile(demand_quantile),
-        "route_threshold": data["route_count"].quantile(route_quantile),
-        "per_route_threshold": data["boardings_per_route"].quantile(per_route_quantile),
+        "demand_threshold": (
+            float(demand_threshold)
+            if demand_threshold is not None
+            else data["boardings"].quantile(demand_quantile)
+        ),
+        "route_threshold": (
+            float(route_threshold)
+            if route_threshold is not None
+            else data["route_count"].quantile(route_quantile)
+        ),
+        "per_route_threshold": (
+            float(per_route_threshold)
+            if per_route_threshold is not None
+            else data["boardings_per_route"].quantile(per_route_quantile)
+        ),
+        "threshold_mode": "absolute"
+        if any(value is not None for value in [demand_threshold, route_threshold, per_route_threshold])
+        else "quantile",
     }
     candidates = data[
         (data["boardings"] >= thresholds["demand_threshold"])

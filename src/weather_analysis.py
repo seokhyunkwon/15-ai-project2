@@ -448,7 +448,10 @@ def calculate_weather_correlations(merged_df: pd.DataFrame, bus_metric: str = "b
             spearman = np.nan
         else:
             pearson = data[bus_metric].corr(data[weather_col], method="pearson")
-            spearman = data[bus_metric].corr(data[weather_col], method="spearman")
+            try:
+                spearman = data[bus_metric].corr(data[weather_col], method="spearman")
+            except ModuleNotFoundError:
+                spearman = data[bus_metric].rank().corr(data[weather_col].rank(), method="pearson")
         rows.append(
             {
                 "날씨 변수": label,
