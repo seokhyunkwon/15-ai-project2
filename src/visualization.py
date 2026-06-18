@@ -261,21 +261,71 @@ def plot_board_alight_line(hourly_df: pd.DataFrame):
     return apply_dark_plotly_theme(fig)
 
 
+def _attach_stop_metadata(hourly_df: pd.DataFrame, stop_df: pd.DataFrame, columns: list[str]) -> pd.DataFrame:
+    """시간대 데이터에 구·군 같은 정류소 속성이 없으면 정류소 요약표에서 붙입니다."""
+    data = hourly_df.copy()
+    if stop_df.empty:
+        return data
+
+    missing_cols = [col for col in columns if col in stop_df.columns and col not in data.columns]
+    empty_cols = [
+        col
+        for col in columns
+        if col in stop_df.columns and col in data.columns and data[col].notna().sum() == 0
+    ]
+    target_cols = list(dict.fromkeys(missing_cols + empty_cols))
+    if not target_cols:
+        return data
+
+    if "_merge_key" in data.columns and "_merge_key" in stop_df.columns:
+        meta = stop_df[["_merge_key"] + target_cols].dropna(subset=["_merge_key"]).drop_duplicates("_merge_key")
+        data = data.drop(columns=[col for col in empty_cols if col in data.columns], errors="ignore")
+        data = data.merge(meta, on="_merge_key", how="left")
+
+    unresolved = [col for col in target_cols if col not in data.columns or data[col].notna().sum() == 0]
+    if unresolved and "stop_name" in data.columns and "stop_name" in stop_df.columns:
+        meta = stop_df[["stop_name"] + unresolved].dropna(subset=["stop_name"]).drop_duplicates("stop_name")
+        data = data.drop(columns=[col for col in unresolved if col in data.columns], errors="ignore")
+        data = data.merge(meta, on="stop_name", how="left")
+
+    return data
+
+
 def plot_stop_hour_heatmap(hourly_df: pd.DataFrame, stop_df: pd.DataFrame, metric: str = "boardings", top_n: int = 20):
     """정류소 × 시간대 히트맵을 만듭니다."""
     px = get_plotly_express()
     if px is None:
         return None
-    if hourly_df.empty or metric not in hourly_df.columns or "hour" not in hourly_df.columns or "stop_name" not in hourly_df.columns:
+    required = {metric, "hour", "stop_name"}
+    if hourly_df.empty or not required.issubset(hourly_df.columns):
         return None
-    if not stop_df.empty and metric in stop_df.columns and "_merge_key" in stop_df.columns:
-        top_keys = stop_df.sort_values(metric, ascending=False)["_merge_key"].head(top_n)
-        data = hourly_df[hourly_df["_merge_key"].isin(top_keys)].copy()
+
+    data = hourly_df.copy()
+    if not stop_df.empty and metric in stop_df.columns:
+        top_stop_df = stop_df.sort_values(metric, ascending=False).head(top_n)
+        data_by_key = pd.DataFrame()
+        if "_merge_key" in data.columns and "_merge_key" in top_stop_df.columns:
+            top_keys = set(top_stop_df["_merge_key"].dropna())
+            data_by_key = data[data["_merge_key"].isin(top_keys)].copy()
+        if not data_by_key.empty:
+            data = data_by_key
+        elif "stop_name" in top_stop_df.columns:
+            top_names = set(top_stop_df["stop_name"].dropna().astype(str))
+            data = data[data["stop_name"].astype(str).isin(top_names)].copy()
     else:
-        data = hourly_df.copy()
+        top_names = (
+            data.groupby("stop_name", as_index=False)[metric]
+            .sum()
+            .sort_values(metric, ascending=False)["stop_name"]
+            .head(top_n)
+        )
+        data = data[data["stop_name"].isin(top_names)].copy()
+
     if data.empty:
         return None
     pivot = data.pivot_table(index="stop_name", columns="hour", values=metric, aggfunc="sum").fillna(0)
+    if pivot.empty:
+        return None
     fig = px.imshow(
         pivot,
         aspect="auto",
@@ -283,18 +333,25 @@ def plot_stop_hour_heatmap(hourly_df: pd.DataFrame, stop_df: pd.DataFrame, metri
         title=f"정류소 × 시간대 {metric_label(metric)} 히트맵",
         labels=dict(x="시간대", y="정류소", color=metric_label(metric)),
     )
-    fig.update_layout(height=560, margin=dict(l=20, r=20, t=60, b=20))
+    fig.update_layout(height=560, margin=dict(l=60, r=40, t=70, b=60))
     return apply_dark_plotly_theme(fig)
 
 
-def plot_district_hour_heatmap(hourly_df: pd.DataFrame, metric: str = "boardings"):
+def plot_district_hour_heatmap(hourly_df: pd.DataFrame, metric: str = "boardings", stop_df: pd.DataFrame | None = None):
     """구·군 × 시간대 히트맵을 만듭니다."""
     px = get_plotly_express()
     if px is None:
         return None
-    if hourly_df.empty or metric not in hourly_df.columns or "hour" not in hourly_df.columns or "district" not in hourly_df.columns:
+    if hourly_df.empty or metric not in hourly_df.columns or "hour" not in hourly_df.columns:
         return None
-    pivot = hourly_df.pivot_table(index="district", columns="hour", values=metric, aggfunc="sum").fillna(0)
+
+    data = hourly_df.copy()
+    if "district" not in data.columns or data["district"].notna().sum() == 0:
+        data = _attach_stop_metadata(data, stop_df if stop_df is not None else pd.DataFrame(), ["district"])
+    if "district" not in data.columns or data["district"].notna().sum() == 0:
+        return None
+
+    pivot = data.pivot_table(index="district", columns="hour", values=metric, aggfunc="sum").fillna(0)
     if pivot.empty:
         return None
     fig = px.imshow(
@@ -304,7 +361,7 @@ def plot_district_hour_heatmap(hourly_df: pd.DataFrame, metric: str = "boardings
         title=f"구·군 × 시간대 {metric_label(metric)} 히트맵",
         labels=dict(x="시간대", y="구·군", color=metric_label(metric)),
     )
-    fig.update_layout(height=500, margin=dict(l=20, r=20, t=60, b=20))
+    fig.update_layout(height=500, margin=dict(l=60, r=40, t=70, b=60))
     return apply_dark_plotly_theme(fig)
 
 

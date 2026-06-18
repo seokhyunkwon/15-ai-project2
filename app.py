@@ -2285,6 +2285,16 @@ def filter_hourly_data(hourly_df: pd.DataFrame, stop_df: pd.DataFrame, hours: tu
         elif "stop_name" in filtered.columns and "stop_name" in stop_df.columns:
             metadata = stop_df[["stop_name"] + metadata_cols].dropna(subset=["stop_name"]).drop_duplicates("stop_name")
             filtered = filtered.merge(metadata, on="stop_name", how="left")
+    if not filtered.empty and "stop_name" in filtered.columns and "stop_name" in stop_df.columns:
+        refill_cols = [
+            col
+            for col in ["district", "stop_type", "route_count"]
+            if col in stop_df.columns and (col not in filtered.columns or filtered[col].notna().sum() == 0)
+        ]
+        if refill_cols:
+            filtered = filtered.drop(columns=[col for col in refill_cols if col in filtered.columns], errors="ignore")
+            metadata = stop_df[["stop_name"] + refill_cols].dropna(subset=["stop_name"]).drop_duplicates("stop_name")
+            filtered = filtered.merge(metadata, on="stop_name", how="left")
     if "total_riders" not in filtered.columns:
         if {"boardings", "alightings"}.issubset(filtered.columns):
             filtered["total_riders"] = filtered["boardings"].fillna(0) + filtered["alightings"].fillna(0)
