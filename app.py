@@ -4,6 +4,7 @@ import importlib
 
 import pandas as pd
 import streamlit as st
+import streamlit.components.v1 as components
 
 from src.analysis import (
     correlation_analysis,
@@ -1550,6 +1551,214 @@ def render_app_hero() -> None:
         </section>
         """,
         unsafe_allow_html=True,
+    )
+
+
+def inject_heart_easter_egg() -> None:
+    """Enter, 이름, Enter 순서가 입력되면 화면에 하트 파티클을 띄웁니다."""
+    components.html(
+        """
+        <script>
+        (() => {
+            const parentWindow = window.parent;
+            const doc = parentWindow.document;
+            const secret = "권석현";
+            const inputId = "ks-heart-easter-egg-input";
+            const layerId = "ks-heart-easter-egg-layer";
+            const styleId = "ks-heart-easter-egg-style";
+
+            if (parentWindow.__ksHeartEggCleanup) {
+                parentWindow.__ksHeartEggCleanup();
+            }
+
+            let timeoutId = null;
+            let composing = false;
+
+            function ensureStyle() {
+                if (doc.getElementById(styleId)) return;
+                const style = doc.createElement("style");
+                style.id = styleId;
+                style.textContent = `
+                    #${layerId} {
+                        position: fixed;
+                        inset: 0;
+                        pointer-events: none;
+                        overflow: hidden;
+                        z-index: 2147483647;
+                    }
+                    .ks-heart-easter-egg-heart {
+                        position: fixed;
+                        left: var(--start-x);
+                        bottom: -32px;
+                        font-size: var(--size);
+                        line-height: 1;
+                        color: var(--color);
+                        opacity: 0;
+                        text-shadow:
+                            0 0 10px rgba(255,255,255,.95),
+                            0 0 22px rgba(255,56,126,.75);
+                        animation: ks-heart-easter-egg-float var(--duration) ease-out forwards;
+                        will-change: transform, opacity;
+                    }
+                    @keyframes ks-heart-easter-egg-float {
+                        0% {
+                            transform: translate3d(0, 0, 0) scale(.45) rotate(0deg);
+                            opacity: 0;
+                        }
+                        12% {
+                            opacity: 1;
+                        }
+                        100% {
+                            transform:
+                                translate3d(var(--move-x), var(--move-y), 0)
+                                scale(var(--scale))
+                                rotate(var(--rotate));
+                            opacity: 0;
+                        }
+                    }
+                `;
+                doc.head.appendChild(style);
+            }
+
+            function ensureLayer() {
+                let layer = doc.getElementById(layerId);
+                if (!layer) {
+                    layer = doc.createElement("div");
+                    layer.id = layerId;
+                    doc.body.appendChild(layer);
+                }
+                return layer;
+            }
+
+            function ensureInput() {
+                let input = doc.getElementById(inputId);
+                if (!input) {
+                    input = doc.createElement("input");
+                    input.id = inputId;
+                    input.type = "text";
+                    input.autocomplete = "off";
+                    input.setAttribute("aria-hidden", "true");
+                    input.style.cssText = [
+                        "position:fixed",
+                        "left:0",
+                        "bottom:0",
+                        "width:1px",
+                        "height:1px",
+                        "opacity:0.01",
+                        "border:0",
+                        "padding:0",
+                        "background:transparent",
+                        "color:transparent",
+                        "caret-color:transparent",
+                        "z-index:-1"
+                    ].join(";");
+                    doc.body.appendChild(input);
+                }
+                return input;
+            }
+
+            function burstHearts() {
+                ensureStyle();
+                const layer = ensureLayer();
+                const hearts = ["❤", "♥", "♡"];
+                const colors = ["#ff3b6f", "#ff5ca8", "#ff7a18", "#ffd400", "#89aacc", "#ffffff"];
+                const count = 92;
+
+                for (let i = 0; i < count; i += 1) {
+                    const heart = doc.createElement("span");
+                    heart.className = "ks-heart-easter-egg-heart";
+                    heart.textContent = hearts[Math.floor(Math.random() * hearts.length)];
+                    heart.style.setProperty("--start-x", `${8 + Math.random() * 84}vw`);
+                    heart.style.setProperty("--move-x", `${(Math.random() - 0.5) * 420}px`);
+                    heart.style.setProperty("--move-y", `${-180 - Math.random() * 520}px`);
+                    heart.style.setProperty("--size", `${18 + Math.random() * 34}px`);
+                    heart.style.setProperty("--scale", `${0.8 + Math.random() * 1.35}`);
+                    heart.style.setProperty("--rotate", `${(Math.random() - 0.5) * 110}deg`);
+                    heart.style.setProperty("--duration", `${1.7 + Math.random() * 1.4}s`);
+                    heart.style.setProperty("--color", colors[Math.floor(Math.random() * colors.length)]);
+                    heart.style.animationDelay = `${Math.random() * 0.28}s`;
+                    layer.appendChild(heart);
+                    window.setTimeout(() => heart.remove(), 3600);
+                }
+            }
+
+            function cancelCapture() {
+                const input = doc.getElementById(inputId);
+                if (input) {
+                    input.value = "";
+                    input.blur();
+                }
+                if (timeoutId) {
+                    window.clearTimeout(timeoutId);
+                    timeoutId = null;
+                }
+            }
+
+            function startCapture() {
+                const input = ensureInput();
+                input.value = "";
+                input.focus({ preventScroll: true });
+                if (timeoutId) window.clearTimeout(timeoutId);
+                timeoutId = window.setTimeout(cancelCapture, 9000);
+            }
+
+            function isEditableTarget(target) {
+                if (!target || target.id === inputId) return false;
+                const tag = (target.tagName || "").toLowerCase();
+                if (["input", "textarea", "select"].includes(tag)) return true;
+                if (target.isContentEditable) return true;
+                return Boolean(target.closest && target.closest("[contenteditable='true'], [role='textbox']"));
+            }
+
+            function onDocumentKeydown(event) {
+                if (event.key !== "Enter") return;
+                if (event.target && event.target.id === inputId) return;
+                if (isEditableTarget(event.target)) return;
+                event.preventDefault();
+                startCapture();
+            }
+
+            function onInputKeydown(event) {
+                if (event.key === "Escape") {
+                    event.preventDefault();
+                    cancelCapture();
+                    return;
+                }
+                if (event.key !== "Enter" || event.isComposing || composing) return;
+                event.preventDefault();
+                const value = event.currentTarget.value.trim().normalize("NFC");
+                if (value === secret) {
+                    burstHearts();
+                }
+                cancelCapture();
+            }
+
+            function onCompositionStart() {
+                composing = true;
+            }
+
+            function onCompositionEnd() {
+                composing = false;
+            }
+
+            ensureStyle();
+            const input = ensureInput();
+            doc.addEventListener("keydown", onDocumentKeydown, true);
+            input.addEventListener("compositionstart", onCompositionStart);
+            input.addEventListener("compositionend", onCompositionEnd);
+            input.addEventListener("keydown", onInputKeydown);
+
+            parentWindow.__ksHeartEggCleanup = () => {
+                doc.removeEventListener("keydown", onDocumentKeydown, true);
+                input.removeEventListener("compositionstart", onCompositionStart);
+                input.removeEventListener("compositionend", onCompositionEnd);
+                input.removeEventListener("keydown", onInputKeydown);
+                if (timeoutId) window.clearTimeout(timeoutId);
+            };
+        })();
+        </script>
+        """,
+        height=0,
     )
 
 
@@ -3375,6 +3584,7 @@ def main() -> None:
     set_korean_font()
     apply_retro_90s_overrides()
     render_app_hero()
+    inject_heart_easter_egg()
 
     if st.sidebar.button("정제 데이터 다시 불러오기"):
         bundle = reload_project_data()
