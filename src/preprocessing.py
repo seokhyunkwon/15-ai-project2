@@ -319,6 +319,33 @@ def aggregate_stop_ridership(frames: list[pd.DataFrame]) -> pd.DataFrame:
     return stop_summary
 
 
+def filter_frames_by_years(frames: list[pd.DataFrame], years: set[int]) -> list[pd.DataFrame]:
+    """월별 수요 데이터를 시간대 데이터와 같은 연도 범위로 맞춥니다."""
+    if not years:
+        return frames
+    filtered_frames = []
+    for frame in frames:
+        if "year" not in frame.columns:
+            filtered_frames.append(frame)
+            continue
+        year_values = to_numeric_series(frame["year"]).astype("Int64")
+        filtered = frame[year_values.isin(years)].copy()
+        if not filtered.empty:
+            filtered_frames.append(filtered)
+    return filtered_frames
+
+
+def extract_years(frames: list[pd.DataFrame]) -> set[int]:
+    """데이터프레임 목록에서 존재하는 연도 값을 추출합니다."""
+    years: set[int] = set()
+    for frame in frames:
+        if "year" not in frame.columns:
+            continue
+        year_values = to_numeric_series(frame["year"]).dropna()
+        years.update(year_values.astype(int).tolist())
+    return years
+
+
 def build_hourly_summary(frames: list[pd.DataFrame]) -> pd.DataFrame:
     """시간대 컬럼이 있는 데이터를 정류소·시간대 단위로 집계합니다."""
     hourly_frames = [
@@ -375,6 +402,11 @@ def add_derived_variables(stop_summary: pd.DataFrame, hourly_summary: pd.DataFra
     if not hourly_summary.empty and "hour" in hourly_summary.columns and "boardings" in hourly_summary.columns:
         hourly_for_boarding = hourly_summary.copy()
         hourly_for_boarding["boardings"] = hourly_for_boarding["boardings"].fillna(0)
+        hourly_total = (
+            hourly_for_boarding.groupby("_merge_key", as_index=False)["boardings"]
+            .sum()
+            .rename(columns={"boardings": "hourly_pattern_boardings"})
+        )
         morning = (
             hourly_for_boarding[hourly_for_boarding["hour"].between(7, 9)]
             .groupby("_merge_key", as_index=False)["boardings"]
@@ -393,11 +425,49 @@ def add_derived_variables(stop_summary: pd.DataFrame, hourly_summary: pd.DataFra
         peak["peak_hour_label"] = peak["hour"].astype(int).astype(str) + "시"
         peak = peak.rename(columns={"hour": "peak_hour"})
 
+        df = df.merge(hourly_total, on="_merge_key", how="left")
         df = df.merge(morning, on="_merge_key", how="left")
         df = df.merge(evening, on="_merge_key", how="left")
         df = df.merge(peak, on="_merge_key", how="left")
-        df["morning_concentration"] = safe_divide(df["morning_boardings"], df["boardings"], fill_value=np.nan) * 100
-        df["evening_concentration"] = safe_divide(df["evening_boardings"], df["boardings"], fill_value=np.nan) * 100
+
+        if "stop_name" in df.columns:
+            pattern_cols = ["hourly_pattern_boardings", "morning_boardings", "evening_boardings", "peak_hour", "peak_hour_label"]
+            by_name_parts = []
+            if "stop_name" in hourly_for_boarding.columns:
+                by_name_total = (
+                    hourly_for_boarding.groupby("stop_name", as_index=False)["boardings"]
+                    .sum()
+                    .rename(columns={"boardings": "hourly_pattern_boardings_by_name"})
+                )
+                by_name_morning = (
+                    hourly_for_boarding[hourly_for_boarding["hour"].between(7, 9)]
+                    .groupby("stop_name", as_index=False)["boardings"]
+                    .sum()
+                    .rename(columns={"boardings": "morning_boardings_by_name"})
+                )
+                by_name_evening = (
+                    hourly_for_boarding[hourly_for_boarding["hour"].between(17, 20)]
+                    .groupby("stop_name", as_index=False)["boardings"]
+                    .sum()
+                    .rename(columns={"boardings": "evening_boardings_by_name"})
+                )
+                name_peak_idx = hourly_for_boarding.groupby("stop_name")["boardings"].idxmax()
+                by_name_peak = hourly_for_boarding.loc[name_peak_idx, ["stop_name", "hour"]].copy()
+                by_name_peak["peak_hour_label_by_name"] = by_name_peak["hour"].astype(int).astype(str) + "시"
+                by_name_peak = by_name_peak.rename(columns={"hour": "peak_hour_by_name"})
+                by_name_parts = [by_name_total, by_name_morning, by_name_evening, by_name_peak]
+
+            for part in by_name_parts:
+                df = df.merge(part, on="stop_name", how="left")
+            for col in pattern_cols:
+                by_name_col = f"{col}_by_name"
+                if by_name_col in df.columns:
+                    df[col] = df[col].fillna(df[by_name_col])
+                    df = df.drop(columns=[by_name_col])
+
+        concentration_base = df.get("hourly_pattern_boardings", df.get("boardings"))
+        df["morning_concentration"] = safe_divide(df["morning_boardings"], concentration_base, fill_value=np.nan) * 100
+        df["evening_concentration"] = safe_divide(df["evening_boardings"], concentration_base, fill_value=np.nan) * 100
 
     if "boardings" in df.columns and "alightings" in df.columns:
         df["boarding_alighting_diff"] = df["boardings"] - df["alightings"]
@@ -466,7 +536,13 @@ def prepare_datasets(loaded_files: dict[str, dict]) -> dict:
             "messages": ["data 폴더에 CSV 파일이 없습니다."],
         }
 
-    summary_source_frames = hourly_frames or monthly_only_frames or standardized_frames
+    hourly_years = extract_years(hourly_frames)
+    if monthly_only_frames:
+        summary_source_frames = filter_frames_by_years(monthly_only_frames, hourly_years)
+        if not summary_source_frames:
+            summary_source_frames = monthly_only_frames
+    else:
+        summary_source_frames = hourly_frames or standardized_frames
     monthly_source_frames = monthly_only_frames or standardized_frames
 
     stop_summary = aggregate_stop_ridership(summary_source_frames)

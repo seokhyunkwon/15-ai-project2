@@ -87,7 +87,10 @@ def correlation_analysis(stop_df: pd.DataFrame, x: str = "route_count", y: str =
     if len(data) < 3 or data[x].nunique() < 2 or data[y].nunique() < 2:
         return {"pearson": np.nan, "spearman": np.nan, "pearson_sentence": "상관관계를 계산할 데이터가 부족합니다."}
     pearson = data[x].corr(data[y], method="pearson")
-    spearman = data[x].corr(data[y], method="spearman")
+    try:
+        spearman = data[x].corr(data[y], method="spearman")
+    except ModuleNotFoundError:
+        spearman = data[x].rank().corr(data[y].rank(), method="pearson")
     pearson_strength = interpret_correlation(pearson)
     spearman_strength = interpret_correlation(spearman)
     return {
@@ -128,6 +131,9 @@ def imbalance_candidates(
     demand_quantile: float = 0.75,
     route_quantile: float = 0.50,
     per_route_quantile: float = 0.90,
+    demand_threshold: float | None = None,
+    route_threshold: float | None = None,
+    per_route_threshold: float | None = None,
 ) -> tuple[pd.DataFrame, dict]:
     """수요는 높고 경유 노선 수는 적은 추가 검토 후보 정류소를 찾습니다."""
     required = {"boardings", "route_count", "boardings_per_route"}
@@ -140,9 +146,24 @@ def imbalance_candidates(
         return pd.DataFrame(), {"demand_threshold": np.nan, "route_threshold": np.nan, "per_route_threshold": np.nan}
 
     thresholds = {
-        "demand_threshold": data["boardings"].quantile(demand_quantile),
-        "route_threshold": data["route_count"].quantile(route_quantile),
-        "per_route_threshold": data["boardings_per_route"].quantile(per_route_quantile),
+        "demand_threshold": (
+            float(demand_threshold)
+            if demand_threshold is not None
+            else data["boardings"].quantile(demand_quantile)
+        ),
+        "route_threshold": (
+            float(route_threshold)
+            if route_threshold is not None
+            else data["route_count"].quantile(route_quantile)
+        ),
+        "per_route_threshold": (
+            float(per_route_threshold)
+            if per_route_threshold is not None
+            else data["boardings_per_route"].quantile(per_route_quantile)
+        ),
+        "threshold_mode": "absolute"
+        if any(value is not None for value in [demand_threshold, route_threshold, per_route_threshold])
+        else "quantile",
     }
     candidates = data[
         (data["boardings"] >= thresholds["demand_threshold"])
@@ -201,7 +222,47 @@ def monthly_yoy_growth(monthly_df: pd.DataFrame, metric: str = "boardings") -> p
     return merged
 
 
-def create_analysis_tables(stop_df: pd.DataFrame, hourly_df: pd.DataFrame, monthly_df: pd.DataFrame, top_n: int = 10) -> dict:
+def target_year_monthly_comparison(
+    monthly_df: pd.DataFrame,
+    metric: str = "boardings",
+    base_year: int = 2025,
+    target_year: int = 2026,
+) -> pd.DataFrame:
+    """발표용으로 기준연도와 대상연도의 같은 달 이용량만 비교합니다."""
+    required = {"year", "month", metric}
+    if monthly_df.empty or not required.issubset(monthly_df.columns):
+        return pd.DataFrame()
+
+    monthly_total = monthly_df.dropna(subset=["year", "month", metric]).copy()
+    monthly_total["year"] = monthly_total["year"].astype(int)
+    monthly_total["month"] = monthly_total["month"].astype(int)
+    monthly_total = monthly_total.groupby(["year", "month"], as_index=False)[metric].sum()
+
+    base = monthly_total[monthly_total["year"] == base_year][["month", metric]].rename(
+        columns={metric: "base_value"}
+    )
+    target = monthly_total[monthly_total["year"] == target_year][["month", metric]].rename(
+        columns={metric: "target_value"}
+    )
+    comparison = target.merge(base, on="month", how="inner")
+    if comparison.empty:
+        return pd.DataFrame()
+
+    comparison = comparison.sort_values("month").copy()
+    comparison["period"] = comparison["month"].astype(str).str.zfill(2) + "월"
+    comparison["change"] = comparison["target_value"] - comparison["base_value"]
+    comparison["growth_rate"] = comparison["change"] / comparison["base_value"].replace({0: pd.NA}) * 100
+    return comparison[["period", "base_value", "target_value", "change", "growth_rate"]]
+
+
+def create_analysis_tables(
+    stop_df: pd.DataFrame,
+    hourly_df: pd.DataFrame,
+    monthly_df: pd.DataFrame,
+    top_n: int = 10,
+    base_year: int = 2025,
+    target_year: int = 2026,
+) -> dict:
     """핵심 분석 결과 표를 한 번에 만듭니다."""
     tables = {
         f"전체 승차 인원이 많은 정류소 TOP {top_n}": top_stops(stop_df, "boardings", top_n),
@@ -216,10 +277,14 @@ def create_analysis_tables(stop_df: pd.DataFrame, hourly_df: pd.DataFrame, month
         "이상치 정류소": outlier_stops(stop_df, "boardings"),
     }
     tables.update(supply_mismatch_tables(stop_df, top_n))
-    yoy = monthly_yoy_growth(monthly_df)
-    if not yoy.empty:
-        tables[f"이용량 증가율 TOP {top_n}"] = yoy.sort_values("yoy_growth_rate", ascending=False).head(top_n)
-        tables[f"이용량 감소율 TOP {top_n}"] = yoy.sort_values("yoy_growth_rate").head(top_n)
+    yearly_comparison = target_year_monthly_comparison(
+        monthly_df,
+        metric="boardings",
+        base_year=base_year,
+        target_year=target_year,
+    )
+    if not yearly_comparison.empty:
+        tables[f"{base_year}년 대비 {target_year}년 월별 증감 요약"] = yearly_comparison
     return tables
 
 
